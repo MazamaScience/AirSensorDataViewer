@@ -1,0 +1,19 @@
+ERROR [2020-07-06 16:28:18] 
+ Download PAT - ERROR:
+ Input Selection: SCSB_27
+ Date Selection: 20200703-20200707
+ERROR [2020-07-06 16:28:19] 
+ Create AirSensor - ERROR
+ERROR [2020-07-06 16:28:19] Error in PWFSLSmoke::monitor_subset(sensor, tlim = c(startdate, enddate)): ws_monitor object contains zero monitors
+
+ERROR [2020-07-06 16:28:22] Error in PWFSLSmoke::monitor_subset(sensor, tlim = c(startdate, enddate)): ws_monitor object contains zero monitors
+
+ERROR [2020-07-06 16:28:22] 
+ Download PAT - ERROR:
+ Input Selection: SCBB_02
+ Date Selection: 20200703-20200707
+ERROR [2020-07-06 16:29:34] 
+ Download ANNUAL SENSORS - ERROR:
+ Date Selection: 2020
+ERROR [2020-07-06 16:29:34] Error in MazamaCoreUtils::stopIfNull(sensor): argument 'sensor' must not be NULL.
+

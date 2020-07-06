@@ -1,0 +1,26 @@
+ERROR [2020-07-06 16:15:01] 
+ Download PAT - ERROR:
+ Input Selection: SCSB_27
+ Date Selection: 20200703-20200707
+ERROR [2020-07-06 16:15:01] 
+ Create AirSensor - ERROR
+ERROR [2020-07-06 16:15:01] Error in PWFSLSmoke::monitor_subset(sensor, tlim = c(startdate, enddate)): ws_monitor object contains zero monitors
+
+ERROR [2020-07-06 16:15:03] Error in PWFSLSmoke::monitor_subset(sensor, tlim = c(startdate, enddate)): ws_monitor object contains zero monitors
+
+ERROR [2020-07-06 16:15:03] 
+ Download PAT - ERROR:
+ Input Selection: SCBB_02
+ Date Selection: 20200703-20200707
+ERROR [2020-07-06 16:15:07] 
+ Download PAT - ERROR:
+ Input Selection: SCSB_12
+ Date Selection: 20200703-20200707
+ERROR [2020-07-06 16:15:07] Error in PWFSLSmoke::monitor_subset(sensor, tlim = c(startdate, enddate)): ws_monitor object contains zero monitors
+
+ERROR [2020-07-06 16:15:16] Error in PWFSLSmoke::monitor_subset(sensor, tlim = c(startdate, enddate)): ws_monitor object contains zero monitors
+
+ERROR [2020-07-06 16:15:17] 
+ Download PAT - ERROR:
+ Input Selection: SCSB_27
+ Date Selection: 20200703-20200707
