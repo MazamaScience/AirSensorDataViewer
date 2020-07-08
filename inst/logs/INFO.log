@@ -1,5 +1,0 @@
-ERROR [2020-07-06 16:29:48] 
- Download ANNUAL SENSORS - ERROR:
- Date Selection: 2020
-ERROR [2020-07-06 16:29:48] Error in MazamaCoreUtils::stopIfNull(sensor): argument 'sensor' must not be NULL.
-
