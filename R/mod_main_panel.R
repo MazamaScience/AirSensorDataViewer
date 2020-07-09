@@ -190,8 +190,7 @@ mod_main_panel_server <- function(input, output, session, values){
     }
     
   })
-  
-  
+
 }
 
 ## To be copied in the UI

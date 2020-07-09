@@ -21,18 +21,28 @@ usethis::use_package("promises")
 usethis::use_package("future")
 usethis::use_package("lubridate")
 usethis::use_package("shinyWidgets")
+usethis::use_package("shinythemes")
 usethis::use_package("rlang")
 
 ## Add modules ----
 ## Create a module infrastructure in R/
 golem::add_module( name = "main_panel" ) # Name of the module
-golem::add_module( name = "name_of_module2" ) # Name of the module
+# golem::add_module( name = "overview" ) # Name of the module
+# golem::add_module( name = "calendar" ) # Name of the module
+golem::add_module( name = "raw" ) # Name of the module
 
 ## Add helper functions ----
 ## Creates ftc_* and utils_*
 #golem::add_fct( "helpers" ) 
 golem::add_utils("helpers")
 golem::add_utils("logs")
+
+## Docker Stuff
+# golem::add_dockerfile(
+#   output = "docker/Dockerfile2",
+#   from = "rocker/r-ver:3.6.3", 
+#   port = 3838,
+# )
 
 ## External resources
 ## Creates .js and .css files at inst/app/www

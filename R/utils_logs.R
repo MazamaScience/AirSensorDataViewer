@@ -5,7 +5,7 @@ if ( interactive() ) { # Running from RStudio
   LOG_DIR <- file.path(getwd(),"logs")
 } else {
   # Use the shiny-server default
-  LOG_DIR <- "/var/log/shiny-server/"
+  LOG_DIR <- "logs" # "/var/log/shiny-server/"
 }
 
 MazamaCoreUtils::initializeLogging(LOG_DIR)
