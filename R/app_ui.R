@@ -3,25 +3,24 @@
 #' @param request Internal parameter for `{shiny}`. 
 #'     DO NOT REMOVE.
 #' @import shiny
+#' @importFrom shinythemes shinytheme
 #' @noRd
 app_ui <- function(request) {
-  
-  shiny::fluidPage(
-    
+  fluidPage(
     # ------ Panel Module -Column ----------------------------------------------
-    shiny::column(
+    column(
       width = 2,
-      shiny::wellPanel(
+      wellPanel(
         id = "panel",
         mod_main_panel_ui("main_panel_ui_1")
       ),
       # shiny::tags$footer(id = "ver", paste0("Version: ", VERSION))
     ),
     
-    shiny::navbarPage(
+    navbarPage(
       # ------ Nav Bar ---------------------------------------------------------
       title = tags$b("AirSensor DataViewer (Beta)"),
-      theme = shinythemes::shinytheme("yeti"),
+      theme = shinytheme("yeti"),
       inverse = TRUE,
       id = "navbar",
       fluid = TRUE,
@@ -30,73 +29,72 @@ app_ui <- function(request) {
       windowTitle = "AirSensor DataViewer",
       
       # ------ Explore Page ----------------------------------------------------
-      shiny::tabPanel(
+      tabPanel(
         title = tags$b("Explore"),
         value = "explore",
-        shiny::fluidRow(
-          shiny::column(
+        fluidRow(
+          column(
             width = 8,
             # ----- Tabs -----
-            shiny::tabsetPanel(
+            tabsetPanel(
               type = "tabs",
               id = "tab",
               # ---- Overview Tab ----
-              shiny::tabPanel(
+              tabPanel(
                 title = tags$b("Overview"),
-                icon = shiny::icon("map-marked-alt"),
+                icon = icon("map-marked-alt"),
                 value = "overview",
                 tags$br(),
-                shiny::column(
+                column(
                   width = 12,
                   #overview_mod_ui("global"),
                 )
               ),
               # ---- Calendar tab ----
-              shiny::tabPanel(
+              tabPanel(
                 title = tags$b("Calendar"),
-                icon = shiny::icon("calendar-alt"),
+                icon = icon("calendar-alt"),
                 value = "calendar",
                 tags$br(),
-                shiny::fluidRow(
-                  shiny::column(
+                fluidRow(
+                  column(
                     width = 12,
                     tags$h4("Calendar"),
-                    shiny::wellPanel(
+                    wellPanel(
                       #calendar_mod_ui("global")
                     )
                   )
                 )
               ),
               # ---- Raw data tab ----
-              shiny::tabPanel(
+              tabPanel(
                 title = tags$b("Raw Data"),
-                icon = shiny::icon("database"),
+                icon = icon("database"),
                 value = "raw",
-                
                 tags$br(),
-                #raw_mod_ui("global")
+                mod_raw_ui("raw_ui_1")
               ),
               # ----- Daily patterns tab -----
-              shiny::tabPanel(
+              tabPanel(
                 title = tags$b("Daily Patterns"),
-                icon = shiny::icon("chart-bar"),
+                icon = icon("chart-bar"),
                 value = "dp",
                 
                 tags$br(),
                 #pattern_mod_ui("global")
               ),
               # ----- Compare tab -----
-              shiny::tabPanel(
+              tabPanel(
                 title = tags$b("Compare"),
-                icon = shiny::icon("balance-scale"),
+                icon = icon("balance-scale"),
                 value = "comp",
                 tags$br(),
                 #comparison_mod_ui("global")
               ),
               # ---- Video tab ----
-              shiny::tabPanel(
+              tabPanel(
                 title = tags$b("Community Timelapse"),
-                icon = shiny::icon("file-video"),
+                icon = icon("file-video"),
                 value = "anim",
                 tags$br(),
                 #video_mod_ui("global")
@@ -104,7 +102,7 @@ app_ui <- function(request) {
             )
           ),
           # HELP
-          shiny::column(
+          column(
             width = 2,
             #help_mod_ui("global")
             
@@ -113,29 +111,29 @@ app_ui <- function(request) {
       ),
       
       #----- View Data Page ----------------------------------------------------
-      shiny::tabPanel(
+      tabPanel(
         title = tags$b("View Data"),
         value = "dv",
-        shiny::fluidRow(
+        fluidRow(
           #dataview_mod_ui("global")
         )
       ),
-      shiny::tabPanel(
+      tabPanel(
         title = tags$b("Latest Data"),
         value = "latest",
-        shiny::fluidRow(
-          shiny::column(
+        fluidRow(
+          column(
             width = 10,
             #latest_mod_ui("global")
           )
         )
       ),
       # ----- About Page -------------------------------------------------------
-      shiny::tabPanel(
+      tabPanel(
         title = tags$b("About"),
         value = "about",
-        shiny::fluidRow(
-          shiny::column(
+        fluidRow(
+          column(
             width = 10,
             #shiny::includeHTML(file.path(getwd(),"../www/about.html"))
           )
@@ -144,11 +142,11 @@ app_ui <- function(request) {
     ),
     
     # Use ShinyJS
-    shinyjs::useShinyjs(debug = TRUE),
+    #shinyjs::useShinyjs(debug = TRUE),
     # Enable the "Share" Clipboard JS
-    rclipboard::rclipboardSetup(),
+    #rclipboard::rclipboardSetup(),
     # Enable Toastr ntofications
-    shinytoastr::useToastr(),
+    #shinytoastr::useToastr(),
     # Load the extra JS script
     #shinyjs::extendShinyjs("../www/extra.js"),
     
@@ -159,7 +157,7 @@ app_ui <- function(request) {
     tags$style(type="text/css", "#panel {min-width:200px;}"),
     tags$style(type = "text/css", "#global-leaflet {height: calc(80vh) !important;}"),
   )
-  
+
 }
 
 #' Add external Resources to the Application
