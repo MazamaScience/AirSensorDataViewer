@@ -33,7 +33,9 @@ golem::add_module( name = "raw" ) # Name of the module
 
 ## Add helper functions ----
 ## Creates ftc_* and utils_*
-#golem::add_fct( "helpers" ) 
+golem::add_fct( "plots" )
+
+# Util functions
 golem::add_utils("helpers")
 golem::add_utils("logs")
 
