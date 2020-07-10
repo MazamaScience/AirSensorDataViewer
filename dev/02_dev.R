@@ -23,17 +23,22 @@ usethis::use_package("lubridate")
 usethis::use_package("shinyWidgets")
 usethis::use_package("shinythemes")
 usethis::use_package("rlang")
+usethis::use_package("plotly")
+usethis::use_package("stringr")
 
 ## Add modules ----
 ## Create a module infrastructure in R/
-golem::add_module( name = "main_panel" ) # Name of the module
-# golem::add_module( name = "overview" ) # Name of the module
-# golem::add_module( name = "calendar" ) # Name of the module
-golem::add_module( name = "raw" ) # Name of the module
+golem::add_module( name = "main_panel" ) # Main Panel 
+# golem::add_module( name = "overview" ) # Overview tabset
+# golem::add_module( name = "calendar" ) # Calendar tabset 
+golem::add_module( name = "raw" ) # Raw data tabset
+golem::add_module( name = "latest" ) # Latest dv navtab
+golem::add_module( name = "datatable" )
 
 ## Add helper functions ----
 ## Creates ftc_* and utils_*
-golem::add_fct( "plots" )
+golem::add_fct( "ggplots" )
+golem::add_fct( "plotlys" )
 
 # Util functions
 golem::add_utils("helpers")

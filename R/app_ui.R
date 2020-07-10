@@ -115,16 +115,18 @@ app_ui <- function(request) {
         title = tags$b("View Data"),
         value = "dv",
         fluidRow(
-          #dataview_mod_ui("global")
+          mod_datatable_ui("datatable_ui_1")
         )
       ),
+      
+      # ----- Latest Data page -------------------------------------------------
       tabPanel(
         title = tags$b("Latest Data"),
         value = "latest",
         fluidRow(
           column(
             width = 10,
-            #latest_mod_ui("global")
+            mod_latest_ui("latest_ui_1")
           )
         )
       ),

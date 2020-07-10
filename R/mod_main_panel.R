@@ -8,7 +8,7 @@
 #'
 #' @importFrom shiny NS tagList 
 #' @importFrom lubridate today ymd days 
-#' @importFrom shinyWidgets pickerInput airDatepickerInput radioGroupButtons
+#' @importFrom shinyWidgets pickerInput airDatepickerInput radioGroupButtons sliderTextInput
 mod_main_panel_ui <- function(id){
   ns <- NS(id)
   
@@ -51,20 +51,30 @@ mod_main_panel_ui <- function(id){
       minDate = ymd(20180101, tz = TZ)
     ),
     
-    radioGroupButtons(
-      inputId = ns("lookback_picker"),
-      label = tags$h4("View Past"),
-      choices = c( "3 Days" = 3,
-                   "7 Days" = 7,
-                   "15 Days" = 15,
-                   "30 Days" = 30 ),
-      justified = T,
-      direction = "vertical",
-      individual = F,
-      checkIcon = list(
-        yes = tags$i(class = "fa fa-check",
-                     style = "color: #008cba"))
+    sliderTextInput(
+      inputId = ns("lookback_picker"), 
+      label = tags$h4("View Past Days"),
+      choices = seq(from = 2, to = 30, by = 1), 
+      grid = TRUE, 
+      selected = 5
+      
     )
+    
+    # radioGroupButtons(
+    #   inputId = ns("lookback_picker"),
+    #   label = tags$h4("View Past"),
+    #   choices = c( "3 Days" = 3,
+    #                "7 Days" = 7,
+    #                "15 Days" = 15,
+    #                "30 Days" = 30 ),
+    #   justified = T,
+    #   direction = "vertical",
+    #   individual = F,
+    #   checkIcon = list(
+    #     yes = tags$i(class = "fa fa-check",
+    #                  style = "color: #008cba"))
+    # )
+    
   )
 }
 
@@ -83,36 +93,84 @@ mod_main_panel_ui <- function(id){
 mod_main_panel_server <- function(input, output, session, values){
   ns <- session$ns
   
-  # Create a reactive sensors promise
+  # SCAQMD sensors
+  setArchiveBaseUrl("http://data.mazamascience.com/PurpleAir/v1") 
+  
+  ## sensors future
   sensors <- reactive({
-    future({ 
-      # SCAQMD sensors
-      setArchiveBaseUrl("http://data.mazamascience.com/PurpleAir/v1") 
-      logger.trace("loaded sensors.")
-      return( sensor_load() )
-    })
+    future({ sensor_load() })
   })
   
+  # Add the promised sensor obj to reactive values when loaded
+  observeEvent(sensors(), {
+    logger.trace("loading sensor obj...")
+    then(sensors(), function(d) { values$sensors <- d })
+    catch(sensors(), function(e) { logger.error(e) })
+    logger.trace("done.")
+  })
+  
+  ## pas future
+  pas <- reactive({
+    future({ pas_load() })
+  })
+  
+  # Add the promised pas obj to reactive values when loaded
+  observeEvent(pas(), {
+    logger.trace("loading pas obj...")
+    then(pas(), function(d) { values$pas <- d } )
+    catch(pas(), function(e) { logger.error(e) })
+    logger.trace("done.")
+  })
+  
+  ## pat obj future
   pat <- reactive({
-    req(input$sensor_picker)
+    # Require a sensor selection
+    req(input$sensor_picker) 
+    # Require pas 
+    req(values$pas)
     ed <- ymd(input$date_picker)
-    sd <- ed - days(31) #years(1)
-    logger.trace(paste("loading", input$sensor_picker, "pat object", 
-                       sd, "--", ed, "..."))
-    future({
-      setArchiveBaseUrl("http://data.mazamascience.com/PurpleAir/v1")
-      pas <- pas_load()
-      return(
-        pat_load(
-          pas = pas, 
-          label = input$sensor_picker, 
-          startdate = sd, 
-          enddate = ed
-        )
-      )
+    sd <- ed - days(31) #years(1) # Default to load 31 days
+    future({ 
+      pat_load(
+        pas = values$pas, 
+        label = input$sensor_picker, 
+        startdate = sd, 
+        enddate = ed
+      ) 
     })
   })
   
+  # Add the promised pat obj to reactive values when loaded
+  observeEvent(pat(), {
+    logger.trace(paste("loading", input$sensor_picker, "pat object...")) 
+    then(pat(), function(d) { values$pat <- d })
+    catch(pat(), function(e) { logger.error(e) })
+    logger.trace(paste(input$sensor_picker, "done."))
+  })
+  
+  ## latest pat obj future
+  latest <- reactive({
+    req(input$sensor_picker)
+    req(values$pas)
+    future({
+      pat_createNew(
+        pas = values$pas, 
+        label = input$sensor_picker, 
+        timezone = 'UTC'
+      ) 
+    })
+  })
+  
+  # Add the promised latest pat obj to reactive values when on latest navbar tab
+  observeEvent({ values$nav; input$sensor_picker }, {
+    if ( values$nav == 'latest' ) {
+      req(input$sensor_picker)
+      logger.trace(paste("loading latest", input$sensor_picker, "pat obj..."))
+      then(latest(), function(d) { values$latest <- d })
+      catch(latest(), function(e) { logger.error(e) })
+      logger.trace(paste(input$sensor_picker, "latest done."))
+    }
+  })
   
   # Update the pickers when sensor promise is fulfilled
   observeEvent(sensors(), {
@@ -130,7 +188,7 @@ mod_main_panel_server <- function(input, output, session, values){
     })
   })
   
-  # Update the avaliable sensors in selected community
+  # Update the available sensors in selected community
   observeEvent(input$community_picker, {
     req(input$community_picker)
     then(sensors(), function(d) {
@@ -149,22 +207,16 @@ mod_main_panel_server <- function(input, output, session, values){
     })
   })
   
-  # Update the reactive sensor, pat values on selection
+  # Update the reactive sensor on input selection
   observeEvent(input$sensor_picker, {
     req(input$sensor_picker)
     logger.trace(paste("selected sensor: ", input$sensor_picker))
-    
-    then(sensors(), function(d) {
-      values$sensor <- sensor_filterMeta(d, .data$label == input$sensor_picker)
-    }, onRejected = function(e) { logger.trace(e) })
-    
-    then(pat(), function(d) {
-      values$pat <- d
-      logger.trace(paste(input$sensor_picker, "done."))
-    }, onRejected = function(e) { logger.trace(e) })
+    # Update the selected sensor reactive data
+    values$sensor <- 
+      sensor_filterMeta(values$sensors, .data$label == input$sensor_picker)
   })
   
-  # Update the reactive pat values on date changes
+  # Update the reactive pat values on date range changes
   observeEvent({ input$date_picker; input$lookback_picker } , {
     req(values$pat)
     data_sd <- ymd_hms(min(values$pat$data$datetime))
@@ -190,12 +242,12 @@ mod_main_panel_server <- function(input, output, session, values){
     }
     
   })
-
+  
 }
 
 ## To be copied in the UI
 # mod_main_panel_ui("main_panel_ui_1")
-    
+
 ## To be copied in the server
 # callModule(mod_main_panel_server, "main_panel_ui_1")
- 
+
