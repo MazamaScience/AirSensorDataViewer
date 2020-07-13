@@ -142,7 +142,7 @@ mod_main_panel_server <- function(input, output, session, values){
   
   # Add the promised pat obj to reactive values when loaded
   observeEvent(pat(), {
-    logger.trace(paste("loading", input$sensor_picker, "pat object...")) 
+    logger.trace(paste("loading", input$sensor_picker, "pat obj...")) 
     then(pat(), function(d) { values$pat <- d })
     catch(pat(), function(e) { logger.error(e) })
     logger.trace(paste(input$sensor_picker, "done."))
@@ -240,7 +240,6 @@ mod_main_panel_server <- function(input, output, session, values){
         logger.trace(paste(input$sensor_picker, "done."))
       })
     }
-    
   })
   
 }
