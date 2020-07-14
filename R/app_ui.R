@@ -78,10 +78,10 @@ app_ui <- function(request) {
               tabPanel(
                 title = tags$b("Daily Patterns"),
                 icon = icon("chart-bar"),
-                value = "dp",
+                value = "patterns",
                 
                 tags$br(),
-                #pattern_mod_ui("global")
+                mod_patterns_ui("patterns_ui_1")
               ),
               # ----- Compare tab -----
               tabPanel(
@@ -89,7 +89,7 @@ app_ui <- function(request) {
                 icon = icon("balance-scale"),
                 value = "comp",
                 tags$br(),
-                #comparison_mod_ui("global")
+                # mod_compare_ui("compare_ui_1")
               ),
               # ---- Video tab ----
               tabPanel(
