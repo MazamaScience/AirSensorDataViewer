@@ -7,7 +7,7 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
-#' @importFrom DT dataTableOutput
+#' @importFrom DT DTOutput
 mod_datatable_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -21,7 +21,7 @@ mod_datatable_ui <- function(id) {
     # Data explorer
     column(
       width = 10,
-      dataTableOutput(
+      DTOutput(
         outputId = ns("datatable")
       ) 
     )
@@ -32,7 +32,7 @@ mod_datatable_ui <- function(id) {
 #'
 #' @noRd 
 #' 
-#' @importFrom DT renderDataTable datatable formatDate
+#' @importFrom DT renderDT datatable formatDate
 mod_datatable_server <- function(input, output, session, values) {
   ns <- session$ns
   
@@ -47,7 +47,7 @@ mod_datatable_server <- function(input, output, session, values) {
                 "Country" = values$pat$meta$countryCode )
   })
   
-  output$datatable <- renderDataTable({
+  output$datatable <- renderDT({ 
     req(values$pat)
     data <- values$pat$data[-(6:10)]
     names(data) <- c( "Datetime (UTC)",
