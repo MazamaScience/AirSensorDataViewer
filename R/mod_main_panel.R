@@ -128,8 +128,12 @@ mod_main_panel_server <- function(input, output, session, values){
     req(input$sensor_picker) 
     # Require pas 
     req(values$pas)
+    # NOT WORK: Caching 30 days throws hard to fix reactivate
+    # ed <- ymd(input$date_picker)
+    # sd <- ed - days(31) #years(1) # Default to load 31 days
+    # USE: inputs instead for data loading
     ed <- ymd(input$date_picker)
-    sd <- ed - days(31) #years(1) # Default to load 31 days
+    sd <- ed - days(input$lookback_picker)
     future({ 
       pat_load(
         pas = values$pas, 
