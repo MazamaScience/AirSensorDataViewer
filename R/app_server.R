@@ -22,7 +22,8 @@ app_server <- function( input, output, session ) {
     sensor = NULL, # sensor obj (selected)
     sensors = NULL, # sensor obj (full)
     latest = NULL, # latest pat obj
-    nav = NULL # navbar tab
+    nav = NULL, # navbar tab
+    tab = NULL # tabset tab
   )
   
   observeEvent(input$navbar, {
@@ -30,9 +31,16 @@ app_server <- function( input, output, session ) {
     values$nav <- input$navbar
   })
   
+  observeEvent(input$tab, {
+    logger.trace(paste("tab:", input$tab))
+    values$tab <- input$tab
+  })
+  
   # List the first level callModules here
   callModule(mod_main_panel_server, "main_panel_ui_1", values)
   callModule(mod_raw_server, "raw_ui_1", values) 
+  callModule(mod_patterns_server, "patterns_ui_1", values)
+  #callModule(mod_compare_server, "compare_ui_1", values)
   callModule(mod_latest_server, "latest_ui_1", values)
   callModule(mod_datatable_server, "datatable_ui_1", values)
   
