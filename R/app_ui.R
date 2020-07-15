@@ -89,7 +89,7 @@ app_ui <- function(request) {
                 icon = icon("balance-scale"),
                 value = "comp",
                 tags$br(),
-                # mod_compare_ui("compare_ui_1")
+                mod_compare_ui("compare_ui_1")
               ),
               # ---- Video tab ----
               tabPanel(
