@@ -25,6 +25,8 @@ usethis::use_package("shinythemes")
 usethis::use_package("rlang")
 usethis::use_package("plotly")
 usethis::use_package("stringr")
+usethis::use_package("worldmet")
+usethis::use_package("DT")
 
 ## Add modules ----
 ## Create a module infrastructure in R/
@@ -32,6 +34,9 @@ golem::add_module( name = "main_panel" ) # Main Panel
 # golem::add_module( name = "overview" ) # Overview tabset
 # golem::add_module( name = "calendar" ) # Calendar tabset 
 golem::add_module( name = "raw" ) # Raw data tabset
+golem::add_module( name = "patterns")
+golem::add_module( name = "compare" )
+
 golem::add_module( name = "latest" ) # Latest dv navtab
 golem::add_module( name = "datatable" )
 
@@ -39,6 +44,8 @@ golem::add_module( name = "datatable" )
 ## Creates ftc_* and utils_*
 golem::add_fct( "ggplots" )
 golem::add_fct( "plotlys" )
+golem::add_fct( "loadNOAA" )
+golem::add_fct( "tables" )
 
 # Util functions
 golem::add_utils("helpers")
