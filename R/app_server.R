@@ -22,13 +22,13 @@ app_server <- function( input, output, session ) {
     sensor = NULL, # sensor obj (selected)
     sensors = NULL, # sensor obj (full)
     latest = NULL, # latest pat obj
-    nav = NULL, # navbar tab
+    navbar = NULL, # navbar tab
     tab = NULL # tabset tab
   )
   
   observeEvent(input$navbar, {
     logger.trace(paste("navbar:", input$navbar))
-    values$nav <- input$navbar
+    values$navbar <- input$navbar
   })
   
   observeEvent(input$tab, {

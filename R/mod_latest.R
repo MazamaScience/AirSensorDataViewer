@@ -40,6 +40,8 @@ mod_latest_ui <- function(id){
 #' @noRd 
 #' 
 #' @importFrom plotly renderPlotly
+#' @importFrom future future 
+#' @importFrom promises then catch
 mod_latest_server <- function(input, output, session, values){
   ns <- session$ns
   
