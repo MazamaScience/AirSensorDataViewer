@@ -4,9 +4,12 @@
 #'     DO NOT REMOVE.
 #' @import shiny
 #' @importFrom shinythemes shinytheme
+#' @importFrom waiter use_waiter use_waitress
 #' @noRd
 app_ui <- function(request) {
   fluidPage(
+    use_waiter(), 
+    use_waitress(), 
     # ------ Panel Module -Column ----------------------------------------------
     column(
       width = 2,

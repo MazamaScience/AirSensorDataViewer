@@ -27,11 +27,12 @@ usethis::use_package("plotly")
 usethis::use_package("stringr")
 usethis::use_package("worldmet")
 usethis::use_package("DT")
+usethis::use_package("waiter")
 
 ## Add modules ----
 ## Create a module infrastructure in R/
 golem::add_module( name = "main_panel" ) # Main Panel 
-# golem::add_module( name = "overview" ) # Overview tabset
+golem::add_module( name = "overview" ) # Overview tabset
 # golem::add_module( name = "calendar" ) # Calendar tabset 
 golem::add_module( name = "raw" ) # Raw data tabset
 golem::add_module( name = "patterns")
@@ -60,7 +61,8 @@ golem::add_utils("logs")
 
 ## External resources
 ## Creates .js and .css files at inst/app/www
-# golem::add_js_file( "script" )
+# golem::add_js_file( "map" )
+# golem::add_js_handler( "map" )
 # golem::add_js_handler( "handlers" )
 # golem::add_css_file( "custom" )
 

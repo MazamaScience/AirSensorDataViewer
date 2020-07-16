@@ -61,19 +61,25 @@ mod_compare_server <- function(input, output, session, values) {
   ns <- session$ns
   
   # leaflet??
+  L1 <- waiter(ns("sensorMonitorCorr"))
+  L2 <- waiter(ns("sensorMonitorComp"))
+  L3 <- waiter(ns("statusTable"))
   
   output$sensorMonitorCorr <- renderPlot({
     req(values$sensor)
+    L1$show()
     asdv_externalFit(values$sensor, tz = 'UTC')
   })
   
   output$sensorMonitorComp <- renderPlot({
     req(values$pat)
+    L2$show()
     pat_monitorComparison(values$pat)
   })
   
   output$statusTable <- renderDT({
     req(values$pat)
+    L3$show()
     datatable(
       data = sensorMonitorCompTable(values$pat), 
       selection = "none",

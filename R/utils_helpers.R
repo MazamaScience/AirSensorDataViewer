@@ -26,3 +26,47 @@ id2com <- function(X) {
 com2id <- function(X) {
   unlist(lapply(X, function(x) {i<-which(com_id == x); ifelse(length(i)!=0, names(com_id[i]), x)}))
 }
+
+#' Title
+#'
+#' @param id 
+#'
+#' @export
+#' @noRd
+#' 
+#' @importFrom waiter Waiter spin_throbber transparent
+waiter <- function(id = NULL) { 
+  Waiter$new(
+    id = id,  
+    html = spin_throbber(), 
+    color = transparent(.5)
+  )
+}
+
+#' Title
+#'
+#' @return
+#' @export
+#' 
+#' @noRd
+#' 
+#' @importFrom waiter Waitress
+waitress <- function() {
+  Waitress$new(min = 0, max = 100)
+}
+
+#' Title
+#'
+#' @param expr 
+#' @param msg 
+#'
+#' @export
+#'
+#' @noRd
+makeWaitress <- function(expr, msg) {
+  w <- waitress()
+  w$notify(msg, position = "bl")
+  w$set(runif(1, min = 10, max = 33))
+  expr
+  w$close()
+}

@@ -11,7 +11,7 @@
 mod_latest_ui <- function(id){
   ns <- NS(id)
   tagList(
-    wellPanel( 
+    "w1" = wellPanel(
       plotlyOutput(
         outputId = ns("pm_latest")
       )
@@ -40,8 +40,6 @@ mod_latest_ui <- function(id){
 #' @noRd 
 #' 
 #' @importFrom plotly renderPlotly
-#' @importFrom future future 
-#' @importFrom promises then catch
 mod_latest_server <- function(input, output, session, values){
   ns <- session$ns
   

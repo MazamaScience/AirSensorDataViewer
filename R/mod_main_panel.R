@@ -17,7 +17,7 @@ mod_main_panel_ui <- function(id){
       inputId = ns("community_picker"),
       label = tags$h4("Community"),
       choices = "Loading Communites...",
-      selected = "",
+      selected = NULL,
       options = list(
         `live-search` = TRUE,
         title = "Select community...",
@@ -82,20 +82,23 @@ mod_main_panel_ui <- function(id){
 #' @importFrom shinyWidgets updatePickerInput
 #' @importFrom PWFSLSmoke createEmptyMonitor
 #' @importFrom rlang .data
+#' @importFrom waiter Waitress
 mod_main_panel_server <- function(input, output, session, values){
   ns <- session$ns
-  
   # SCAQMD sensors
   setArchiveBaseUrl("http://data.mazamascience.com/PurpleAir/v1") 
-  
   ## ---- Startup ----
   # load non-changing rv: sensors, pas objs
   observe({
+    # notification
+    startupWaitress <- waitress()
+    startupWaitress$notify(html = "Loading Data...", position = "bl")
     # create sensors obj promise
     sensors <- future({ 
       logger.trace("loading sensors obj...")
       sensor_load() 
     })
+    startupWaitress$set(10)
     then(sensors, function(d) {
       # update the pickers fulfilled sensor promise
       updatePickerInput(
@@ -110,6 +113,7 @@ mod_main_panel_server <- function(input, output, session, values){
       )
       # update sensors rv
       values$sensors <- d 
+      startupWaitress$set(50)
       logger.trace("sensors done.")
     })
     catch(sensors, function(err) { 
@@ -120,14 +124,17 @@ mod_main_panel_server <- function(input, output, session, values){
       logger.trace("loading pas obj...")
       pas_load() 
     })
+    startupWaitress$set(75)
     then(pas, function(d) { 
       # update pas rv 
       values$pas <- d 
+      startupWaitress$set(90)
       logger.trace("pas done.")
     })
     catch(pas, function(err) { 
       logger.error(err) 
     })
+    startupWaitress$close()
   })
   
   ## ---- Reactive Expressions ----
@@ -151,6 +158,7 @@ mod_main_panel_server <- function(input, output, session, values){
     })
     catch(pat, function(err) {
       logger.error(err)
+      showNotification("Oops!", "An Error has occured.", type = "warn")
     })
     # return pat promise for flexibility
     return(pat)
@@ -159,7 +167,7 @@ mod_main_panel_server <- function(input, output, session, values){
   getSensor <- reactive({
     req(input$sensor_picker, values$sensors)
     # update the selected sensor reactive data
-    sensor <- future({ 
+    sensor <- future({
       sensor_filterMeta(values$sensors, .data$label == input$sensor_picker)
     })
     then(sensor, function(d) {
@@ -168,6 +176,7 @@ mod_main_panel_server <- function(input, output, session, values){
     })
     catch(sensor, function(err) {
       logger.error(err)
+      showNotification("WHAT", type = "error")
     })
     # return sensor promise for flexibility
     return(sensor)
@@ -190,7 +199,7 @@ mod_main_panel_server <- function(input, output, session, values){
         startdate = strftime(sd, "%Y%m%d"),
         enddate = strftime(ed, "%Y%m%d")
       )
-    # otherwise reload pat obj with domain selections
+      # otherwise reload pat obj with domain selections
     } else {
       logger.trace(paste(input$sensor_picker, "selected dates", sd, "--", 
                          ed, "out of range, reloading pat obj..."))
@@ -220,18 +229,23 @@ mod_main_panel_server <- function(input, output, session, values){
     })
     return(latest)
   })
-
+  
   ## ---- Event Handling ----
   # load the pat and filter the sensors on sensor selection
   observeEvent(input$sensor_picker, {
-    # load the pat obj and filtered sensor from selection label
-    getPat()
-    getSensor()
-  }, priority = 0)
+    req(input$sensor_picker)
+    makeWaitress({
+      # load the pat obj and filtered sensor from selection label
+      getPat()
+      getSensor()
+    }, paste0("Loading ", input$sensor_picker, "..."))
+  }, priority = 0, ignoreInit = TRUE, ignoreNULL = TRUE)
   # filter dates on date || lookback picker change
   observeEvent({ input$date_picker; input$lookback_picker }, {
-    filterDates()
-  }, priority = 0)
+    makeWaitress({
+      filterDates()
+    }, msg = "Loading dates...")
+  }, priority = 0, ignoreInit = TRUE)
   # filter sensors selection on community selection
   observeEvent(input$community_picker, {
     req(input$community_picker, values$sensors)
@@ -248,10 +262,14 @@ mod_main_panel_server <- function(input, output, session, values){
   }, priority = 0)
   # load latest pat obj on latest nav && sensor selection
   observeEvent({ input$sensor_picker; values$navbar }, {
+    req(input$sensor_picker)
     if ( values$navbar == "latest" ) {
-      getLatest()
+      makeWaitress({
+        getLatest()
+      }, "Loading Latest Data...")
     }
-  }, priority = 1) # if on latest page, load latest pat first
+  }, priority = 1, ignoreInit = TRUE, ignoreNULL = TRUE) # if on latest page, load latest pat first
+  # use the waitress
   
 } # End Server
 
