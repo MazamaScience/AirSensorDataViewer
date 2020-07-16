@@ -44,28 +44,61 @@ mod_patterns_ui <- function(id){
 #'
 #' @noRd 
 #' @importFrom DT renderDT datatable
+#' @importFrom worldmet getMeta importNOAA
+#' @importFrom lubridate ymd_hms year
+#' @importFrom future future availableCores 
+#' @importFrom promises then catch
 mod_patterns_server <- function(input, output, session, values){
   ns <- session$ns
   
-  noaa <- reactive({
+  # create loaders 
+  L1 <- waiter(ns("patternPlot"))
+  L2 <- waiter(ns("noaaTable"))
+  L3 <- waiter(ns("windPlot"))
+  
+  getNOAA <- reactive({
     req(values$sensor)
-    future({ loadNOAA(values$sensor) })
+    noaa <- future({
+      logger.trace("loading NOAA...")
+      sd <- min(ymd_hms(values$sensor$data$datetime))
+      ed <- max(ymd_hms(values$sensor$data$datetime))
+      # Find wind data readings from the closest NOAA site
+      year <- year(ed)
+      lon <- values$sensor$meta$longitude
+      lat <- values$sensor$meta$latitude
+      closestSite <- getMeta(lon = lon, lat = lat, n = 1, plot = FALSE)[1,]
+      siteCode <- closestSite$code
+      siteData <- importNOAA(code = siteCode, year = year, n.cores = availableCores() - 1) 
+      return(siteData)
+    })
+    then(noaa, function(d) {
+      values$noaa <- d
+      logger.trace("NOAA done.")
+    })
+    catch(noaa, function(err) {
+      logger.error(err)
+    })
+    return(noaa)
   })
   
-  observeEvent(values$tab, {
+  observeEvent({ input$sensor_picker;  values$tab; values$sensor } , {
     if ( values$tab == 'patterns' ) {
-      then(noaa(), function(d) { values$noaa <- d })
+      makeWaitress({
+        getNOAA()
+      }, paste0("Loading NOAA Data..."))
     }
-  })
+  }, priority = 1)
   
   output$patternPlot <- renderPlot({
     req(values$sensor)
+    L1$show()
     asdv_pm25Diurnal(ws_data = values$sensor) + 
       stat_meanByHour(output = "scaqmd")
   })
   
   output$noaaTable <- renderDT({
     req(values$noaa)
+    L2$show()
     datatable(
       data = noaaTable(values$noaa),
       selection = "none",
@@ -79,6 +112,7 @@ mod_patterns_server <- function(input, output, session, values){
   output$windPlot <- renderPlot({
     req(values$sensor)
     req(values$noaa)
+    L3$show()
     sensor_pollutionRose(values$sensor, values$noaa)
   })
   

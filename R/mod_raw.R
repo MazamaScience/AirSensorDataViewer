@@ -19,7 +19,7 @@ mod_raw_ui <- function(id){
           plotOutput(
             outputId = ns("multiPlot"),
             height = "800"
-          ) 
+          )
         )
       )
     ),
@@ -51,19 +51,27 @@ mod_raw_ui <- function(id){
 #' @noRd 
 mod_raw_server <- function(input, output, session, values){
   ns <- session$ns
-
+  
+  # create loaders
+  L1 <- waiter(ns("multiPlot"))
+  L2 <- waiter(ns("comparePlot"))
+  L3 <- waiter(ns("lmPlot"))
+  
   output$multiPlot <- renderPlot({
     req(values$pat)
+    L1$show()
     pat_multiPlot(pat = values$pat)
   })
   
   output$comparePlot <- renderPlot({
     req(values$pat)
+    L2$show()
     asdv_internalFit(pat = values$pat, tz = 'UTC', whichPlot = 'ab')
   })
   
   output$lmPlot <- renderPlot({
     req(values$pat)
+    L3$show()
     asdv_internalFit(pat = values$pat, tz = 'UTC', whichPlot = 'lm')
   })
  
