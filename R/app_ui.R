@@ -90,7 +90,7 @@ app_ui <- function(request) {
               tabPanel(
                 title = tags$b("Compare"),
                 icon = icon("balance-scale"),
-                value = "comp",
+                value = "compare",
                 tags$br(),
                 mod_compare_ui("compare_ui_1")
               ),
@@ -98,9 +98,9 @@ app_ui <- function(request) {
               tabPanel(
                 title = tags$b("Community Timelapse"),
                 icon = icon("file-video"),
-                value = "anim",
+                value = "video",
                 tags$br(),
-                #video_mod_ui("global")
+                mod_video_ui("video_ui_1")
               )
             )
           ),

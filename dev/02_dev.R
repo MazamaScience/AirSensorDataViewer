@@ -37,6 +37,7 @@ golem::add_module( name = "overview" ) # Overview tabset
 golem::add_module( name = "raw" ) # Raw data tabset
 golem::add_module( name = "patterns")
 golem::add_module( name = "compare" )
+golem::add_module( name = "video" )
 
 golem::add_module( name = "latest" ) # Latest dv navtab
 golem::add_module( name = "datatable" )

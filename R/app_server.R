@@ -41,6 +41,7 @@ app_server <- function( input, output, session ) {
   callModule(mod_raw_server, "raw_ui_1", values) 
   callModule(mod_patterns_server, "patterns_ui_1", values)
   callModule(mod_compare_server, "compare_ui_1", values)
+  callModule(mod_video_server, "video_ui_1", values)
   callModule(mod_latest_server, "latest_ui_1", values)
   callModule(mod_datatable_server, "datatable_ui_1", values)
   

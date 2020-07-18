@@ -27,7 +27,7 @@ mod_main_panel_ui <- function(id){
       inputId = ns("sensor_picker"),
       label = tags$h4("Sensor"),
       choices = "Loading Sensors...",
-      selected = "",
+      selected = NULL,
       options = list(
         `live-search` = TRUE,
         title = "Select sensor...",
@@ -104,12 +104,12 @@ mod_main_panel_server <- function(input, output, session, values){
       updatePickerInput(
         session, 
         "community_picker", 
-        choices = c("All...", unique(id2com(d$meta$communityRegion)))
+        choices = c("All...", na.omit(unique(id2com(d$meta$communityRegion))))
       )
       updatePickerInput(
         session, 
         "sensor_picker", 
-        choices = d$meta$label
+        choices = na.omit(unique(d$meta$label))
       )
       # update sensors rv
       values$sensors <- d 
@@ -157,8 +157,14 @@ mod_main_panel_server <- function(input, output, session, values){
       logger.trace(paste(input$sensor_picker, "pat done."))
     })
     catch(pat, function(err) {
+      # if error, log, notify and reset picker selection to previous 
       logger.error(err)
       showNotification("Oops!", "An Error has occured.", type = "warn")
+      updatePickerInput(
+        session, 
+        inputId = "sensor_picker", 
+        selected = values$pat$meta$label
+      )
     })
     # return pat promise for flexibility
     return(pat)
@@ -175,8 +181,14 @@ mod_main_panel_server <- function(input, output, session, values){
       logger.trace(paste(input$sensor_picker, "sensor done."))
     })
     catch(sensor, function(err) {
+      # if error, log, notify and reset picker selection to previous 
       logger.error(err)
-      showNotification("WHAT", type = "error")
+      showNotification("Oops!", "An Error has occured.", type = "warn")
+      updatePickerInput(
+        session, 
+        inputId = "sensor_picker", 
+        selected = values$sensor$meta$label
+      )
     })
     # return sensor promise for flexibility
     return(sensor)
@@ -242,6 +254,7 @@ mod_main_panel_server <- function(input, output, session, values){
   }, priority = 0, ignoreInit = TRUE, ignoreNULL = TRUE)
   # filter dates on date || lookback picker change
   observeEvent({ input$date_picker; input$lookback_picker }, {
+    req(input$sensor_picker)
     makeWaitress({
       filterDates()
     }, msg = "Loading dates...")
@@ -258,7 +271,7 @@ mod_main_panel_server <- function(input, output, session, values){
           id2com(values$sensors$meta$communityRegion) == input$community_picker,
         ]
     }
-    updatePickerInput(session, "sensor_picker", choices = validSensors$label)
+    updatePickerInput(session, "sensor_picker", choices = na.omit(validSensors$label))
   }, priority = 0)
   # load latest pat obj on latest nav && sensor selection
   observeEvent({ input$sensor_picker; values$navbar }, {
@@ -269,7 +282,6 @@ mod_main_panel_server <- function(input, output, session, values){
       }, "Loading Latest Data...")
     }
   }, priority = 1, ignoreInit = TRUE, ignoreNULL = TRUE) # if on latest page, load latest pat first
-  # use the waitress
   
 } # End Server
 
