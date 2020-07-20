@@ -1,5 +1,9 @@
 # ----- Set up logging ---------------------------------------------------------
 
+if ( !dir.exists(paste0(getwd(),"/logs")) ) {
+  dir.create(paste0(getwd(), "/logs"))
+}
+
 if ( interactive() ) { # Running from RStudio
   # Somewhere easy to find
   LOG_DIR <- file.path(getwd(),"logs")
