@@ -5,6 +5,11 @@ Authors@R: person('Hans', 'Martin', email = 'hansmrtn@gmail.com', role = c('cre'
 Description: The AirSensor DataViewer.
 License: GPL-3
 Imports: 
+    MazamaCoreUtils,
+    dplyr,
+    ggplot2,
+    leaflet,
+    rlang,
     config,
     golem,
     shiny,
@@ -23,7 +28,9 @@ Imports:
     plotly,
     stringr,
     worldmet,
-    waiter
+    waiter,
+    gridExtra,
+    tidyr
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
