@@ -166,4 +166,4 @@ joule_reboot: joule_build joule_bounce
 # AirSensordataviewer DOCKER CORE ---------------------------------------------------
 
 airsensordataviewer_build:
-	cd docker; docker build -t mazamascience/airsensordataviewer:$(VERSION) -f Dockerfile .
+	docker build -t mazamascience/airsensordataviewer:$(VERSION) -f docker/Dockerfile .
