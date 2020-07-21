@@ -13,7 +13,7 @@ To use interactively (un-hosted) download the application as a package via githu
 
 `remotes::install_github(“MazamaScience/AirSensorDataViewer”)`
 
-### Run via RStudio 
+### Run via R session
 
 `AirSensorDataViewer::run_app()`
 
