@@ -7,10 +7,15 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
+#' @importFrom tiotemp timeseriesMapOutput
 mod_overview_ui <- function(id){
   ns <- NS(id)
   tagList(
-    
+    wellPanel(
+      timeseriesMapOutput(
+        outputId = ns("timeseriesMap")
+      )
+    )
     
   )
 }
@@ -18,9 +23,13 @@ mod_overview_ui <- function(id){
 #' overview Server Function
 #'
 #' @noRd 
-mod_overview_server <- function(input, output, session){
+#' @importFrom tiotemp renderTimeseriesMap timeseriesMap
+mod_overview_server <- function(input, output, session, values) {
   ns <- session$ns
  
+  output$timeseriesMap <- renderTimeseriesMap({
+    timeseriesMap(data = values$sensors$data, meta = values$sensors$meta)
+  })
 }
     
 ## To be copied in the UI
