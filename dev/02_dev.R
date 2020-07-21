@@ -28,6 +28,8 @@ usethis::use_package("stringr")
 usethis::use_package("worldmet")
 usethis::use_package("DT")
 usethis::use_package("waiter")
+usethis::use_package("gridExtra")
+usethis::use_package("tidyr")
 
 ## Add modules ----
 ## Create a module infrastructure in R/
