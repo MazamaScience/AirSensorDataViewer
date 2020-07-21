@@ -4,6 +4,8 @@
 #'
 #' @return
 #' @export
+#' 
+#' @importFrom utils head tail
 sensorMonitorCompTable <- function(pat) {
   
   # ----- Validate parameters --------------------------------------------------

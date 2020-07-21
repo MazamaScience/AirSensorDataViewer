@@ -83,6 +83,7 @@ mod_main_panel_ui <- function(id){
 #' @importFrom PWFSLSmoke createEmptyMonitor
 #' @importFrom rlang .data
 #' @importFrom waiter Waitress
+#' @importFrom stats na.omit 
 mod_main_panel_server <- function(input, output, session, values){
   ns <- session$ns
   # SCAQMD sensors

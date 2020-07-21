@@ -6,7 +6,7 @@
 #' @return a plotly
 #' @export
 #' 
-#' @importFrom plotly plot_ly add_trace layout config
+#' @importFrom plotly plot_ly add_trace config
 #' @importFrom lubridate with_tz
 #' @importFrom stringr str_to_lower
 channelPlotly <- function(pat, channel = "ab") {
@@ -29,7 +29,7 @@ channelPlotly.a <- function(pat, ...) {
     opacity = 0.65 
   ) %>%
     config(displayModeBar = FALSE) %>%
-    layout( 
+    plotly::layout( 
       title = list(text = paste0(pat$meta$label, " Latest Data")),
       legend = list(orientation = 'h'),
       xaxis = list(title = "Date", titlefont = list(size = 14.5)),
@@ -53,7 +53,7 @@ channelPlotly.b <- function(pat, ...) {
     opacity = 0.65 
   ) %>%
     config(displayModeBar = FALSE) %>%
-    layout( 
+    plotly::layout( 
       title = list(text = paste0(pat$meta$label, " Latest Data")),
       legend = list(orientation = 'h'),
       xaxis = list(title = "Date", titlefont = list(size = 14.5)),
@@ -82,7 +82,7 @@ channelPlotly.ab <- function(pat, ...) {
       name = "Channel B" 
     ) %>%
     config(displayModeBar = FALSE) %>%
-    layout( 
+    plotly::layout( 
       title = list(text = paste0(pat$meta$label, " Latest Data")),
       legend = list(orientation = 'h'),
       xaxis = list(title = "Date", titlefont = list(size = 14.5)),
@@ -98,7 +98,7 @@ channelPlotly.ab <- function(pat, ...) {
 #' @return a plotly
 #' @export
 #' 
-#' @importFrom plotly plot_ly add_trace layout config
+#' @importFrom plotly plot_ly add_trace config
 #' @importFrom lubridate with_tz
 humidityPlotly <- function(pat) {
   pat$data$datetime <- with_tz(pat$data$datetime, tzone = 'UTC')
@@ -112,7 +112,7 @@ humidityPlotly <- function(pat) {
     opacity = 0.65 
   ) %>%
     config(displayModeBar = FALSE) %>%
-    layout( 
+    plotly::layout( 
       title = list(text = "Humidity"),
       xaxis = list(title = "Date", titlefont = list(size = 14.5)),
       yaxis = list(title = "RH (%)", titlefont = list(size = 14.5)) 
@@ -126,7 +126,7 @@ humidityPlotly <- function(pat) {
 #' @return a plotly
 #' @export
 #' 
-#' @importFrom plotly plot_ly add_trace layout config
+#' @importFrom plotly plot_ly add_trace config
 #' @importFrom lubridate with_tz
 temperaturePlotly <- function(pat) {
   pat$data$datetime <- with_tz(pat$data$datetime, tzone = 'UTC')
@@ -140,7 +140,7 @@ temperaturePlotly <- function(pat) {
     opacity = 0.65 
   ) %>%
     config(displayModeBar = FALSE) %>%
-    layout( 
+    plotly::layout( 
       title = list(text = "Temperature"),
       xaxis = list(title = "Date", titlefont = list(size = 14.5)),
       yaxis = list(title = "Temperature (F)", titlefont = list(size = 14.5)) 

@@ -63,6 +63,8 @@ waitress <- function() {
 #' @export
 #'
 #' @noRd
+#' 
+#' @importFrom stats runif
 makeWaitress <- function(expr, msg) {
   w <- waitress()
   w$notify(msg, position = "bl")
