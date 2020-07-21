@@ -50,7 +50,7 @@ app_ui <- function(request) {
                 tags$br(),
                 column(
                   width = 12,
-                  #overview_mod_ui("global"),
+                  mod_overview_ui("overview_ui_1")
                 )
               ),
               # ---- Calendar tab ----
