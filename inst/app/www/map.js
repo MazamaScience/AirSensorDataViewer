@@ -109,8 +109,3 @@ metaset.then(function(meta) {
 
 });
 
-$( document ).ready(function() {
-  Shiny.addCustomMessageHandler('fun', function(arg) {
-  
-  })
-});
