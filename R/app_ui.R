@@ -10,6 +10,8 @@ app_ui <- function(request) {
   fluidPage(
     use_waiter(), 
     use_waitress(), 
+    shinyjs::useShinyjs(),
+    
     # ------ Panel Module -Column ----------------------------------------------
     column(
       width = 2,
@@ -63,9 +65,7 @@ app_ui <- function(request) {
                   column(
                     width = 12,
                     tags$h4("Calendar"),
-                    wellPanel(
-                      #calendar_mod_ui("global")
-                    )
+                    mod_calendar_ui("calendar_ui_1")
                   )
                 )
               ),

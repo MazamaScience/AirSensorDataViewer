@@ -11,16 +11,20 @@
 mod_overview_ui <- function(id){
   ns <- NS(id)
   tagList(
-    wellPanel(
+    #wellPanel(
       timeseriesMapOutput(
-        outputId = ns("timeseriesMap")
-      ), 
+        outputId = ns("timeseriesMap"),
+        width = "100%", 
+        height = 600
+     ),
+    #),
+    wellPanel(
       timeseriesBarChartOutput(
         outputId = ns("timeseriesBarChart")
       )
     )
-    
   )
+  
 }
     
 #' overview Server Function
@@ -30,14 +34,26 @@ mod_overview_ui <- function(id){
 #' @importFrom tiotemp renderTimeseriesBarChart timeseriesBarChart
 mod_overview_server <- function(input, output, session, values) {
   ns <- session$ns
- 
+  
   output$timeseriesMap <- renderTimeseriesMap({
-    timeseriesMap(data = values$sensors$data, meta = values$sensors$meta)
+    req(values$sensors)
+    timeseriesMap(
+      data = values$sensors$data, 
+      meta = values$sensors$meta, 
+      inputId = 'main_panel_ui_1-sensor_select'
+    )
   })
   
   output$timeseriesBarChart <- renderTimeseriesBarChart({
-    timeseriesBarChart(data = values$sensors$data, meta = values$sensors$meta)
+    req(values$sensors)
+    timeseriesBarChart(
+      data = values$sensors$data, 
+      meta = values$sensors$meta, 
+      inputId = 'main_panel_ui_1-sensor_select', 
+      ylab = "\u03bcg / m\u00b3"
+    )
   })
+  
 }
     
 ## To be copied in the UI

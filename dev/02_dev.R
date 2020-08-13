@@ -35,7 +35,7 @@ usethis::use_package("tidyr")
 ## Create a module infrastructure in R/
 golem::add_module( name = "main_panel" ) # Main Panel 
 golem::add_module( name = "overview" ) # Overview tabset
-# golem::add_module( name = "calendar" ) # Calendar tabset 
+golem::add_module( name = "calendar" ) # Calendar tabset 
 golem::add_module( name = "raw" ) # Raw data tabset
 golem::add_module( name = "patterns")
 golem::add_module( name = "compare" )
@@ -50,6 +50,7 @@ golem::add_fct( "ggplots" )
 golem::add_fct( "plotlys" )
 golem::add_fct( "loadNOAA" )
 golem::add_fct( "tables" )
+golem::add_fct( "load" )
 
 # Util functions
 golem::add_utils("helpers")
@@ -64,8 +65,8 @@ golem::add_utils("logs")
 
 ## External resources
 ## Creates .js and .css files at inst/app/www
-# golem::add_js_file( "map" )
-# golem::add_js_handler( "map" )
+golem::add_js_file( "tiotemp_watcher" )
+golem::add_js_handler( "tiotemp_handler" )
 # golem::add_js_handler( "handlers" )
 # golem::add_css_file( "custom" )
 

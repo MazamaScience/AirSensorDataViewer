@@ -23,7 +23,9 @@ app_server <- function( input, output, session ) {
     sensor = NULL, # sensor obj (selected)
     latest = NULL, # latest pat obj
     navbar = NULL, # navbar tab
-    tab = NULL # tabset tab
+    tab = NULL, # tabset tab
+    ed = NULL, # startdate 
+    sd = NULL # enddate 
   )
   
   observeEvent(input$navbar, {
@@ -39,11 +41,13 @@ app_server <- function( input, output, session ) {
   # List the first level callModules here
   callModule(mod_main_panel_server, "main_panel_ui_1", values)
   callModule(mod_overview_server, "overview_ui_1", values)
+  callModule(mod_calendar_server, "calendar_ui_1", values)
   callModule(mod_raw_server, "raw_ui_1", values) 
   callModule(mod_patterns_server, "patterns_ui_1", values)
   callModule(mod_compare_server, "compare_ui_1", values)
   callModule(mod_video_server, "video_ui_1", values)
   callModule(mod_latest_server, "latest_ui_1", values)
   callModule(mod_datatable_server, "datatable_ui_1", values)
+  
   
 }

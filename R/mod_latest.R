@@ -44,18 +44,18 @@ mod_latest_server <- function(input, output, session, values){
   ns <- session$ns
   
   output$pm_latest <- renderPlotly({
-    req(values$latest)
-    channelPlotly(pat = values$latest, channel = 'ab')
+    req(values$pat_latest)
+    channelPlotly(pat = values$pat_latest, channel = 'ab')
   })
   
   output$humidity_latest <- renderPlotly({
-    req(values$latest)
-    humidityPlotly(pat = values$latest)
+    req(values$pat_latest)
+    humidityPlotly(pat = values$pat_latest)
   })
   
   output$temperature_latest <- renderPlotly({
-    req(values$latest)
-    temperaturePlotly(pat = values$latest)
+    req(values$pat_latest)
+    temperaturePlotly(pat = values$pat_latest)
   })
 }
 
