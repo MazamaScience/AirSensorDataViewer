@@ -60,19 +60,33 @@ mod_raw_server <- function(input, output, session, values){
   output$multiPlot <- renderPlot({
     req(values$pat)
     L1$show()
-    pat_multiPlot(pat = values$pat)
+    then(values$pat, function(d) {
+      pat_multiPlot(pat = d)
+    }, onRejected = function(err) {
+      logger.error(err)
+    })
+    
   })
   
   output$comparePlot <- renderPlot({
     req(values$pat)
     L2$show()
-    asdv_internalFit(pat = values$pat, tz = 'UTC', whichPlot = 'ab')
+    then(values$pat, function(d) {
+      asdv_internalFit(pat = d, tz = 'UTC', whichPlot = 'ab')
+    }, onRejected = function(err) {
+      logger.error(err)
+    })
+    
   })
   
   output$lmPlot <- renderPlot({
     req(values$pat)
     L3$show()
-    asdv_internalFit(pat = values$pat, tz = 'UTC', whichPlot = 'lm')
+    then(values$pat, function(d) {
+      asdv_internalFit(pat = d, tz = 'UTC', whichPlot = 'lm')
+    }, onRejected = function(err) {
+      logger.error(err)
+    })
   })
  
 }

@@ -27,12 +27,13 @@ mod_calendar_ui <- function(id){
 mod_calendar_server <- function(input, output, session, values) {
   ns <- session$ns
   output$calendarPlot <- renderTimeseriesCalendar({
-    timeseriesCalendar(
-      data = values$sensors$data, 
-      meta = values$sensors$meta, 
-      inputId = 'main_panel_ui_1-sensor_select',
-      elementId = "map"
-    )
+    then(values$sensors, function(d) {
+      timeseriesCalendar(
+        data = d$data, 
+        meta = d$meta, 
+        inputId = 'main_panel_ui_1-sensor_select'
+      )
+    })
   })
 }
     

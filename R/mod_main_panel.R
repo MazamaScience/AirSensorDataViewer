@@ -9,7 +9,7 @@
 #' @importFrom shiny NS tagList 
 #' @importFrom lubridate today ymd days 
 #' @importFrom shinyWidgets pickerInput airDatepickerInput radioGroupButtons sliderTextInput
-mod_main_panel_ui <- function(id){
+mod_main_panel_ui <- function(id) {
   ns <- NS(id)
   TZ <- 'UTC'
   tagList(
@@ -63,22 +63,27 @@ mod_main_panel_server <- function(input, output, session, values) {
   ## ---- Startup ----
   
   # load non-changing rv: sensors, pas objs
-  observe({
+  observeEvent(
+    once = TRUE,
+    eventExpr = {
+    values$init
+    }, 
+    handlerExpr = {
     # notification
     startupWaitress <- waitress()
     startupWaitress$notify(html = tags$h4("Loading Data..."), position = "bl")
     
     ##  create sensors obj promise on startup 
-    sensors <- future({ 
+    values$sensors <- future({ 
       get_sensors(sd = input$date_range[1], ed = input$date_range[2])
     })
     startupWaitress$set(10)
     
-    then(sensors, function(d) {
+    then(values$sensors, function(d) {
       # update sensors rv
-      values$sensors <- d 
+      #values$sensors <- d 
       # Fill the community selection
-      updateSelectizeInput(
+      updateSelectizeInput( 
         session,
         inputId = "community_select", 
         selected = "All...",
@@ -94,22 +99,22 @@ mod_main_panel_server <- function(input, output, session, values) {
       logger.trace("sensors done.")
     })
     
-    catch(sensors, function(err) { 
+    catch(values$sensors, function(err) { 
       logger.error(err) 
     })
     
     ## create pas promise
-    pas <- future({ 
+    values$pas <- future({ 
       get_pas()
     })
     startupWaitress$set(75)
-    then(pas, function(d) { 
+    then(values$pas, function(d) { 
       # update pas rv 
-      values$pas <- d 
+      #values$pas <- d 
       startupWaitress$set(90)
       logger.trace("pas done.")
     })
-    catch(pas, function(err) { 
+    catch(values$pas, function(err) { 
       logger.error(err) 
     })
     startupWaitress$close()
@@ -117,151 +122,217 @@ mod_main_panel_server <- function(input, output, session, values) {
   
   ## ---- Event Handling ----
   
-  # update the sensor selections on community seection
+  # update the sensor selections on community selection
   observeEvent(
     eventExpr = {
       input$community_select
     }, 
     handlerExpr = {
-      req(input$community_select, values$sensors)
-      logger.trace(paste("selected community: ", input$community_select))
+      req(values$sensors, input$community_select)
+      then(values$sensors, function(d) {
+        if ( input$community_select == "All..." ) {
+          validSensors <- d$meta
+        } else {
+          validSensors <-
+            d$meta[id2com(d$meta$communityRegion) ==
+                     input$community_select,]
+        }
+        updateSelectizeInput(
+          session,
+          "sensor_select",
+          choices = na.omit(validSensors$label)
+        )
+      })
+    }, ignoreNULL = TRUE, ignoreInit = TRUE)
+  
+  observeEvent(
+    eventExpr = {
+      input$sensor_select
+    }, 
+    handlerExpr = {
+      # store sensor selection label as string for scoping
+      values$sensor_select <- input$sensor_select
+      # filter/download a new sensors
+      then(values$sensors, function(d) {
+        values$sensor <- future({
+          get_sensor(
+            sensors = d,
+            label = input$sensor_select,
+            sd = input$date_range[1],
+            ed = input$date_range[2]
+          )
+        })
+      })
       
-      if ( input$community_select == "All..." ) {
-        validSensors <- values$sensors$meta
-      } else {
-        validSensors <-
-          values$sensors$meta[id2com(values$sensors$meta$communityRegion) ==
-                                input$community_select,]
-      }
-      updateSelectizeInput(
-        session,
-        "sensor_select",
-        choices = na.omit(validSensors$label)
-      )
-    }
+      then(values$pas, function(d) {
+        values$pat <- future({
+          get_pat(
+            pas = d, 
+            label = input$sensor_select, 
+            sd = input$date_range[1], 
+            ed = input$date_range[2]
+          )
+        })
+      })
+    }, ignoreNULL = TRUE, ignoreInit = TRUE
   )
   
   # update the sensor and pat rv on sensor selection
   observeEvent(
     eventExpr = {
-      input$sensor_select
-      #input$date_range
+      #input$sensor_select
+      input$date_range
     },
     handlerExpr = {
       req(values$sensors, values$pas)
-      tryCatch(
-        expr = {
-          makeWaitress({
-            values$sensor <- get_sensor(
-              sensors = values$sensors,
-              label = input$sensor_select,
-              sd = input$date_range[1],
-              ed = input$date_range[2]
-            )
-            
-            values$pat <- get_pat(
-              pas = values$pas, 
-              label = input$sensor_select, 
-              sd = input$date_range[1], 
-              ed = input$date_range[2]
-            )
-          }, tags$h4(paste0("Loading ", input$sensor_select, "...")))
-        }, 
-        error = function(err) {
-          logger.error(err)
-          showNotification("Oops!", "An Error has occured.", type = "warn")
-        }
-      )
-    },
-    ignoreNULL = TRUE, 
-    ignoreInit = TRUE 
-  )
-  
-  # Attempt filter/load on date change
-  observeEvent(
-    eventExpr = {
-      input$date_range
-    }, 
-    handlerExpr = {
-      req(input$sensor_select, values$pas, values$pat)
-      # if the user selects an enddate that is before or on the startdate, make 
+      
+      # if the user selects an enddate that is before or on the startdate, make
       # the startdate a day before the enddate to avoid weird stuff
       if ( ymd(input$date_range[2]) <= ymd(input$date_range[1]) ) {
         updateDateRangeInput(
-          session, 
-          "date_range", 
+          session,
+          "date_range",
           start = ymd(input$date_range[2]) - days(1)
         )
-      } 
+      }
       if ( ymd(input$date_range[2]) - ymd(input$date_range[1]) > 31 ) {
         updateDateRangeInput(
-          session, 
-          "date_range", 
+          session,
+          "date_range",
           start = ymd(input$date_range[2]) - days(31)
         )
         showNotification("Dates range too long!", "Max date range is 31 days.", type = "warn")
       }
-      # establish startdate and endate rv 
+      # establish startdate and endate rv
       values$sd <- input$date_range[1]
       values$ed <- input$date_range[2]
+      
       # filter/download a new sensors
-      values$sensors <- get_sensors(
-        sd = input$date_range[1], 
-        ed = input$date_range[2], 
-        sensors = values$sensors
-      )
-      values$pat <- get_pat(
-        pas = values$pas,
-        label = input$sensor_select, 
-        sd = input$date_range[1],
-        ed = input$date_range[2], 
-        pat = values$pat
-      )
-    }, 
-    priority = 1
-  )
-  
-  # Save loading for specific navbar pages
+      then(values$sensors, function(d) {
+        values$sensor <- future({
+          get_sensor(
+            sensors = d,
+            label = input$sensor_select,
+            sd = input$date_range[1],
+            ed = input$date_range[2]
+          )
+        })
+      })
+      
+      then(values$pas, function(d) {
+        values$pat <- future({
+          get_pat(
+            pas = d, 
+            label = input$sensor_select, 
+            sd = input$date_range[1], 
+            ed = input$date_range[2]
+          )
+        })
+      })
+      
+      ##  create sensors obj promise on startup 
+      values$sensors <- future({ 
+        get_sensors(sd = input$date_range[1], ed = input$date_range[2])
+      })
+    }, ignoreNULL = TRUE, ignoreInit = TRUE)
+
+
+  # 
+  # # Attempt filter/load on date change
+  # observeEvent(
+  #   eventExpr = {
+  #     input$date_range
+  #   }, 
+  #   handlerExpr = {
+  #     req(input$sensor_select, values$pas, values$pat)
+  #     # if the user selects an enddate that is before or on the startdate, make 
+  #     # the startdate a day before the enddate to avoid weird stuff
+  #     if ( ymd(input$date_range[2]) <= ymd(input$date_range[1]) ) {
+  #       updateDateRangeInput(
+  #         session, 
+  #         "date_range", 
+  #         start = ymd(input$date_range[2]) - days(1)
+  #       )
+  #     } 
+  #     if ( ymd(input$date_range[2]) - ymd(input$date_range[1]) > 31 ) {
+  #       updateDateRangeInput(
+  #         session, 
+  #         "date_range", 
+  #         start = ymd(input$date_range[2]) - days(31)
+  #       )
+  #       showNotification("Dates range too long!", "Max date range is 31 days.", type = "warn")
+  #     }
+  #     # establish startdate and endate rv 
+  #     values$sd <- input$date_range[1]
+  #     values$ed <- input$date_range[2]
+  #     # filter/download a new sensors
+  #     values$sensors <- get_sensors(
+  #       sd = input$date_range[1], 
+  #       ed = input$date_range[2], 
+  #       sensors = values$sensors
+  #     )
+  #     values$pat <- get_pat(
+  #       pas = values$pas,
+  #       label = input$sensor_select, 
+  #       sd = input$date_range[1],
+  #       ed = input$date_range[2], 
+  #       pat = values$pat
+  #     )
+  #   }, 
+  #   priority = 1
+  # )
+  # 
+  # # Save loading for specific navbar pages
   observeEvent(
     eventExpr = {
       values$navbar
-    }, 
+    },
     handlerExpr = {
       if (values$navbar == 'latest') {
-        tryCatch(
-          expr = {
-            makeWaitress({
-              values$pat_latest <- get_pat_latest(
-                values$pas, 
-                input$sensor_select
-              )
-            }, tags$h4(paste0("Loading latest ", input$sensor_select, "...")))
-          }, 
-          error = function(err) {
-            logger.error(err)
-            showNotification("Oops!", "An Error has occured.", type = "warn")
-          }
-        )
+        
+      then(values$pas, function(d){
+        values$pat_latest <- future({
+          get_pat_latest(
+            pas = d,
+            label = input$sensor_select
+          )
+        })
+      })
+
+        # tryCatch(
+        #   expr = {
+        #     makeWaitress({
+        #       values$pat_latest <- get_pat_latest(
+        #         values$pas,
+        #         input$sensor_select
+        #       )
+        #     }, tags$h4(paste0("Loading latest ", input$sensor_select, "...")))
+        #   },
+        #   error = function(err) {
+        #     logger.error(err)
+        #     showNotification("Oops!", "An Error has occured.", type = "warn")
+        #   }
+        # )
       }
     }
   )
-  
-  # Watch for map click updates on the input from tiotemp
-  observeEvent(
-    eventExpr = {
-      input$sensor_select
-    }, 
-    handlerExpr = {
-      updateSelectizeInput(
-        session,
-        "sensor_select",
-        selected = input$sensor_select
-      )
-      values$sensor_select <- input$sensor_select
-    }, 
-    priority = 1, 
-    ignoreNULL = TRUE
-  )
+  # 
+  # # Watch for map click updates on the input from tiotemp
+  # observeEvent(
+  #   eventExpr = {
+  #     input$sensor_select
+  #   }, 
+  #   handlerExpr = {
+  #     updateSelectizeInput(
+  #       session,
+  #       "sensor_select",
+  #       selected = input$sensor_select
+  #     )
+  #     values$sensor_select <- input$sensor_select
+  #   }, 
+  #   priority = 1, 
+  #   ignoreNULL = TRUE
+  # )
 
 } # End Server
 

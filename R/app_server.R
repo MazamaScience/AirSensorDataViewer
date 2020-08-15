@@ -17,6 +17,7 @@ app_server <- function( input, output, session ) {
   
   # Create reactive values 
   values <- rv(
+    init = TRUE, 
     pas = NULL, # pas obj 
     sensors = NULL, # sensor obj (full)
     pat = NULL, # pat obj (selected)
