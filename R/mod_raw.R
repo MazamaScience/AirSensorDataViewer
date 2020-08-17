@@ -66,6 +66,11 @@ mod_raw_server <- function(input, output, session, values){
       logger.error(err)
     })
     
+    catch(values$pat, function(d) {
+      print("SHIT")
+      logger.error(d)
+    })
+    
   })
   
   output$comparePlot <- renderPlot({

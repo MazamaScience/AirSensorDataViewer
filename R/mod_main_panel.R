@@ -80,21 +80,29 @@ mod_main_panel_server <- function(input, output, session, values) {
     startupWaitress$set(10)
     
     then(values$sensors, function(d) {
-      # update sensors rv
-      #values$sensors <- d 
-      # Fill the community selection
-      updateSelectizeInput( 
-        session,
-        inputId = "community_select", 
-        selected = "All...",
-        choices = c("Choose a community" = "","All...", na.omit(unique(id2com(d$meta$communityRegion))))
-      )
-      # Fill the sensor selection
-      updateSelectizeInput(
-        session, 
-        inputId = "sensor_select", 
-        choices = na.omit(unique(d$meta$label))
-      )
+      # Check diff bewteen sensors aval in sensor obj and pas obj and only use 
+      # the sensors with mutual existence
+      then(values$pas, function(p) {
+        communities <- na.omit(unique(id2com(d$meta$communityRegion[d$meta$label %in% p$label])))
+        sensor_labels <- na.omit(unique(d$meta$label[d$meta$label %in% p$label]))
+        
+        # update sensors rv
+        #values$sensors <- d 
+        # Fill the community selection
+        updateSelectizeInput( 
+          session,
+          inputId = "community_select", 
+          selected = "All...",
+          choices = c("Choose a community" = "","All...", communities)
+        )
+        # Fill the sensor selection
+        updateSelectizeInput(
+          session, 
+          inputId = "sensor_select", 
+          choices = sensor_labels
+        )
+      })
+
       startupWaitress$set(50)
       logger.trace("sensors done.")
     })
@@ -150,6 +158,7 @@ mod_main_panel_server <- function(input, output, session, values) {
       input$sensor_select
     }, 
     handlerExpr = {
+      req(input$sensor_select)
       # store sensor selection label as string for scoping
       values$sensor_select <- input$sensor_select
       # filter/download a new sensors
@@ -173,6 +182,9 @@ mod_main_panel_server <- function(input, output, session, values) {
             ed = input$date_range[2]
           )
         })
+      }, onRejected = function(err) {
+        print("NO!")
+        logger.error(err)
       })
     }, ignoreNULL = TRUE, ignoreInit = TRUE
   )

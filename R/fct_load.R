@@ -152,6 +152,30 @@ get_pat_latest <- function(pas, label, tz = 'UTC') {
   )
 }
 
+#' Title
+#'
+#' @param sensor 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' 
+#' @importFrom worldmet importNOAA getMeta 
+get_noaa <- function(sensor) {
+  logger.trace("loading NOAA...")
+  sd <- min(ymd_hms(sensor$data$datetime))
+  ed <- max(ymd_hms(sensor$data$datetime))
+  # Find wind data readings from the closest NOAA site
+  year <- year(ed)
+  lon <- sensor$meta$longitude
+  lat <- sensor$meta$latitude
+  closestSite <- getMeta(lon = lon, lat = lat, n = 1, plot = FALSE)[1,]
+  siteCode <- closestSite$code
+  siteData <- importNOAA(code = siteCode, year = year) 
+  return(siteData)
+}
+
 # filter_date <- function(x, sd, ed) {
 #   UseMethod("filter_date", x)
 # }

@@ -68,26 +68,32 @@ mod_compare_server <- function(input, output, session, values) {
   output$sensorMonitorCorr <- renderPlot({
     req(values$sensor)
     L1$show()
-    asdv_externalFit(values$sensor, tz = 'UTC')
+    then(values$sensor, function(d) {
+      asdv_externalFit(d, tz = 'UTC')
+    })
   })
   
   output$sensorMonitorComp <- renderPlot({
     req(values$pat)
     L2$show()
-    pat_monitorComparison(values$pat)
+    then(values$pat, function(d) {
+      pat_monitorComparison(values$pat)
+    })
   })
   
   output$statusTable <- renderDT({
     req(values$pat)
     L3$show()
-    datatable(
-      data = sensorMonitorCompTable(values$pat), 
-      selection = "none",
-      colnames = "",
-      options = list(dom = 't', bSort = FALSE),
-      class = 'cell-border stripe'
-    ) %>%
-      formatRound(columns = 1, digits = 2)
+    then(values$pat, function(d) {
+      datatable(
+        data = sensorMonitorCompTable(values$pat), 
+        selection = "none",
+        colnames = "",
+        options = list(dom = 't', bSort = FALSE),
+        class = 'cell-border stripe'
+      ) %>%
+        formatRound(columns = 1, digits = 2)
+    })
   })
   
 }
