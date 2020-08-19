@@ -7,29 +7,71 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
-#' @importFrom tiotemp timeseriesMapOutput timeseriesBarChartOutput 
+#' @importFrom tiotemp timeseriesMapOutput barChartOutput 
 mod_overview_ui <- function(id){
   ns <- NS(id)
   tagList(
     timeseriesMapOutput(
       outputId = ns("timeseriesMap"),
       width = "100%", 
-      height = 600
+      height = "80vh"
     ),
-    wellPanel(
-      timeseriesBarChartOutput(
-        outputId = ns("timeseriesBarChart")
+    absolutePanel(
+      id = "plot_panel",
+      fixed = FALSE,
+      left = "auto",
+      right = "auto",
+      bottom = 0,
+      width = "100%",
+      height = "inherit",
+      # Show/Hide barplot panel button
+      HTML('<a id = "collapse_btn" class = "collapsed" data-toggle="collapse" data-target="#dem" style="margin-left:50%;">
+           <span class="glyphicon glyphicon-chevron-up"></span> Select a Sensor</a>'),
+      # Put barplot in "dem" html
+      tags$div(
+        id = 'dem',
+        class = "collapse",
+        barChartOutput(
+          outputId = ns("timeseriesBarChart"), 
+          height = "20vh"
+        )
       )
+    ),
+    # Barplot panel opacity CSS and leaflet padding fix
+    tags$style(
+      type = "text/css",
+      '#plot_panel{
+        /* Appearance */
+        background-color: white;
+        padding: 0 0 0 0;
+        cursor: move;
+        /* Fade out while not hovering */
+        opacity: 0.70;
+        zoom: 0.9;
+        transition: opacity 300ms 500ms;
+      }
+      #plot_panel:hover {
+        /* Fade in while hovering */
+        opacity: 1;
+        transition-delay: 0;
+      }
+      .col-sm-12{
+        padding: 0 0 0 0;
+      }'
     )
   )
   
+  # .leaflet-bottom .leaflet-control {
+  #   margin-bottom: 352px;
+  # }
+  # 
 }
 
 #' overview Server Function
 #'
 #' @noRd 
 #' @importFrom tiotemp renderTimeseriesMap timeseriesMap 
-#' @importFrom tiotemp renderTimeseriesBarChart timeseriesBarChart
+#' @importFrom tiotemp renderBarChart barChart
 mod_overview_server <- function(input, output, session, values) {
   ns <- session$ns
   
@@ -47,10 +89,10 @@ mod_overview_server <- function(input, output, session, values) {
     })
   })
   
-  output$timeseriesBarChart <- renderTimeseriesBarChart({
+  output$timeseriesBarChart <- renderBarChart({
     req(values$sensors)
     then(values$sensors, function(d) {
-      timeseriesBarChart(
+      barChart(
         data = d$data, 
         meta = d$meta, 
         inputId = 'main_panel_ui_1-sensor_select', 
@@ -59,6 +101,13 @@ mod_overview_server <- function(input, output, session, values) {
     }, onRejected = function(err) {
       logger.error(err)
     })
+  })
+  
+  observeEvent(ignoreInit = TRUE, {values$sensor_select},{
+    plotUp()
+  })
+  observeEvent({values$community_select},{
+    plotUp()
   })
   
 }

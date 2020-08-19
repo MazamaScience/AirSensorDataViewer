@@ -19,7 +19,7 @@ app_ui <- function(request) {
         id = "panel",
         mod_main_panel_ui("main_panel_ui_1")
       ),
-      # shiny::tags$footer(id = "ver", paste0("Version: ", VERSION))
+      shiny::tags$footer(id = "ver", paste0("Version: ", golem::get_golem_version()))
     ),
     
     navbarPage(
@@ -35,7 +35,7 @@ app_ui <- function(request) {
       
       # ------ Explore Page ----------------------------------------------------
       tabPanel(
-        title = tags$b("Explore"),
+        title = tags$b("Historical Data"),
         value = "explore",
         fluidRow(
           column(
@@ -153,7 +153,7 @@ app_ui <- function(request) {
     # Enable Toastr ntofications
     #shinytoastr::useToastr(),
     # Load the extra JS script
-    #shinyjs::extendShinyjs("../www/extra.js"),
+    shinyjs::extendShinyjs("inst/app/www/plotAnimate.js"),
     
     # Other Random CSS
     tags$style(type="text/css", "body {padding-top: 70px;}"),
@@ -162,7 +162,7 @@ app_ui <- function(request) {
     tags$style(type="text/css", "#panel {min-width:200px;}"),
     tags$style(type = "text/css", "#global-leaflet {height: calc(80vh) !important;}"),
   )
-
+  
 }
 
 #' Add external Resources to the Application
@@ -178,7 +178,7 @@ golem_add_external_resources <- function(){
   add_resource_path(
     'www', app_sys('app/www')
   )
- 
+  
   tags$head(
     favicon(),
     bundle_resources(

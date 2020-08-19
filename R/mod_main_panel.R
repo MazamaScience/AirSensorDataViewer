@@ -186,6 +186,15 @@ mod_main_panel_server <- function(input, output, session, values) {
         print("NO!")
         logger.error(err)
       })
+      
+      # Update the selector on map point click, done in backend by tiotemp,
+      # but value change must be watched 
+      updateSelectizeInput(
+        session, 
+        "sensor_select", 
+        selected = input$sensor_select
+      )
+      
     }, ignoreNULL = TRUE, ignoreInit = TRUE
   )
   

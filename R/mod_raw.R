@@ -52,32 +52,20 @@ mod_raw_ui <- function(id){
 mod_raw_server <- function(input, output, session, values){
   ns <- session$ns
   
-  # create loaders
-  L1 <- waiter(ns("multiPlot"))
-  L2 <- waiter(ns("comparePlot"))
-  L3 <- waiter(ns("lmPlot"))
-  
   output$multiPlot <- renderPlot({
     req(values$pat)
-    L1$show()
     then(values$pat, function(d) {
       pat_multiPlot(pat = d)
     }, onRejected = function(err) {
       logger.error(err)
     })
     
-    catch(values$pat, function(d) {
-      print("SHIT")
-      logger.error(d)
-    })
-    
   })
   
   output$comparePlot <- renderPlot({
     req(values$pat)
-    L2$show()
     then(values$pat, function(d) {
-      asdv_internalFit(pat = d, tz = 'UTC', whichPlot = 'ab')
+      asdv_internalFit(pat = d, tz = 'UTC', whichPlot = 'ab')  + ggplot2::theme_light()
     }, onRejected = function(err) {
       logger.error(err)
     })
@@ -86,9 +74,8 @@ mod_raw_server <- function(input, output, session, values){
   
   output$lmPlot <- renderPlot({
     req(values$pat)
-    L3$show()
     then(values$pat, function(d) {
-      asdv_internalFit(pat = d, tz = 'UTC', whichPlot = 'lm')
+      asdv_internalFit(pat = d, tz = 'UTC', whichPlot = 'lm')  + ggplot2::theme_light()
     }, onRejected = function(err) {
       logger.error(err)
     })
