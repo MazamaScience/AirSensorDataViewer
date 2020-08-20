@@ -6,6 +6,8 @@
 #' @noRd
 app_server <- function( input, output, session ) {
   
+  options(warn = -1)
+  
   # Record session start 
   observe({ 
     logger.trace(paste("session started:", session$token)) 
