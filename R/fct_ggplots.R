@@ -62,16 +62,16 @@ asdv_externalFit <-
     
     # ----- Validate parameters --------------------------------------------------
     
-    if ( !PWFSLSmoke::monitor_isMonitor(sensor) ) {
-      stop("Parameter 'pat' is not a valid 'pa_timeseries' object.")
+    if ( !AirSensor::sensor_isSensor (sensor) ) {
+      stop("Parameter 'sensor' is not a valid 'airsensor' object.")
     }
-    if ( PWFSLSmoke::monitor_isEmpty(sensor) ) {
-      stop("Parameter 'pat' has no data.")
+    if ( AirSensor::sensor_isEmpty(sensor) ) {
+      stop("Parameter 'sensor' has no data.")
     }
     
     # Crop to dates
     
-    sensor <- PWFSLSmoke::monitor_subset(ws_monitor = sensor, tlim = c(startdate, enddate))
+    #sensor <- PWFSLSmoke::monitor_subset(ws_monitor = sensor, tlim = c(startdate, enddate))
     
     # For easier access
     # meta <- sensor$meta
@@ -79,7 +79,7 @@ asdv_externalFit <-
     
     # ----- Assemble data ---------------------------------------------
     
-    paHourly_data <- PWFSLSmoke::monitor_extractData(sensor)
+    paHourly_data <- AirSensor::sensor_extractData(sensor)
     
     names(paHourly_data) <- c("datetime", "pa_pm25")
     
@@ -88,7 +88,7 @@ asdv_externalFit <-
     tlim <- range(paHourly_data$datetime)
     pwfsl_data <-
       PWFSLSmoke::monitor_load(tlim[1], tlim[2], monitorIDs = monitorID) %>%
-      PWFSLSmoke::monitor_subset(tlim = tlim) %>%
+      #PWFSLSmoke::monitor_subset(tlim = tlim) %>%
       PWFSLSmoke::monitor_extractData()
     names(pwfsl_data) <- c("datetime", "pwfsl_pm25")
     
@@ -96,9 +96,9 @@ asdv_externalFit <-
     both_data <- dplyr::full_join(paHourly_data, pwfsl_data, by = "datetime")
     
     # Create a tidy dataframe appropriate for ggplot
-    tidy_data <-
-      both_data %>%
-      tidyr::gather("source", "pm25", -.data$datetime)
+    # tidy_data <-
+    #   both_data %>%
+    #   tidyr::gather("source", "pm25", -.data$datetime)
     
     # Define square xy limit now that we have the data for both monitors
     if ( is.null(xylim) ) {

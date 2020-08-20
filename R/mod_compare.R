@@ -17,7 +17,7 @@ mod_compare_ui <- function(id) {
         width = 12,
         wellPanel(
           leafletOutput(
-            outputId = ns("comparisonMap")
+            outputId = ns("comparisonLeaflet")
           )
         )
       )
@@ -57,44 +57,141 @@ mod_compare_ui <- function(id) {
 #' @noRd 
 #' 
 #' @importFrom DT datatable formatRound renderDT
+#' @import leaflet
+#' @import ggplot2
 mod_compare_server <- function(input, output, session, values) {
   ns <- session$ns
   
-  # leaflet??
-  L1 <- waiter(ns("sensorMonitorCorr"))
-  L2 <- waiter(ns("sensorMonitorComp"))
-  L3 <- waiter(ns("statusTable"))
+  observeEvent(
+    eventExpr = {
+      values$tab
+    }, 
+    handlerExpr = {
+      req(values$sensor)
+      if (values$tab == 'compare' ) {
+        values$pwfsl <- future({then(values$sensor, function(d) {
+            dates <- range(d$data$datetime)
+            mlab <- d$meta$pwfsl_closestMonitorID
+            PWFSLSmoke::monitor_load(startdate = dates[1], enddate = dates[2], monitorIDs = mlab)
+          })
+        })
+      }
+    } 
+  )
+  
+  output$comparisonLeaflet <- renderLeaflet({
+    req(values$sensor)
+    req(values$pwfsl)
+    p <- then(values$sensor, function(d) {
+      then(values$pwfsl, function(h) {
+        future({
+          slab <- d$meta$label
+          mdist <- signif(d$meta$pwfsl_closestDistance/1000, 2)
+          mlab <- d$meta$pwfsl_closestMonitorID
+          sensor <- PWFSLSmoke::monitor_toTidy(d)
+          dates <- range(d$data$datetime)
+          monitor <- PWFSLSmoke::monitor_toTidy(h)
+          df <- dplyr::left_join(sensor, monitor, by = 'datetime', suffix = c('.pwfsl', '.pa'))
+          
+          leaflet(df) %>% 
+            addTiles() %>% 
+            addAwesomeMarkers(
+              lng = ~unique(longitude.pwfsl), 
+              lat = ~unique(latitude.pwfsl), 
+              icon = makeAwesomeIcon(markerColor = "gray", icon = 'flag'), 
+              popup = mlab
+            ) %>% 
+            addAwesomeMarkers(
+              lng = ~unique(longitude.pa), 
+              lat = ~unique(latitude.pa), 
+              icon = makeAwesomeIcon(markerColor = "purple", icon = 'flag'), 
+              popup = slab
+            ) %>% 
+            addPolylines(
+              lng = c(unique(df$longitude.pwfsl), unique(df$longitude.pa)), 
+              lat = c(unique(df$latitude.pwfsl), unique(df$latitude.pa)),
+              dashArray = "12", 
+              color = 'red', 
+              popup = paste0(mdist, " km")
+            )
+        })
+      })
+    })
+  })
   
   output$sensorMonitorCorr <- renderPlot({
     req(values$sensor)
-    L1$show()
-    then(values$sensor, function(d) {
-      asdv_externalFit(d, tz = 'UTC')
+    p <- then(values$sensor, function(d) {
+      future({
+        slab <- d$meta$label
+        mlab <- d$meta$pwfsl_closestMonitorID
+        sensor <- PWFSLSmoke::monitor_toTidy(d)
+        dates <- range(sensor$datetime)
+        monitor <- PWFSLSmoke::monitor_toTidy(PWFSLSmoke::monitor_load(startdate = dates[1], enddate = dates[2], monitorIDs = mlab))
+        
+        df <- dplyr::left_join(sensor, monitor, by = 'datetime', suffix = c('.pwfsl', '.pa'))
+        
+        dataMin <- min(c(df$pm25.pa, df$pm25.pwfsl), na.rm = TRUE)
+        dataMax <- max(c(df$pm25.pa, df$pm25.pwfsl), na.rm = TRUE)
+        xylim <- c(dataMin, dataMax)
+        
+        model <- lm(df$pm25.pa ~ df$pm25.pwfsl, subset = NULL,
+                    weights = NULL, na.action = 'na.omit')
+        
+        slope <- as.numeric(model$coefficients[2])      # as.numeric() to remove name
+        intercept <- as.numeric(model$coefficients[1])
+        r_squared <- summary(model)$r.squared
+        
+        # # Label for linear fit
+        equationLabel <-
+          ggplot2::annotate(
+            geom = "text",
+            x = 0.75 * xylim[2],
+            y = c(0.25, 0.15, 0.05) * xylim[2],
+            label = c(paste0("Slope = ", round(slope, digits = 2)),
+                      paste0("Intercept = ", round(intercept, digits = 1)),
+                      paste0("R\U00B2 = ", round(r_squared, digits = 3))) )
+        
+        print(str(df))
+        
+        ggplot(df, aes(x = pm25.pa, y = pm25.pwfsl)) +   
+          geom_point(color = 'black', shape = 15, alpha = 0.2, size = 1) +
+          geom_smooth(method = "lm", se = FALSE, color = 'red', alpha = 0.3) + 
+          
+          xlim(xylim) +
+          ylim(xylim) +
+          xlab(slab) + 
+          ylab(mlab) +
+          theme_light() + 
+          coord_fixed() + 
+          equationLabel
+        
+      })
     })
+    return(then(p))
   })
   
   output$sensorMonitorComp <- renderPlot({
     req(values$pat)
-    L2$show()
-    then(values$pat, function(d) {
-      pat_monitorComparison(values$pat)
+    p <- then(values$pat, function(d) {
+      future(pat_monitorComparison(d))
     })
+    return(then(p))
   })
   
-  output$statusTable <- renderDT({
-    req(values$pat)
-    L3$show()
-    then(values$pat, function(d) {
-      datatable(
-        data = sensorMonitorCompTable(values$pat), 
-        selection = "none",
-        colnames = "",
-        options = list(dom = 't', bSort = FALSE),
-        class = 'cell-border stripe'
-      ) %>%
-        formatRound(columns = 1, digits = 2)
-    })
-  })
+  # output$statusTable <- renderDT({
+  #   req(values$pat)
+  #   then(values$pat, function(d) {
+  #     datatable(
+  #       data = sensorMonitorCompTable(values$pat), 
+  #       selection = "none",
+  #       colnames = "",
+  #       options = list(dom = 't', bSort = FALSE),
+  #       class = 'cell-border stripe'
+  #     ) %>%
+  #       formatRound(columns = 1, digits = 2)
+  #   })
+  # })
   
 }
     

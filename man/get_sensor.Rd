@@ -4,7 +4,7 @@
 \alias{get_sensor}
 \title{Title}
 \usage{
-get_sensor(sensors, label, sd, ed)
+get_sensor(sensors, ...)
 }
 \arguments{
 \item{sensors}{}

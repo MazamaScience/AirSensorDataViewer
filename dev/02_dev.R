@@ -51,6 +51,7 @@ golem::add_fct( "plotlys" )
 golem::add_fct( "loadNOAA" )
 golem::add_fct( "tables" )
 golem::add_fct( "load" )
+golem::add_fct( "leaflet" )
 
 # Util functions
 golem::add_utils("helpers")
