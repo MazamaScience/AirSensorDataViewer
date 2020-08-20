@@ -50,60 +50,63 @@ mod_patterns_ui <- function(id){
 #' @importFrom promises then catch
 mod_patterns_server <- function(input, output, session, values){
   ns <- session$ns
-  
-  # create loaders 
-  L1 <- waiter(ns("patternPlot"))
-  L2 <- waiter(ns("noaaTable"))
-  L3 <- waiter(ns("windPlot"))
-  
-
-  
-
-  
-  observeEvent({ input$sensor_picker;  values$tab; values$sensor } , {
-    if ( values$tab == 'patterns' ) {
-      then(values$sensor, function(d) {
-        values$noaa <- future({
-          get_noaa(d)
+  # 
+  # observeEvent({ input$sensor_select;  values$tab; values$sensor } , {
+  #   if ( values$tab == 'patterns' ) {
+  #     then(values$sensor, function(d) {
+  #       values$noaa <- future({
+  #         get_noaa(d)
+  #       })
+  #     })
+  #   }
+  # })
+  # 
+  observeEvent(
+    eventExpr = {
+      values$tab
+    }, 
+    handlerExpr = {
+      if (values$tab == 'patterns' ) {
+        values$noaa <- then(values$sensor, function(d) {
+          future({get_noaa(d)})
         })
-      })
-    }
-  })
-  
+        catch(values$noaa, function(err) logger.error(err))
+      }
+    } 
+  )
   output$patternPlot <- renderPlot({
     req(values$sensor)
-    L1$show()
     then(values$sensor, function(d) {
-      asdv_pm25Diurnal(ws_data = d) + 
-        stat_meanByHour(output = "scaqmd")
+      then(future(asdv_pm25Diurnal(ws_data = d) + 
+        stat_meanByHour(output = "scaqmd")))
     })
   })
   
-  output$noaaTable <- renderDT({
-    req(values$noaa)
-    L2$show()
-    then(values$noaa, function(d) {
-      datatable(
-        data = noaaTable(d),
-        selection = "none",
-        colnames = "",
-        options = list(dom = 't', bSort = FALSE),
-        class = 'cell-border stripe'
-      ) %>%
-        formatRound(columns = 1, digits = 2)
-    })
-  })
-  
-  output$windPlot <- renderPlot({
-    req(values$sensor)
-    req(values$noaa)
-    L3$show()
-    then(values$sensor, function(d) {
-      then(values$noaa, function(h) {
-        sensor_pollutionRose(d, h)  
-      })
-    })
-  })
+  # output$noaaTable <- renderDT({
+  #   req(values$noaa)
+  #   L2$show()
+  #   then(values$noaa, function(d) {
+  #     datatable(
+  #       data = noaaTable(d),
+  #       selection = "none",
+  #       colnames = "",
+  #       options = list(dom = 't', bSort = FALSE),
+  #       class = 'cell-border stripe'
+  #     ) %>%
+  #       formatRound(columns = 1, digits = 2)
+  #   })
+  # })
+  # 
+  # output$windPlot <- renderPlot({
+  #   req(values$sensor)
+  #   req(values$noaa)
+  #   L3$show()
+  #   then(values$sensor, function(d) {
+  #     then(values$noaa, function(h) {
+  #       sensor_pollutionRose(d, h)  
+  #     })
+  #   })
+  # })
   
 }
     
