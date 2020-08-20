@@ -54,33 +54,35 @@ mod_raw_server <- function(input, output, session, values){
   
   output$multiPlot <- renderPlot({
     req(values$pat)
-    then(values$pat, function(d) {
-      pat_multiPlot(pat = d)
-    }, onRejected = function(err) {
-      logger.error(err)
+    future({
+      then(values$pat, function(d) {
+        pat_multiPlot(pat = d)
+      })
     })
     
   })
   
   output$comparePlot <- renderPlot({
     req(values$pat)
-    then(values$pat, function(d) {
-      asdv_internalFit(pat = d, tz = 'UTC', whichPlot = 'ab')  + ggplot2::theme_light()
-    }, onRejected = function(err) {
-      logger.error(err)
+    future({
+      then(values$pat, function(d) {
+        asdv_internalFit(pat = d, tz = 'UTC', whichPlot = 'ab') +
+          ggplot2::theme_light()
+      })
     })
     
   })
   
   output$lmPlot <- renderPlot({
     req(values$pat)
-    then(values$pat, function(d) {
-      asdv_internalFit(pat = d, tz = 'UTC', whichPlot = 'lm')  + ggplot2::theme_light()
-    }, onRejected = function(err) {
-      logger.error(err)
+    future({
+      then(values$pat, function(d) {
+        asdv_internalFit(pat = d, tz = 'UTC', whichPlot = 'lm') + 
+          ggplot2::theme_light()
+      })
     })
   })
- 
+  
 }
     
 ## To be copied in the UI

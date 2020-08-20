@@ -77,29 +77,33 @@ mod_overview_server <- function(input, output, session, values) {
   
   output$timeseriesMap <- renderTimeseriesMap({
     req(values$sensors)
-    then(values$sensors, function(d) {
-      timeseriesMap(
-        data = d$data, 
-        meta = d$meta, 
-        inputId = 'main_panel_ui_1-sensor_select', 
-        selected = isolate(values$sensor_select)
-      )
-    }, onRejected = function(err) {
-      logger.error(err)
+    future({
+      then(values$sensors, function(d) {
+        timeseriesMap(
+          data = d$data, 
+          meta = d$meta, 
+          inputId = 'main_panel_ui_1-sensor_select', 
+          selected = isolate(values$sensor_select)
+        )
+      }, onRejected = function(err) {
+        logger.error(err)
+      })
     })
   })
   
   output$timeseriesBarChart <- renderBarChart({
     req(values$sensors)
-    then(values$sensors, function(d) {
-      barChart(
-        data = d$data, 
-        meta = d$meta, 
-        inputId = 'main_panel_ui_1-sensor_select', 
-        ylab = "\u03bcg / m\u00b3"
-      )
-    }, onRejected = function(err) {
-      logger.error(err)
+    future({
+      then(values$sensors, function(d) {
+        barChart(
+          data = d$data, 
+          meta = d$meta, 
+          inputId = 'main_panel_ui_1-sensor_select', 
+          ylab = "\u03bcg / m\u00b3"
+        )
+      }, onRejected = function(err) {
+        logger.error(err)
+      })
     })
   })
   

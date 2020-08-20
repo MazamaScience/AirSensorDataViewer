@@ -49,9 +49,9 @@ mod_compare_ui <- function(id) {
       )
     )
   )
-
+  
 }
-    
+
 #' compare Server Function
 #'
 #' @noRd 
@@ -70,10 +70,10 @@ mod_compare_server <- function(input, output, session, values) {
       req(values$sensor)
       if (values$tab == 'compare' ) {
         values$pwfsl <- future({then(values$sensor, function(d) {
-            dates <- range(d$data$datetime)
-            mlab <- d$meta$pwfsl_closestMonitorID
-            PWFSLSmoke::monitor_load(startdate = dates[1], enddate = dates[2], monitorIDs = mlab)
-          })
+          dates <- range(d$data$datetime)
+          mlab <- d$meta$pwfsl_closestMonitorID
+          PWFSLSmoke::monitor_load(startdate = dates[1], enddate = dates[2], monitorIDs = mlab)
+        })
         })
       }
     } 
@@ -82,9 +82,10 @@ mod_compare_server <- function(input, output, session, values) {
   output$comparisonLeaflet <- renderLeaflet({
     req(values$sensor)
     req(values$pwfsl)
-    p <- then(values$sensor, function(d) {
-      then(values$pwfsl, function(h) {
-        future({
+    future({
+      then(values$sensor, function(d) {
+        then(values$pwfsl, function(h) {
+          
           slab <- d$meta$label
           mdist <- signif(d$meta$pwfsl_closestDistance/1000, 2)
           mlab <- d$meta$pwfsl_closestMonitorID
@@ -121,8 +122,9 @@ mod_compare_server <- function(input, output, session, values) {
   
   output$sensorMonitorCorr <- renderPlot({
     req(values$sensor)
-    p <- then(values$sensor, function(d) {
-      future({
+    future({
+      then(values$sensor, function(d) {
+        
         slab <- d$meta$label
         mlab <- d$meta$pwfsl_closestMonitorID
         sensor <- PWFSLSmoke::monitor_toTidy(d)
@@ -168,15 +170,15 @@ mod_compare_server <- function(input, output, session, values) {
         
       })
     })
-    return(then(p))
   })
   
   output$sensorMonitorComp <- renderPlot({
     req(values$pat)
-    p <- then(values$pat, function(d) {
-      future(pat_monitorComparison(d))
+    future({
+      then(values$pat, function(d) {
+        pat_monitorComparison(d)
+      })
     })
-    return(then(p))
   })
   
   # output$statusTable <- renderDT({
@@ -194,10 +196,10 @@ mod_compare_server <- function(input, output, session, values) {
   # })
   
 }
-    
+
 ## To be copied in the UI
 # mod_compare_ui("compare_ui_1")
-    
+
 ## To be copied in the server
 # callModule(mod_compare_server, "compare_ui_1")
- 
+

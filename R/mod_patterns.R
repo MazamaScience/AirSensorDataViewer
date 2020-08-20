@@ -39,7 +39,7 @@ mod_patterns_ui <- function(id){
     )
   )
 }
-    
+
 #' patterns Server Function
 #'
 #' @noRd 
@@ -76,9 +76,13 @@ mod_patterns_server <- function(input, output, session, values){
   )
   output$patternPlot <- renderPlot({
     req(values$sensor)
-    then(values$sensor, function(d) {
-      then(future(asdv_pm25Diurnal(ws_data = d) + 
-        stat_meanByHour(output = "scaqmd")))
+    future({
+      then(values$sensor, function(d) {
+        future({
+          asdv_pm25Diurnal(ws_data = d) + 
+            stat_meanByHour(output = "scaqmd")
+        })
+      })
     })
   })
   
@@ -109,10 +113,10 @@ mod_patterns_server <- function(input, output, session, values){
   # })
   
 }
-    
+
 ## To be copied in the UI
 # mod_patterns_ui("patterns_ui_1")
-    
+
 ## To be copied in the server
 # callModule(mod_patterns_server, "patterns_ui_1")
 

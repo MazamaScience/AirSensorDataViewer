@@ -66,67 +66,67 @@ mod_main_panel_server <- function(input, output, session, values) {
   observeEvent(
     once = TRUE,
     eventExpr = {
-    values$init
+      values$init
     }, 
     handlerExpr = {
-    # notification
-    startupWaitress <- waitress()
-    startupWaitress$notify(html = tags$h4("Loading Data..."), position = "bl")
-    
-    ##  create sensors obj promise on startup 
-    values$sensors <- future({ 
-      get_sensors(sd = input$date_range[1], ed = input$date_range[2])
-    })
-    startupWaitress$set(10)
-    
-    then(values$sensors, function(d) {
-      # Check diff bewteen sensors aval in sensor obj and pas obj and only use 
-      # the sensors with mutual existence
-      then(values$pas, function(p) {
-        communities <- na.omit(unique(id2com(d$meta$communityRegion[d$meta$label %in% p$label])))
-        sensor_labels <- na.omit(unique(d$meta$label[d$meta$label %in% p$label]))
-        
-        # update sensors rv
-        #values$sensors <- d 
-        # Fill the community selection
-        updateSelectizeInput( 
-          session,
-          inputId = "community_select", 
-          selected = "All...",
-          choices = c("Choose a community" = "","All...", communities)
-        )
-        # Fill the sensor selection
-        updateSelectizeInput(
-          session, 
-          inputId = "sensor_select", 
-          choices = sensor_labels
-        )
+      # notification
+      startupWaitress <- waitress()
+      startupWaitress$notify(html = tags$h4("Loading Data..."), position = "bl")
+      
+      ##  create sensors obj promise on startup 
+      values$sensors <- future({ 
+        get_sensors(sd = input$date_range[1], ed = input$date_range[2])
       })
-
-      startupWaitress$set(50)
-      logger.trace("sensors done.")
+      startupWaitress$set(10)
+      
+      then(values$sensors, function(d) {
+        # Check diff bewteen sensors aval in sensor obj and pas obj and only use 
+        # the sensors with mutual existence
+        then(values$pas, function(p) {
+          communities <- na.omit(unique(id2com(d$meta$communityRegion[d$meta$label %in% p$label])))
+          sensor_labels <- na.omit(unique(d$meta$label[d$meta$label %in% p$label]))
+          
+          # update sensors rv
+          #values$sensors <- d 
+          # Fill the community selection
+          updateSelectizeInput( 
+            session,
+            inputId = "community_select", 
+            selected = "All...",
+            choices = c("Choose a community" = "","All...", communities)
+          )
+          # Fill the sensor selection
+          updateSelectizeInput(
+            session, 
+            inputId = "sensor_select", 
+            choices = sensor_labels
+          )
+        })
+        
+        startupWaitress$set(50)
+        logger.trace("sensors done.")
+      })
+      
+      catch(values$sensors, function(err) { 
+        logger.error(err) 
+      })
+      
+      ## create pas promise
+      values$pas <- future({ 
+        get_pas()
+      })
+      startupWaitress$set(75)
+      then(values$pas, function(d) { 
+        # update pas rv 
+        #values$pas <- d 
+        startupWaitress$set(90)
+        logger.trace("pas done.")
+      })
+      catch(values$pas, function(err) { 
+        logger.error(err) 
+      })
+      startupWaitress$close()
     })
-    
-    catch(values$sensors, function(err) { 
-      logger.error(err) 
-    })
-    
-    ## create pas promise
-    values$pas <- future({ 
-      get_pas()
-    })
-    startupWaitress$set(75)
-    then(values$pas, function(d) { 
-      # update pas rv 
-      #values$pas <- d 
-      startupWaitress$set(90)
-      logger.trace("pas done.")
-    })
-    catch(values$pas, function(err) { 
-      logger.error(err) 
-    })
-    startupWaitress$close()
-  })
   
   ## ---- Event Handling ----
   
@@ -257,8 +257,8 @@ mod_main_panel_server <- function(input, output, session, values) {
         get_sensors(sd = input$date_range[1], ed = input$date_range[2])
       })
     }, ignoreNULL = TRUE, ignoreInit = TRUE)
-
-
+  
+  
   # 
   # # Attempt filter/load on date change
   # observeEvent(
@@ -310,17 +310,19 @@ mod_main_panel_server <- function(input, output, session, values) {
       values$navbar
     },
     handlerExpr = {
+      
       if (values$navbar == 'latest') {
-        
-      then(values$pas, function(d){
-        values$pat_latest <- future({
-          get_pat_latest(
-            pas = d,
-            label = input$sensor_select
-          )
+        then(values$pas, function(d){
+          values$pat_latest <- future({
+            get_pat_latest(
+              pas = d,
+              label = input$sensor_select
+            )
+          })
         })
-      })
-
+      } 
+        
+        
         # tryCatch(
         #   expr = {
         #     makeWaitress({
@@ -335,27 +337,17 @@ mod_main_panel_server <- function(input, output, session, values) {
         #     showNotification("Oops!", "An Error has occured.", type = "warn")
         #   }
         # )
-      }
     }
   )
-  # 
-  # # Watch for map click updates on the input from tiotemp
-  # observeEvent(
-  #   eventExpr = {
-  #     input$sensor_select
-  #   }, 
-  #   handlerExpr = {
-  #     updateSelectizeInput(
-  #       session,
-  #       "sensor_select",
-  #       selected = input$sensor_select
-  #     )
-  #     values$sensor_select <- input$sensor_select
-  #   }, 
-  #   priority = 1, 
-  #   ignoreNULL = TRUE
-  # )
-
+  
+  observeEvent(values$navbar, {
+    if (values$navbar == 'latest') {
+      shinyjs::hide("date_range", anim = TRUE)
+    } else {
+      shinyjs::show("date_range", anim = TRUE)
+    }
+  })
+  
 } # End Server
 
 ## To be copied in the UI
