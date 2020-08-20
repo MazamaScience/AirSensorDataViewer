@@ -159,22 +159,23 @@ mod_main_panel_server <- function(input, output, session, values) {
     }, 
     handlerExpr = {
       req(input$sensor_select)
+      
       # store sensor selection label as string for scoping
       values$sensor_select <- input$sensor_select
       # filter/download a new sensors
-      then(values$sensors, function(d) {
-        values$sensor <- future({
+      values$sensor <- then(values$sensors, function(d) {
+        future({
           get_sensor(
             sensors = d,
-            label = input$sensor_select,
-            sd = input$date_range[1],
-            ed = input$date_range[2]
+            .data$label == input$sensor_select
           )
         })
       })
       
-      then(values$pas, function(d) {
-        values$pat <- future({
+      
+      
+      values$pat <- then(values$pas, function(d) {
+        future({
           get_pat(
             pas = d, 
             label = input$sensor_select, 
