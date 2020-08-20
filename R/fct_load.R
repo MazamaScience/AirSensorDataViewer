@@ -68,9 +68,9 @@ get_pat <- function(pas, label, sd, ed, pat = NULL) {
 #' @export
 #'
 #' @examples
-get_sensor <- function(sensors, label, sd, ed) {
+get_sensor <- function(sensors, ...) {
   logger.trace("loading sensor obj...")
-  sensor_filterMeta(sensors, .data$label == label) 
+  sensor_filterMeta(sensors, ...) 
 }
 
 #' Title
@@ -170,9 +170,9 @@ get_noaa <- function(sensor) {
   year <- year(ed)
   lon <- sensor$meta$longitude
   lat <- sensor$meta$latitude
-  closestSite <- getMeta(lon = lon, lat = lat, n = 1, plot = FALSE)[1,]
+  closestSite <- getMeta(lon = lon, lat = lat,n = 1, plot = FALSE)
   siteCode <- closestSite$code
-  siteData <- importNOAA(code = siteCode, year = year) 
+  siteData <- importNOAA(code = siteCode, year = year, n.cores = 1) 
   return(siteData)
 }
 
