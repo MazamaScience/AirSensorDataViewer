@@ -77,7 +77,6 @@ mod_overview_server <- function(input, output, session, values) {
   
   output$timeseriesMap <- renderTimeseriesMap({
     req(values$sensors)
-    future({
       then(values$sensors, function(d) {
         timeseriesMap(
           data = d$data, 
@@ -88,12 +87,10 @@ mod_overview_server <- function(input, output, session, values) {
       }, onRejected = function(err) {
         logger.error(err)
       })
-    })
   })
   
   output$timeseriesBarChart <- renderBarChart({
     req(values$sensors)
-    future({
       then(values$sensors, function(d) {
         barChart(
           data = d$data, 
@@ -104,7 +101,6 @@ mod_overview_server <- function(input, output, session, values) {
       }, onRejected = function(err) {
         logger.error(err)
       })
-    })
   })
   
   observeEvent(ignoreInit = TRUE, {values$sensor_select},{

@@ -38,7 +38,6 @@ mod_datatable_server <- function(input, output, session, values) {
   
   output$metatable <- renderTable({
     req(values$pat)
-    future({
       then(values$pat, function(d) {
         data.frame( "Sensor" = d$meta$label,
                     "Community" = d$meta$communityRegion,
@@ -47,13 +46,11 @@ mod_datatable_server <- function(input, output, session, values) {
                     "Latitude" = d$meta$latitude,
                     "State" = d$meta$stateCode,
                     "Country" = d$meta$countryCode )
-      })
     })
   })
   
   output$datatable <- renderDT({ 
     req(values$pat)
-    future({
       then(values$pat, function(d) {
         data <- d$data[-(6:10)]
         names(data) <- c( "Datetime (UTC)",
@@ -65,7 +62,6 @@ mod_datatable_server <- function(input, output, session, values) {
         datatable(data, selection = "none", options = list(pageLength = 25) ) %>%
           formatDate(1, method = 'toLocaleString', params = list('en-EN'))
         
-      })
     })
   })
   

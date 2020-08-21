@@ -45,29 +45,23 @@ mod_latest_server <- function(input, output, session, values){
   
   output$pm_latest <- renderPlotly({
     req(values$pat_latest)
-    future({
       then(values$pat_latest, function(d) {
         channelPlotly(pat = d, channel = 'ab')
       })
-    })
   })
   
   output$humidity_latest <- renderPlotly({
     req(values$pat_latest)
-    future({
       then(values$pat_latest, function(d) {
         humidityPlotly(pat = d)
       })
-    })
   })
   
   output$temperature_latest <- renderPlotly({
     req(values$pat_latest)
-    future({
       then(values$pat_latest, function(d) {
         temperaturePlotly(pat = d)
       })
-    })
   })
 }
 

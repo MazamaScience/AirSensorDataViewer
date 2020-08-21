@@ -82,7 +82,6 @@ mod_compare_server <- function(input, output, session, values) {
   output$comparisonLeaflet <- renderLeaflet({
     req(values$sensor)
     req(values$pwfsl)
-    future({
       then(values$sensor, function(d) {
         then(values$pwfsl, function(h) {
           
@@ -117,12 +116,10 @@ mod_compare_server <- function(input, output, session, values) {
             )
         })
       })
-    })
   })
   
   output$sensorMonitorCorr <- renderPlot({
     req(values$sensor)
-    future({
       then(values$sensor, function(d) {
         
         slab <- d$meta$label
@@ -169,16 +166,13 @@ mod_compare_server <- function(input, output, session, values) {
           equationLabel
         
       })
-    })
   })
   
   output$sensorMonitorComp <- renderPlot({
     req(values$pat)
-    future({
       then(values$pat, function(d) {
         pat_monitorComparison(d)
       })
-    })
   })
   
   # output$statusTable <- renderDT({

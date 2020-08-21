@@ -67,22 +67,17 @@ mod_patterns_server <- function(input, output, session, values){
     }, 
     handlerExpr = {
       if (values$tab == 'patterns' ) {
-        values$noaa <- then(values$sensor, function(d) {
-          future({get_noaa(d)})
+        values$noaa <- future({then(values$sensor, function(d) {
+          get_noaa(d)})
         })
-        catch(values$noaa, function(err) logger.error(err))
       }
     } 
   )
   output$patternPlot <- renderPlot({
     req(values$sensor)
-    future({
       then(values$sensor, function(d) {
-        future({
           asdv_pm25Diurnal(ws_data = d) + 
             stat_meanByHour(output = "scaqmd")
-        })
-      })
     })
   })
   
