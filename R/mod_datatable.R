@@ -33,36 +33,29 @@ mod_datatable_ui <- function(id) {
 #' @noRd 
 #' 
 #' @importFrom DT renderDT datatable formatDate
-mod_datatable_server <- function(input, output, session, values) {
+mod_datatable_server <- function(input, output, session, obj) {
   ns <- session$ns
   
   output$metatable <- renderTable({
-    req(values$pat)
-      then(values$pat, function(d) {
-        data.frame( "Sensor" = d$meta$label,
-                    "Community" = d$meta$communityRegion,
-                    "Sensor Type" = d$meta$sensorType,
-                    "Longitude" = d$meta$longitude,
-                    "Latitude" = d$meta$latitude,
-                    "State" = d$meta$stateCode,
-                    "Country" = d$meta$countryCode )
-    })
+    data.frame( "Sensor" = obj$data$pat$meta$label,
+                "Community" = obj$data$pat$meta$communityRegion,
+                "Sensor Type" = obj$data$pat$meta$sensorType,
+                "Longitude" = obj$data$pat$meta$longitude,
+                "Latitude" = obj$data$pat$meta$latitude,
+                "State" = obj$data$pat$meta$stateCode,
+                "Country" = obj$data$pat$meta$countryCode )
   })
   
   output$datatable <- renderDT({ 
-    req(values$pat)
-      then(values$pat, function(d) {
-        data <- d$data[-(6:10)]
-        names(data) <- c( "Datetime (UTC)",
-                          "PM2.5 Ch. A (\u03bcg / m\u00b)",
-                          "PM2.5 Ch. B (\u03bcg / m\u00b)",
-                          "Temperature (F)",
-                          "Relative Humidity (%)" )
-        
-        datatable(data, selection = "none", options = list(pageLength = 25) ) %>%
-          formatDate(1, method = 'toLocaleString', params = list('en-EN'))
-        
-    })
+    data <- obj$data$pat$data[-(6:10)]
+    names(data) <- c( "Datetime (UTC)",
+                      "PM2.5 Ch. A (\u03bcg / m\u00b)",
+                      "PM2.5 Ch. B (\u03bcg / m\u00b)",
+                      "Temperature (F)",
+                      "Relative Humidity (%)" )
+    
+    datatable(data, selection = "none", options = list(pageLength = 25) ) %>%
+      formatDate(1, method = 'toLocaleString', params = list('en-EN'))
   })
   
 }

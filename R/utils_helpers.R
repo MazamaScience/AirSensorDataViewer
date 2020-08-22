@@ -112,9 +112,9 @@ makeWaitress <- function(expr, msg) {
 #' @export
 #'
 #' @examples
-throwNiceError <- function(err) {
+catchError <- function(err) {
   logger.error(err)
-  print("oops!")
+  NULL
 }
 
 #' Animate Plot up

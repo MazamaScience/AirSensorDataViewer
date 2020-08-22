@@ -24,17 +24,15 @@ mod_calendar_ui <- function(id){
 #' @noRd 
 #' 
 #' @importFrom tiotemp renderTimeseriesCalendar timeseriesCalendar
-mod_calendar_server <- function(input, output, session, values) {
+mod_calendar_server <- function(input, output, session, obj) {
   ns <- session$ns
   output$calendarPlot <- renderTimeseriesCalendar({
-    then(values$sensors, function(d) {
       timeseriesCalendar(
-        data = d$data, 
-        meta = d$meta, 
+        data = obj$data$sensors$data, 
+        meta = obj$data$sensors$meta, 
         inputId = 'main_panel_ui_1-sensor_select'
       )
     })
-  })
 }
     
 ## To be copied in the UI

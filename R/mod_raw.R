@@ -49,31 +49,43 @@ mod_raw_ui <- function(id){
 #' raw Server Function
 #'
 #' @noRd 
-mod_raw_server <- function(input, output, session, values){
+mod_raw_server <- function(input, output, session, obj){
   ns <- session$ns
   
+  observeEvent(
+    ignoreInit = TRUE,
+    eventExpr = {
+      obj$selected$sensor
+      obj$selected$sd
+      obj$selected$ed
+      obj$selected$page
+    },
+    handlerExpr = {
+      if ( obj$selected$page != 'latest' ) {
+        obj$updatePat(
+          pas = obj$data$pas, 
+          label = obj$selected$sensor, 
+          sd = obj$selected$sd, 
+          ed = obj$selected$ed
+        )
+      }
+    }
+  )
+  
   output$multiPlot <- renderPlot({
-    req(values$pat)
-      then(values$pat, function(d) {
-        pat_multiPlot(pat = d)
-      })
+    pat_multiPlot(obj$data$pat)
   })
   
   output$comparePlot <- renderPlot({
-    req(values$pat)
-      then(values$pat, function(d) {
-        asdv_internalFit(pat = d, tz = 'UTC', whichPlot = 'ab') +
-          ggplot2::theme_light()
-      })
+    asdv_internalFit(pat = obj$data$pat, tz = 'UTC', whichPlot = 'ab') +
+      ggplot2::theme_light()
+    
   })
   
   output$lmPlot <- renderPlot({
-    req(values$pat)
-      then(values$pat, function(d) {
-        asdv_internalFit(pat = d, tz = 'UTC', whichPlot = 'lm') + 
-          ggplot2::theme_light()
-      })
-
+    asdv_internalFit(pat = obj$data$pat, tz = 'UTC', whichPlot = 'lm') +
+      ggplot2::theme_light()
+    
   })
   
 }

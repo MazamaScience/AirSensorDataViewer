@@ -36,3 +36,22 @@ By default, the application will be forwarded to `0.0.0.0:8000`.
 ## Notes 
 
 AirSensor DataViewer is built with Shiny utilizing {golem} framework.  The AirSensor R package functions as the primary backend for data processing and visualization. 
+
+### General Application Pipeline
+```
+load pas 
+load sensors
+from sensors or pas: 
+  fill sensor_select and comunity_select
+on select sensor:
+  load sensor
+  load pat
+  load latest
+  load annunal
+on select community:
+  fill sensor_select where sensor in select community
+on select date: 
+  load sensors
+  load sensor
+  load pat
+```

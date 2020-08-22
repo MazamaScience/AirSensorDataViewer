@@ -40,28 +40,31 @@ mod_latest_ui <- function(id){
 #' @noRd 
 #' 
 #' @importFrom plotly renderPlotly
-mod_latest_server <- function(input, output, session, values){
+mod_latest_server <- function(input, output, session, obj){
   ns <- session$ns
   
+  observeEvent({
+    obj$selected$page
+    obj$selected$sensor
+  }, {
+    if ( obj$selected$page == 'latest' ) {
+      obj$updateLatest(
+        pas = obj$data$pas,
+        label = obj$selected$sensor
+      )
+    }
+  }, ignoreInit = TRUE)
+  
   output$pm_latest <- renderPlotly({
-    req(values$pat_latest)
-      then(values$pat_latest, function(d) {
-        channelPlotly(pat = d, channel = 'ab')
-      })
+    channelPlotly(obj$data$latest, channel = 'ab')
   })
   
   output$humidity_latest <- renderPlotly({
-    req(values$pat_latest)
-      then(values$pat_latest, function(d) {
-        humidityPlotly(pat = d)
-      })
+        humidityPlotly(obj$data$latest)
   })
   
   output$temperature_latest <- renderPlotly({
-    req(values$pat_latest)
-      then(values$pat_latest, function(d) {
-        temperaturePlotly(pat = d)
-      })
+    temperaturePlotly(obj$data$latest)
   })
 }
 

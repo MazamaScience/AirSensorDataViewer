@@ -25,18 +25,17 @@ mod_video_ui <- function(id){
 #' video Server Function
 #'
 #' @noRd 
-mod_video_server <- function(input, output, session, values) {
+mod_video_server <- function(input, output, session, obj) {
   ns <- session$ns
   
   output$video <- renderUI({
-    req(values$community_select, values$ed)
-    if ( values$community_select != "All.." ) {
-      ed <- ymd(values$ed)
+    if ( obj$selected$community != "All.." ) {
+      ed <- ymd(obj$selected$ed)
       baseUrl <- "http://smoke.mazamascience.com/data/PurpleAir/videos/"
       year    <- strftime(ed, "%Y")
       mm      <- strftime(ed, "%m")
       dd      <- strftime(ed, "%d")
-      id    <- com2id(values$community_select)
+      id    <- com2id(obj$selected$community)
       url <- paste0(baseUrl, year, "/", id, "_", year, mm, dd, ".mp4" )
       tags$video(
         id = "video",

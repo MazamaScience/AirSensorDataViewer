@@ -48,37 +48,26 @@ mod_patterns_ui <- function(id){
 #' @importFrom lubridate ymd_hms year
 #' @importFrom future future availableCores 
 #' @importFrom promises then catch
-mod_patterns_server <- function(input, output, session, values){
+mod_patterns_server <- function(input, output, session, obj){
   ns <- session$ns
-  # 
-  # observeEvent({ input$sensor_select;  values$tab; values$sensor } , {
-  #   if ( values$tab == 'patterns' ) {
-  #     then(values$sensor, function(d) {
-  #       values$noaa <- future({
-  #         get_noaa(d)
+
+  # observeEvent(
+  #   eventExpr = {
+  #     values$tab
+  #   }, 
+  #   handlerExpr = {
+  #     if (values$tab == 'patterns' ) {
+  #       values$noaa <- future({then(values$sensor, function(d) {
+  #         get_noaa(d)})
   #       })
-  #     })
-  #   }
-  # })
-  # 
-  observeEvent(
-    eventExpr = {
-      values$tab
-    }, 
-    handlerExpr = {
-      if (values$tab == 'patterns' ) {
-        values$noaa <- future({then(values$sensor, function(d) {
-          get_noaa(d)})
-        })
-      }
-    } 
-  )
+  #     }
+  #   } 
+  # )
   output$patternPlot <- renderPlot({
-    req(values$sensor)
-      then(values$sensor, function(d) {
-          asdv_pm25Diurnal(ws_data = d) + 
+    
+    asdv_pm25Diurnal(obj$data$sensor) + 
             stat_meanByHour(output = "scaqmd")
-    })
+
   })
   
   # output$noaaTable <- renderDT({

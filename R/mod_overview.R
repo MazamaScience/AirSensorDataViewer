@@ -72,43 +72,36 @@ mod_overview_ui <- function(id){
 #' @noRd 
 #' @importFrom tiotemp renderTimeseriesMap timeseriesMap 
 #' @importFrom tiotemp renderBarChart barChart
-mod_overview_server <- function(input, output, session, values) {
+mod_overview_server <- function(input, output, session, obj) {
   ns <- session$ns
   
   output$timeseriesMap <- renderTimeseriesMap({
-    req(values$sensors)
-      then(values$sensors, function(d) {
-        timeseriesMap(
-          data = d$data, 
-          meta = d$meta, 
-          inputId = 'main_panel_ui_1-sensor_select', 
-          selected = isolate(values$sensor_select)
-        )
-      }, onRejected = function(err) {
-        logger.error(err)
-      })
+    timeseriesMap(
+      data = obj$data$sensors$data, 
+      meta = obj$data$sensors$meta, 
+      inputId = 'main_panel_ui_1-sensor_select', 
+      selected = isolate(obj$selected$sensor)
+    )
   })
   
   output$timeseriesBarChart <- renderBarChart({
-    req(values$sensors)
-      then(values$sensors, function(d) {
-        barChart(
-          data = d$data, 
-          meta = d$meta, 
-          inputId = 'main_panel_ui_1-sensor_select', 
-          ylab = "\u03bcg / m\u00b3"
-        )
-      }, onRejected = function(err) {
-        logger.error(err)
-      })
+    barChart(
+      data = obj$data$sensors$data,
+      meta = obj$data$sensors$meta,
+      inputId = 'main_panel_ui_1-sensor_select',
+      ylab = "\u03bcg / m\u00b3"
+    )
   })
   
-  observeEvent(ignoreInit = TRUE, {values$sensor_select},{
-    plotUp()
-  })
-  observeEvent({values$community_select},{
-    plotUp()
-  })
+  observeEvent(
+    ignoreInit = TRUE, 
+    eventExpr = {
+      obj$selected$sensor
+    },
+    handlerExpr = {
+      plotUp()
+    }
+  )
   
 }
 

@@ -140,7 +140,7 @@ app_ui <- function(request) {
         fluidRow(
           column(
             width = 10,
-            #shiny::includeHTML(file.path(getwd(),"../www/about.html"))
+            shiny::includeHTML("inst/app/www/about.html")
           )
         )
       )
