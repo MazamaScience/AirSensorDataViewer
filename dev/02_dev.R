@@ -20,7 +20,6 @@ usethis::use_package("PWFSLSmoke")
 usethis::use_package("promises")
 usethis::use_package("future")
 usethis::use_package("lubridate")
-usethis::use_package("shinyWidgets")
 usethis::use_package("shinythemes")
 usethis::use_package("rlang")
 usethis::use_package("plotly")
@@ -30,6 +29,9 @@ usethis::use_package("DT")
 usethis::use_package("waiter")
 usethis::use_package("gridExtra")
 usethis::use_package("tidyr")
+usethis::use_package("clipr")
+usethis::use_package("shinyjs")
+
 
 ## Add modules ----
 ## Create a module infrastructure in R/
@@ -54,6 +56,7 @@ golem::add_fct( "load" )
 golem::add_fct( "leaflet" )
 
 # Util functions
+golem::add_utils("Client")
 golem::add_utils("helpers")
 golem::add_utils("logs")
 

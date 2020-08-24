@@ -26,6 +26,25 @@ mod_calendar_ui <- function(id){
 #' @importFrom tiotemp renderTimeseriesCalendar timeseriesCalendar
 mod_calendar_server <- function(input, output, session, obj) {
   ns <- session$ns
+  
+  observeEvent(
+    ignoreInit = TRUE, 
+    eventExpr = {
+      obj$selected$sensor
+      obj$selected$ed
+      obj$selected$sd
+      obj$selected$tab
+    }, 
+    handlerExpr = {
+      if ( obj$selected$tab == 'calendar' )
+        obj$updateAnnual(
+          pas = obj$data$pas, 
+          label = obj$selected$sensor, 
+          date = obj$selected$ed
+        )
+    }
+  )
+  
   output$calendarPlot <- renderTimeseriesCalendar({
       timeseriesCalendar(
         data = obj$data$sensors$data, 

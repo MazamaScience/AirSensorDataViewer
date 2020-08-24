@@ -19,58 +19,21 @@ app_server <- function( input, output, session ) {
     logger.trace(paste("session ended:",  session$token)) 
   })
   
-  DataObj <- R6::R6Class(
-    "DataObject",
-    public = list(
-      url = "http://data.mazamascience.com/PurpleAir/v1",
-      token = session$token, 
-      
-      selected = rv(),
-      data = rv(),
-      
-      initialize = function() {
-        logger.trace("init")
-        setArchiveBaseUrl(self$url)
-        self$data$pas <- get_pas()
-        self$data$sensors <- get_sensors(today() - days(7), today())
-      },
-      
-      updatePas = function() {
-        setArchiveBaseUrl(self$url)
-        self$data$pas <- get_pas()
-      }, 
-      
-      updateSensors = function(sd, ed) {
-        setArchiveBaseUrl(self$url)
-        self$data$sensors <- get_sensors(sd, ed)
-      }, 
-      
-      updateSensor = function(sensors, ...) {
-        self$data$sensor <- AirSensor::sensor_filterMeta(sensors, ...)
-      }, 
-      
-      updatePat = function(pas, label, sd, ed) {
-        setArchiveBaseUrl(self$url)
-        self$data$pat <- get_pat(
-          pas = pas,
-          label = label,
-          sd = sd,
-          ed = ed
-        )
-      }, 
-      
-      updatePwfsl = function(id, sd, ed) {
-        self$data$pwfsl <- PWFSLSmoke::monitor_load(sd, ed, id)
-      }, 
-      
-      updateLatest = function(pas, label, tz = 'UTC') {
-        self$data$latest <- get_pat_latest(pas, label, tz)
-      }
-    )
-  )
+  # Bookmarking
+  observe({
+    reactiveValuesToList(input)
+    session$doBookmark()
+  }) 
+  onBookmarked(function(url) {
+    updateQueryString(url)
+    obj$url <- url
+  })
   
-  obj <- DataObj$new()
   
+  # Create the client session data object
+  obj <- Client$new(session)
+  
+  # Watch tabs and page
   observeEvent(input$navbar, {
     logger.trace(paste("navbar:", input$navbar))
     obj$selected$page <- input$navbar
