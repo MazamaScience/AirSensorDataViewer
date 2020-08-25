@@ -73,30 +73,33 @@ mod_overview_ui <- function(id){
 #' @importFrom tiotemp renderTimeseriesMap timeseriesMap 
 #' @importFrom tiotemp renderBarChart barChart
 mod_overview_server <- function(input, output, session, obj) {
-  ns <- session$ns
+  ns <- session[['ns']]
   
-  output$timeseriesMap <- renderTimeseriesMap({
+  output[['timeseriesMap']] <- renderTimeseriesMap({
+    req(obj[['data']][['sensors']])
     timeseriesMap(
-      data = obj$data$sensors$data, 
-      meta = obj$data$sensors$meta, 
+      data = obj[['data']][['sensors']][['data']], 
+      meta = obj[['data']][['sensors']][['meta']], 
       inputId = 'main_panel_ui_1-sensor_select', 
-      selected = isolate(obj$selected$sensor)
+      selected = isolate(obj[['selected']][['sensor']])
     )
   })
   
   output$timeseriesBarChart <- renderBarChart({
+    req(obj[['data']][['sensors']])
     barChart(
-      data = obj$data$sensors$data,
-      meta = obj$data$sensors$meta,
+      data = obj[['data']][['sensors']][['data']], 
+      meta = obj[['data']][['sensors']][['meta']],
       inputId = 'main_panel_ui_1-sensor_select',
       ylab = "\u03bcg / m\u00b3"
     )
   })
   
   observeEvent(
+    ignoreNULL = TRUE,
     ignoreInit = TRUE, 
     eventExpr = {
-      obj$selected$sensor
+      obj[['selected']][['sensor']]
     },
     handlerExpr = {
       plotUp()

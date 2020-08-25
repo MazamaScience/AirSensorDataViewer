@@ -12,36 +12,35 @@ app_server <- function( input, output, session ) {
   
   # Record session start 
   observe({ 
-    logger.trace(paste("session started:", session$token)) 
+    logger.trace(paste("session started:", session[['token']])) 
   })
   # Record session end 
-  session$onSessionEnded(function() { 
-    logger.trace(paste("session ended:",  session$token)) 
+  session[['onSessionEnded']](function() { 
+    logger.trace(paste("session ended:",  session[['token']])) 
   })
   
   # Bookmarking
   observe({
     reactiveValuesToList(input)
-    session$doBookmark()
+    session[['doBookmark']]()
   }) 
   onBookmarked(function(url) {
     updateQueryString(url)
-    obj$url <- url
+    obj[['url']] <- url
   })
   
-  
-  # Create the client session data object
-  obj <- Client$new(session)
+  # Create the client session object
+  obj <- Client[['new']](session)
   
   # Watch tabs and page
-  observeEvent(input$navbar, {
-    logger.trace(paste("navbar:", input$navbar))
-    obj$selected$page <- input$navbar
+  observeEvent(input[['navbar']], {
+    logger.trace(paste("navbar:", input[['navbar']]))
+    obj[['selected']][['page']] <- input[['navbar']]
   })
   
-  observeEvent(input$tab, {
-    logger.trace(paste("tab:", input$tab))
-    obj$selected$tab <- input$tab
+  observeEvent(input[['tab']], {
+    logger.trace(paste("tab:", input[['tab']]))
+    obj[['selected']][['tab']] <- input[['tab']]
   })
   
   # List the first level callModules here
@@ -54,6 +53,6 @@ app_server <- function( input, output, session ) {
   callModule(mod_video_server, "video_ui_1", obj)
   callModule(mod_latest_server, "latest_ui_1", obj)
   callModule(mod_datatable_server, "datatable_ui_1", obj)
-  
+  callModule(mod_help_server, "help_ui_1", obj)
   
 }

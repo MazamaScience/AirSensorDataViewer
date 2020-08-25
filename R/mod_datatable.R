@@ -37,25 +37,32 @@ mod_datatable_server <- function(input, output, session, obj) {
   ns <- session$ns
   
   output$metatable <- renderTable({
-    data.frame( "Sensor" = obj$data$pat$meta$label,
-                "Community" = obj$data$pat$meta$communityRegion,
-                "Sensor Type" = obj$data$pat$meta$sensorType,
-                "Longitude" = obj$data$pat$meta$longitude,
-                "Latitude" = obj$data$pat$meta$latitude,
-                "State" = obj$data$pat$meta$stateCode,
-                "Country" = obj$data$pat$meta$countryCode )
+    obj[['data']][['pat']] %...>% {
+      data.frame( "Sensor" = .$meta$label,
+                  "Community" = .$meta$communityRegion,
+                  "Sensor Type" = .$meta$sensorType,
+                  "Longitude" = .$meta$longitude,
+                  "Latitude" = .$meta$latitude,
+                  "State" = .$meta$stateCode,
+                  "Country" = .$meta$countryCode ) 
+    } %...!%
+      catchError()
   })
   
   output$datatable <- renderDT({ 
-    data <- obj$data$pat$data[-(6:10)]
-    names(data) <- c( "Datetime (UTC)",
-                      "PM2.5 Ch. A (\u03bcg / m\u00b)",
-                      "PM2.5 Ch. B (\u03bcg / m\u00b)",
-                      "Temperature (F)",
-                      "Relative Humidity (%)" )
-    
-    datatable(data, selection = "none", options = list(pageLength = 25) ) %>%
-      formatDate(1, method = 'toLocaleString', params = list('en-EN'))
+    obj[['data']][['pat']] %...>% {
+      data <- .$data[c("datetime", "pm25_A", "pm25_B", "temperature", "humidity")]
+      names(data) <- c( "Datetime (UTC)",
+                        "PM2.5 Ch. A (\u03bcg / m\u00b)",
+                        "PM2.5 Ch. B (\u03bcg / m\u00b)",
+                        "Temperature (F)",
+                        "Relative Humidity (%)" )
+      
+      datatable(data, selection = "none", options = list(pageLength = 25) ) %>%
+        formatDate(1, method = 'toLocaleString', params = list('en-EN'))
+    } %...!% 
+      catchError()
+
   })
   
 }

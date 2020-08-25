@@ -45,6 +45,7 @@ golem::add_module( name = "video" )
 
 golem::add_module( name = "latest" ) # Latest dv navtab
 golem::add_module( name = "datatable" )
+golem::add_module( name = "help" )
 
 ## Add helper functions ----
 ## Creates ftc_* and utils_*

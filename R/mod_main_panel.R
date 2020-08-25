@@ -9,6 +9,7 @@
 #' @importFrom shiny NS tagList 
 #' @importFrom lubridate today ymd days 
 #' @importFrom shinyWidgets pickerInput airDatepickerInput radioGroupButtons sliderTextInput
+#' @import bsplus
 mod_main_panel_ui <- function(id) {
   ns <- NS(id)
   TZ <- 'UTC'
@@ -64,8 +65,6 @@ mod_main_panel_ui <- function(id) {
       )
       
     )
-    
-    
   )
 }
 
@@ -84,26 +83,26 @@ mod_main_panel_ui <- function(id) {
 #' @importFrom waiter Waitress
 #' @importFrom stats na.omit 
 #' @importFrom clipr write_clip
-mod_main_panel_server <- function(input, output, session, obj, selected) {
+mod_main_panel_server <- function(input, output, session, obj) {
   ns <- session$ns
   
   startupWaitress <- waitress()
-  startupWaitress$notify(html = tags$h3("Loading Data..."), position = "bl")
-  startupWaitress$set(20)
+  startupWaitress[['notify']](html = tags[['h3']]("Loading Data..."), position = "bl")
+  startupWaitress[['set']](20)
+  # initialize 
   observeEvent(
-    ignoreNULL = TRUE,
     once = TRUE, 
+    ignoreNULL = TRUE,
     eventExpr = {
-      obj$data$sensors
+      obj[['data']][['sensors']]
     },
     handlerExpr = {
+      meta <- obj[['data']][['sensors']][['meta']]
       # Check diff bewteen sensors aobj in sensor obj and pas obj and only use
       # the sensors with mutual existence
-      communities <- na.omit(unique(id2com(obj$data$sensors$meta$communityRegion)))
-      sensor_labels <- na.omit(unique(obj$data$sensors$meta$label))
+      communities <- na.omit(unique(id2com(meta[['communityRegion']])))
+      sensor_labels <- na.omit(unique(meta[['label']]))
       
-      # update sensors rv
-      #objues$sensors <- d
       # Fill the community selection
       updateSelectizeInput(
         session,
@@ -117,7 +116,122 @@ mod_main_panel_server <- function(input, output, session, obj, selected) {
         inputId = "sensor_select",
         choices = sensor_labels
       )
-      startupWaitress$close()
+      startupWaitress[['close']]()
+    }
+  )
+  
+  debouncedSelectSensor <- debounce(reactive(input[['sensor_select']]), 250)
+  observeEvent(
+    ignoreNULL = TRUE,
+    ignoreInit = TRUE,
+    eventExpr = {
+      debouncedSelectSensor()
+    }, 
+    handlerExpr = {
+      
+      # Update the selector using js for speediness
+      shinyjs::runjs(
+        paste0(
+          '$("select#main_panel_ui_1-sensor_select")[0].selectize.setValue("', 
+          input[['sensor_select']],
+          '", false)'
+        )
+      )
+      
+      obj[['selected']][['sensor']] <- input[['sensor_select']]
+      obj$updateLastInput(Sys.time())
+    }
+  )
+  
+  debouncedDateRange <- debounce(reactive(input[['date_range']]), 250)
+  observeEvent(
+    priority = 100,
+    ignoreNULL = TRUE,
+    eventExpr = {
+      debouncedDateRange()
+    }, 
+    handlerExpr = {
+      
+      sd <- input[['date_range']][1]
+      ed <- input[['date_range']][2]
+      
+      if ( ymd(ed) <= ymd(sd) ) {
+        sd <- strftime(ymd(sd) - days(1), "%Y-%m-%d")
+        updateDateRangeInput(
+          session,
+          "date_range",
+          start = ymd(ed) - days(1)
+        )
+        
+        # Validate that dates are valid before continuing
+        validate(
+          need(ymd(sd) <= ymd(ed), "improper dates")
+        )
+        
+      }
+      if ( ymd(ed) - ymd(sd) >= 21 ) {
+        sd <- strftime(ymd(sd) - days(21), "%Y-%m-%d")
+        updateDateRangeInput(
+          session,
+          "date_range",
+          start = ymd(ed) - days(21)
+        )
+        showNotification("Dates range too long!", "Max date range is 21 days.", type = "warn")
+        
+      }
+      
+      obj[['selected']][['sd']] <- sd
+      obj[['selected']][['ed']] <- ed      
+      obj[['updateSensors']](sd, ed)
+      
+    }
+  )
+  
+  observeEvent(
+    ignoreNULL = TRUE,
+    ignoreInit = TRUE, 
+    eventExpr = {
+      input[['community_select']]
+    }, 
+    handlerExpr = {
+      meta <- obj[['data']][['sensors']][['meta']]
+      if ( input[['community_select']] == "All..." ) {
+        choices <- meta
+      } else {
+        choices <-
+          meta[
+            id2com(meta[['communityRegion']]) == input[['community_select']],
+          ]
+      }
+      updateSelectizeInput(
+        session,
+        "sensor_select",
+        choices = na.omit(choices[['label']])
+      )
+      
+      obj[['selected']][['community']] <- input[['community_select']]
+      
+    }
+  )
+  
+  observeEvent(input[['share_button']], {
+    
+    logger.trace(paste0("bookmarked @: ", obj[['url']]))
+    clipr::write_clip(obj[['url']])
+    
+  })
+  
+  output$download_button <- downloadHandler(
+    filename = function() {
+      paste0(
+        obj[['selected']][['sensor']], '_',
+        obj[['selected']][['sd']], '_',
+        obj[['selected']][['ed']],
+        ".csv"
+      )
+    },
+    content = function(file) {
+      write.csv(obj[['data']][['pat']][['data']], file, row.names = FALSE)
     }
   )
   
@@ -125,98 +239,15 @@ mod_main_panel_server <- function(input, output, session, obj, selected) {
     ignoreNULL = TRUE,
     ignoreInit = TRUE,
     eventExpr = {
-      input$sensor_select
+      obj[['selected']][['page']]
     }, 
     handlerExpr = {
-      # Throws a freaking loop
-      # updateSelectizeInput(
-      #   session,
-      #   inputId = "sensor_select",
-      #   selected = isolate(input$sensor_select)
-      # )
-      obj$selected$sensor <- isolate(input$sensor_select)
-    }
-  )
-  
-  observeEvent(
-    ignoreNULL = TRUE,
-    eventExpr = {
-      input$date_range
-    }, 
-    handlerExpr = {
-      
-      if ( ymd(input$date_range[2]) <= ymd(input$date_range[1]) ) {
-        updateDateRangeInput(
-          session,
-          "date_range",
-          start = ymd(input$date_range[2]) - days(1)
-        )
-      }
-      if ( ymd(input$date_range[2]) - ymd(input$date_range[1]) > 21 ) {
-        updateDateRangeInput(
-          session,
-          "date_range",
-          start = ymd(input$date_range[2]) - days(21)
-        )
-        showNotification("Dates range too long!", "Max date range is 21 days.", type = "warn")
-      }
-      
-      obj$updateSensors(input$date_range[1], input$date_range[2])
-      
-      obj$selected$sd <- input$date_range[1]
-      obj$selected$ed <- input$date_range[2]
-      
-    }
-  )
-  
-  observeEvent(
-    ignoreInit = TRUE, 
-    eventExpr = {
-      input$community_select
-    }, 
-    handlerExpr = {
-      
-      if ( input$community_select == "All..." ) {
-        choices <- obj$data$sensors$meta
+      if (obj[['selected']][['page']] == 'latest') {
+        shinyjs::hide("date_range", anim = TRUE)
       } else {
-        choices <-
-          obj$data$sensors$meta[id2com(obj$data$sensors$meta$communityRegion) ==
-                                  input$community_select,]
+        shinyjs::show("date_range", anim = TRUE)
       }
-      updateSelectizeInput(
-        session,
-        "sensor_select",
-        choices = na.omit(choices$label)
-      )
-      
-      obj$selected$community <- input$community_select
-      
-    }
-  )
-  
-  observeEvent(input$share_button, {
-    
-    logger.trace(paste0("bookmarked @: ", obj$url))
-    clipr::write_clip(obj$url)
-    
-  })
-  
-  output$download_button <- downloadHandler(
-    filename = function() {
-      paste0(obj$selected$sensor,'_',obj$selected$sd,'_',obj$selected$ed,".csv")
-    },
-    content = function(file) {
-      write.csv(obj$data$pat$data, file, row.names = FALSE)
-    }
-  )
-  
-  observeEvent(ignoreInit = TRUE,obj$selected$page, {
-    if (obj$selected$page == 'latest') {
-      shinyjs::hide("date_range", anim = TRUE)
-    } else {
-      shinyjs::show("date_range", anim = TRUE)
-    }
-  })
+    })
   
   # 
 } # End Server

@@ -1,0 +1,11 @@
+#### Overview Help
+
+Select a sensor by clicking on the map or by using the drop down menus. After selecting a sensor, the plot below the map will display the hourly averages for the timeframe selected.
+
+Change the timeframe by selecting a different ‘Date’ on the calendar and/or by changing the number of days selected under ‘View Past’. 
+
+Take a closer look at the data in the plot by highlighting the section you are interested, the ‘Reset Zoom’ button will take you back to the complete plot. 
+
+Note, the PM2.5 values displayed on the map are the average PM2.5 levels for the same timeframe displayed in the plot.
+
+The colors in the map and in the plot correspond to different levels of PM2.5 and the scale in the [location on app] shows which colors correspond to which concentration ranges. 

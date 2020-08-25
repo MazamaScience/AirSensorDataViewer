@@ -43,7 +43,10 @@ mod_latest_ui <- function(id){
 mod_latest_server <- function(input, output, session, obj){
   ns <- session$ns
   
-  observeEvent({
+  observeEvent(
+    ignoreNULL = TRUE,
+    ignoreInit = TRUE,
+    eventExpr = {
     obj$selected$page
     obj$selected$sensor
   }, {
@@ -53,7 +56,7 @@ mod_latest_server <- function(input, output, session, obj){
         label = obj$selected$sensor
       )
     }
-  }, ignoreInit = TRUE)
+  })
   
   output$pm_latest <- renderPlotly({
     channelPlotly(obj$data$latest, channel = 'ab')

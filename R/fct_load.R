@@ -21,7 +21,8 @@ get_pas <- function() {
 #'
 #' @examples
 get_pat <- function(pas, label, sd, ed, pat = NULL) {
-  logger.trace("loading pat obj...")
+
+  logger.trace(paste(label, sd, ed, "loading pat obj..."))
   
   sd <- ymd(sd)
   ed <- ymd(ed)
@@ -34,6 +35,8 @@ get_pat <- function(pas, label, sd, ed, pat = NULL) {
       enddate = ed
     ) 
   } else {
+    
+    # Add label check
     data_sd <- ymd_hms(min(pat$data$datetime))
     data_ed <- ymd_hms(max(pat$data$datetime))
     
@@ -88,7 +91,7 @@ get_sensors <- function(sd, ed, sensors = NULL) {
   sd <- ymd(sd) 
   
   if ( is.null(sensors) ) {
-    logger.trace("loading sensors obj...")
+    logger.trace(paste(sd, ed, "loading sensors obj..."))
     sensors <- sensor_load(
       startdate = strftime(sd, "%Y%m%d"),
       enddate = strftime(ed, "%Y%m%d")
@@ -144,7 +147,7 @@ get_pat_annual <- function(pas, label, date) {
 #'
 #' @examples
 get_pat_latest <- function(pas, label, tz = 'UTC') {
-  logger.trace("loading latest pat obj...")
+  logger.trace(paste(label, "loading latest pat obj..."))
   pat_createNew(
     pas = pas, 
     label = label, 

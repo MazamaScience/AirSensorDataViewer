@@ -36,12 +36,12 @@ mod_calendar_server <- function(input, output, session, obj) {
       obj$selected$tab
     }, 
     handlerExpr = {
-      if ( obj$selected$tab == 'calendar' )
-        obj$updateAnnual(
-          pas = obj$data$pas, 
-          label = obj$selected$sensor, 
-          date = obj$selected$ed
-        )
+      # if ( obj$selected$tab == 'calendar' )
+        # obj$updateAnnual(
+        #   pas = obj$data$pas, 
+        #   label = obj$selected$sensor, 
+        #   date = obj$selected$ed
+        # )
     }
   )
   

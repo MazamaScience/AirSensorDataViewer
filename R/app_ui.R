@@ -19,7 +19,7 @@ app_ui <- function(request) {
         id = "panel",
         mod_main_panel_ui("main_panel_ui_1")
       ),
-      shiny::tags$footer(id = "ver", paste0("Version: ", golem::get_golem_version()))
+      tags$footer(id = "ver", paste0("Version: ", golem::get_golem_version()))
     ),
     
     navbarPage(
@@ -107,7 +107,7 @@ app_ui <- function(request) {
           # HELP
           column(
             width = 2,
-            #help_mod_ui("global")
+            mod_help_ui("help_ui_1")
             
           )
         )
