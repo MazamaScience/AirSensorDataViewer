@@ -36,6 +36,11 @@ usethis::use_package("digest")
 usethis::use_package("tiotemp")
 
 
+# Add github personal access token if you build a lot and exceed rate limit
+# usethis::browse_github_pat()
+# usethis::edit_r_environ()
+
+
 ## Add modules ----
 ## Create a module infrastructure in R/
 golem::add_module( name = "main_panel" ) # Main Panel 
