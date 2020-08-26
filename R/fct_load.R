@@ -73,7 +73,7 @@ get_pat <- function(pas, label, sd, ed, pat = NULL) {
 #' @examples
 get_sensor <- function(sensors, ...) {
   logger.trace("loading sensor obj...")
-  sensor_filter(sensors, ...) 
+  sensor_filterMeta(sensors, ...) 
 }
 
 #' Title
