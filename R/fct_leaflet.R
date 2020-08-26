@@ -5,7 +5,7 @@
 #'
 #' @return
 #' @export
-#'
+#' @import leaflet
 #' @examples
 comparisonLeaflet <- function(sensor, pwfsl) {
   
