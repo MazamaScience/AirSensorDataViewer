@@ -127,7 +127,10 @@ mod_main_panel_server <- function(input, output, session, obj) {
       obj[['token']]
     },
     handlerExpr = {
-      shinyjs::runjs("let tz = Intl.DateTimeFormat().resolvedOptions().timeZone; Shiny.setInputValue('main_panel_ui_1-client_tz', tz)")
+      # get the client timezone
+      shinyjs::runjs("let tz = Intl.DateTimeFormat().resolvedOptions().timeZone; 
+                      Shiny.setInputValue('main_panel_ui_1-client_tz', tz)")
+      # set the client object timezone
       obj$setTz(input$client_tz)
       
       sensors <- obj[['data']][['sensors']]
@@ -316,8 +319,8 @@ mod_main_panel_server <- function(input, output, session, obj) {
     ignoreNULL = TRUE, 
     ignoreInit = TRUE, 
     eventExpr = {
-      input[['sensor_select']]
-      input[['date_range']]
+      debouncedSelectSensor()
+      debouncedDateRange()
     }, 
     handlerExpr = {
       sensors <- obj$data$sensors
