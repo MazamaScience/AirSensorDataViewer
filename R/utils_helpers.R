@@ -144,3 +144,17 @@ plotUp <- function() {
 plotDown <- function() {
   
 }
+
+#' Title
+#'
+#' @param x 
+#'
+#' @return
+#' @export
+#' @importFrom digest digest
+#'
+#' @examples
+cacheKey <- function(...) {
+  x <- list(...)
+  digest(x)
+}
