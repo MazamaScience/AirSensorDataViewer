@@ -18,8 +18,16 @@ app_ui <- function(request) {
       wellPanel(
         id = "panel",
         mod_main_panel_ui("main_panel_ui_1"), 
-        # ----- Blurb -------
-        tags$footer(id = "version", paste0("v", golem::get_golem_version())),
+      ),        
+      fluidRow(
+        column(
+          width = 6, 
+          mod_help_ui("help_ui_1") 
+        ), 
+        column(
+          width = 6, 
+          tags$footer(id = "version", paste0("v", golem::get_golem_version())),
+        )
       )
     ),
     
@@ -108,7 +116,7 @@ app_ui <- function(request) {
           # HELP
           column(
             width = 1,
-            mod_help_ui("help_ui_1")
+            #mod_help_ui("help_ui_1")
           )
         )
       ),
@@ -118,7 +126,10 @@ app_ui <- function(request) {
         title = tags$b("View Data"),
         value = "dv",
         fluidRow(
-          mod_datatable_ui("datatable_ui_1")
+          column(
+            width = 8,
+            mod_datatable_ui("datatable_ui_1")
+          )
         )
       ),
       
@@ -128,7 +139,7 @@ app_ui <- function(request) {
         value = "latest",
         fluidRow(
           column(
-            width = 10,
+            width = 8,
             mod_latest_ui("latest_ui_1")
           )
         )
@@ -139,7 +150,7 @@ app_ui <- function(request) {
         value = "about",
         fluidRow(
           column(
-            width = 10,
+            width = 8,
             includeHTML("inst/app/www/about.html")
           )
         )
@@ -157,7 +168,6 @@ app_ui <- function(request) {
     tags$style(
       type="text/css", 
       "footer {
-        padding-top: 36px; 
         color: #808080; 
         font-size: 0.7em;  
         text-align: right;
