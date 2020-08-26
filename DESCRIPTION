@@ -32,7 +32,10 @@ Imports:
     gridExtra,
     tidyr,
     clipr,
-    shinyjs
+    shinyjs,
+    bsplus,
+    digest,
+    tiotemp
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
