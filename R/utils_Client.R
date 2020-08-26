@@ -12,6 +12,7 @@ Client <- R6::R6Class(
   public = list(
     baseUrl = "http://data.mazamascience.com/PurpleAir/v1",
     token = NULL, 
+    tz = NULL,
     url = NULL,
     inter = NULL, 
     lastInput = NULL,
@@ -133,7 +134,7 @@ Client <- R6::R6Class(
       data[['pwfsl']] <<- f
     }, 
     
-    updateLatest = function(pas, label, tz = 'UTC') {
+    updateLatest = function(pas, label, tz = 'US/Pacific') {
       logger.trace(paste("updating latest -->", label, tz))
       f %<-% {
         tryCatch(
@@ -158,6 +159,10 @@ Client <- R6::R6Class(
     
     updateLastInput = function(t) {
       lastInput <<- as.numeric(t)
+    }, 
+    
+    setTz = function(timezone) {
+      tz <<- timezone
     }
   )
 )

@@ -55,7 +55,8 @@ mod_latest_server <- function(input, output, session, obj){
     if ( obj$selected$page == 'latest' ) {
       obj$updateLatest(
         pas = obj$data$pas,
-        label = obj$selected$sensor
+        label = obj$selected$sensor,
+        tz = obj$clientTz
       )
     }
   })

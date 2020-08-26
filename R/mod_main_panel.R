@@ -36,7 +36,14 @@ mod_main_panel_ui <- function(id) {
       end = (today(tzone = TZ) - days(1)), 
       min = ymd(20171001), 
       max = (today(tzone = TZ) - days(1))
-    ),
+    ), 
+    
+    # Hacky way to get the client timezone stored in the client object
+    shinyjs::hidden(textInput(
+      inputId = ns("client_tz"),
+      "client time",
+      value = ""
+    )),
     
     tags$hr(), 
     
@@ -120,6 +127,8 @@ mod_main_panel_server <- function(input, output, session, obj) {
       obj[['token']]
     },
     handlerExpr = {
+      shinyjs::runjs("let tz = Intl.DateTimeFormat().resolvedOptions().timeZone; Shiny.setInputValue('main_panel_ui_1-client_tz', tz)")
+      obj$setTz(input$client_tz)
       
       sensors <- obj[['data']][['sensors']]
       
@@ -286,6 +295,21 @@ mod_main_panel_server <- function(input, output, session, obj) {
         show("date_range", anim = TRUE)
       }
     })
+  # # watch current tab for same as above (as listed in 0.9.7 suggestion notes??)
+  # observeEvent(
+  #   ignoreNULL = TRUE,
+  #   ignoreInit = TRUE,
+  #   eventExpr = {
+  #     obj[['selected']][['tab']]
+  #   }, 
+  #   handlerExpr = {
+  #     if (obj[['selected']][['tab']] == 'community') {
+  #       hide("date_range", anim = TRUE)
+  #     } else {
+  #       show("date_range", anim = TRUE)
+  #     }
+  #   })
+  
  
   # Watch the sensor and daterange input to promise the new client data values 
   observeEvent(
