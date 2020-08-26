@@ -44,31 +44,29 @@ mod_patterns_ui <- function(id){
 #'
 #' @noRd 
 #' @importFrom DT renderDT datatable
-#' @importFrom worldmet getMeta importNOAA
-#' @importFrom lubridate ymd_hms year
-#' @importFrom future future availableCores 
-#' @importFrom promises then catch
+#' @importFrom waiter Waiter
 mod_patterns_server <- function(input, output, session, obj){
   ns <- session$ns
-
-  # observeEvent(
-  #   eventExpr = {
-  #     values$tab
-  #   }, 
-  #   handlerExpr = {
-  #     if (values$tab == 'patterns' ) {
-  #       values$noaa <- future({then(values$sensor, function(d) {
-  #         get_noaa(d)})
-  #       })
-  #     }
-  #   } 
-  # )
-  output$patternPlot <- renderPlot({
-    
-    asdv_pm25Diurnal(obj$data$sensor) + 
-            stat_meanByHour(output = "scaqmd")
-
-  })
+  
+  w <- Waiter$new(
+    c(ns("patternPlot")), 
+    spin_throbber(), 
+    color = "#F8F8F8"
+  )
+  
+  output$patternPlot <- renderCachedPlot({
+    sensor <- obj[['data']][['sensor']]
+      w$show()
+      tryCatch(
+        expr = {
+          asdv_pm25Diurnal(sensor) + stat_meanByHour(output = "scaqmd")
+        }, 
+        error = function(err) {
+          logger.error(err)
+          NULL
+        }
+      )
+  }, cacheKey("patternPlot", obj[['data']][['sensor']]))
   
   # output$noaaTable <- renderDT({
   #   req(values$noaa)

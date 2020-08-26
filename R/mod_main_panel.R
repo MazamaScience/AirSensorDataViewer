@@ -9,7 +9,7 @@
 #' @importFrom shiny NS tagList 
 #' @importFrom lubridate today ymd days 
 #' @importFrom shinyWidgets pickerInput airDatepickerInput radioGroupButtons sliderTextInput
-#' @import bsplus
+#' @importFrom bsplus bs_embed_tooltip
 mod_main_panel_ui <- function(id) {
   ns <- NS(id)
   TZ <- 'UTC'
@@ -49,19 +49,39 @@ mod_main_panel_ui <- function(id) {
   <path fill-rule="evenodd" d="M7.646 15.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 14.293V5.5a.5.5 0 0 0-1 0v8.793l-2.146-2.147a.5.5 0 0 0-.708.708l3 3z"/>
 </svg> Download...'))
         ), 
-        width = 6
+        tags$style("#main_panel_ui_1-download_button { text-align:center; }"),
+        width = 7
       ),
       column(
-        actionLink(
-          inputId = ns("share_button"), 
-          label = tags$div(HTML('<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-link-45deg" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        bs_embed_tooltip(
+          title = "Copy URL",
+          actionLink(
+            inputId = ns("share_button"), 
+            label = tags$div(HTML('<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-link-45deg" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
   <path d="M4.715 6.542L3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.001 1.001 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/>
   <path d="M5.712 6.96l.167-.167a1.99 1.99 0 0 1 .896-.518 1.99 1.99 0 0 1 .518-.896l.167-.167A3.004 3.004 0 0 0 6 5.499c-.22.46-.316.963-.288 1.46z"/>
   <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 0 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 0 0-4.243-4.243L6.586 4.672z"/>
   <path d="M10 9.5a2.99 2.99 0 0 0 .288-1.46l-.167.167a1.99 1.99 0 0 1-.896.518 1.99 1.99 0 0 1-.518.896l-.167.167A3.004 3.004 0 0 0 10 9.501z"/>
 </svg> Share...'))
-        ), 
-        width =  6
+          )
+        ),
+        
+        # Add neat interactivity to the copy tooltip onclick:copied!
+        tags$style("#main_panel_ui_1-share_button { text-align:center; }"),
+        tags$script(
+          HTML(
+            '$("#main_panel_ui_1-share_button").on("click", () => {
+            $("#main_panel_ui_1-share_button")
+              .attr("data-original-title", "Copied!")
+              .tooltip("fixTitle").tooltip("show");
+            });
+            $("#main_panel_ui_1-share_button").on("hidden.bs.tooltip", () => {
+              $("#main_panel_ui_1-share_button")
+                .attr("data-original-title", "Copy URL")
+                .tooltip("fixTitle");
+            });')
+        ),
+        width =  5
       )
       
     )
@@ -83,25 +103,30 @@ mod_main_panel_ui <- function(id) {
 #' @importFrom waiter Waitress
 #' @importFrom stats na.omit 
 #' @importFrom clipr write_clip
+#' @importFrom shinyjs show hide
 mod_main_panel_server <- function(input, output, session, obj) {
   ns <- session$ns
   
-  startupWaitress <- waitress()
-  startupWaitress[['notify']](html = tags[['h3']]("Loading Data..."), position = "bl")
-  startupWaitress[['set']](20)
-  # initialize 
+  w <- Waitress$new(min = 0, max = 100)
+  
+  w$notify(html = tags[['h3']]("Loading Data..."), position = "bl")
+  w$set(20)
+  
+  # initialize on every new token i.e. new client session object
   observeEvent(
     once = TRUE, 
     ignoreNULL = TRUE,
     eventExpr = {
-      obj[['data']][['sensors']]
+      obj[['token']]
     },
     handlerExpr = {
-      meta <- obj[['data']][['sensors']][['meta']]
+      
+      sensors <- obj[['data']][['sensors']]
+      
       # Check diff bewteen sensors aobj in sensor obj and pas obj and only use
       # the sensors with mutual existence
-      communities <- na.omit(unique(id2com(meta[['communityRegion']])))
-      sensor_labels <- na.omit(unique(meta[['label']]))
+      communities <- na.omit(unique(id2com(sensors[["meta"]][['communityRegion']])))
+      sensor_labels <- na.omit(unique(sensors[["meta"]][['label']]))
       
       # Fill the community selection
       updateSelectizeInput(
@@ -116,14 +141,16 @@ mod_main_panel_server <- function(input, output, session, obj) {
         inputId = "sensor_select",
         choices = sensor_labels
       )
-      startupWaitress[['close']]()
+      # Close the waitress
+      w$close()
+      
     }
   )
   
+  # debounce the sensor input to avoid too many clicks & infinite loops
   debouncedSelectSensor <- debounce(reactive(input[['sensor_select']]), 250)
   observeEvent(
     ignoreNULL = TRUE,
-    ignoreInit = TRUE,
     eventExpr = {
       debouncedSelectSensor()
     }, 
@@ -137,12 +164,12 @@ mod_main_panel_server <- function(input, output, session, obj) {
           '", false)'
         )
       )
-      
+      # Update the client object sensor selection 
       obj[['selected']][['sensor']] <- input[['sensor_select']]
-      obj$updateLastInput(Sys.time())
     }
   )
   
+  # debounce the date input to avoid too many clicks & infinite loops
   debouncedDateRange <- debounce(reactive(input[['date_range']]), 250)
   observeEvent(
     priority = 100,
@@ -155,21 +182,28 @@ mod_main_panel_server <- function(input, output, session, obj) {
       sd <- input[['date_range']][1]
       ed <- input[['date_range']][2]
       
+      # Check dates before updating client object
+      # NOTE: if the enddate is less than or equal to the startdate, then push 
+      # NOTE: the startdate to the enddate-1d
       if ( ymd(ed) <= ymd(sd) ) {
+        
         sd <- strftime(ymd(sd) - days(1), "%Y-%m-%d")
         updateDateRangeInput(
           session,
           "date_range",
           start = ymd(ed) - days(1)
         )
-        
         # Validate that dates are valid before continuing
         validate(
           need(ymd(sd) <= ymd(ed), "improper dates")
         )
         
       }
+      # NOTE: if the difference between the enddate and startdate is greater 
+      # NOTE: than or equal to 21 days, set the startdate to be the endate-21d, 
+      # NOTE: and notity the user that their selection was too great.
       if ( ymd(ed) - ymd(sd) >= 21 ) {
+        
         sd <- strftime(ymd(sd) - days(21), "%Y-%m-%d")
         updateDateRangeInput(
           session,
@@ -180,13 +214,14 @@ mod_main_panel_server <- function(input, output, session, obj) {
         
       }
       
+      # update the client object date selections
       obj[['selected']][['sd']] <- sd
-      obj[['selected']][['ed']] <- ed      
-      obj[['updateSensors']](sd, ed)
+      obj[['selected']][['ed']] <- ed     
       
     }
   )
   
+  # Watch the community selection
   observeEvent(
     ignoreNULL = TRUE,
     ignoreInit = TRUE, 
@@ -194,47 +229,50 @@ mod_main_panel_server <- function(input, output, session, obj) {
       input[['community_select']]
     }, 
     handlerExpr = {
-      meta <- obj[['data']][['sensors']][['meta']]
+      
+      sensors <- obj[['data']][['sensors']]
+      meta <- sensors[['meta']]
+      
+      # update the sensor selection per community if not on all
       if ( input[['community_select']] == "All..." ) {
         choices <- meta
       } else {
-        choices <-
-          meta[
-            id2com(meta[['communityRegion']]) == input[['community_select']],
-          ]
+        community_str <- id2com(meta[['communityRegion']])
+        choices <- meta[community_str == input[['community_select']],]
       }
+      
       updateSelectizeInput(
         session,
         "sensor_select",
         choices = na.omit(choices[['label']])
       )
       
+      # update the client community selection input
       obj[['selected']][['community']] <- input[['community_select']]
-      
     }
   )
   
+  # Write the url to the user clipboard on share click
   observeEvent(input[['share_button']], {
-    
-    logger.trace(paste0("bookmarked @: ", obj[['url']]))
-    clipr::write_clip(obj[['url']])
-    
+    url <- obj[['url']]
+    write_clip(url)
   })
   
+  # Handle the download button using shiny tools. see ?downloadHandler docs. 
   output$download_button <- downloadHandler(
     filename = function() {
-      paste0(
-        obj[['selected']][['sensor']], '_',
-        obj[['selected']][['sd']], '_',
-        obj[['selected']][['ed']],
-        ".csv"
-      )
+      sensor <- obj[['selected']][['sensor']]
+      sd <- obj[['selected']][['sd']]
+      ed <- obj[['selected']][['ed']]
+      paste0(sensor,'_',sd,'_',ed,".csv")
     },
     content = function(file) {
-      write.csv(obj[['data']][['pat']][['data']], file, row.names = FALSE)
+      pat <- obj[['data']][['pat']]
+      write.csv(pat[['data']], file, row.names = FALSE)
     }
   )
   
+  # Watch the current page. if on the latest page, hide the date range input 
   observeEvent(
     ignoreNULL = TRUE,
     ignoreInit = TRUE,
@@ -243,13 +281,37 @@ mod_main_panel_server <- function(input, output, session, obj) {
     }, 
     handlerExpr = {
       if (obj[['selected']][['page']] == 'latest') {
-        shinyjs::hide("date_range", anim = TRUE)
+        hide("date_range", anim = TRUE)
       } else {
-        shinyjs::show("date_range", anim = TRUE)
+        show("date_range", anim = TRUE)
       }
     })
+ 
+  # Watch the sensor and daterange input to promise the new client data values 
+  observeEvent(
+    ignoreNULL = TRUE, 
+    ignoreInit = TRUE, 
+    eventExpr = {
+      input[['sensor_select']]
+      input[['date_range']]
+    }, 
+    handlerExpr = {
+      sensors <- obj$data$sensors
+      sensor <- obj$data$sensor
+      pas <- obj$data$pas
+      sd <- obj$selected$sd
+      ed <- obj$selected$ed
+      label <- input$sensor_select
+      
+      # Order matters
+      obj$updateSensor(sensors, label)
+      obj$updatePat(pas, label, sd, ed)
+      obj$updatePwfsl(sensor$meta$pwfsl_closestMonitorID, sd, ed)
+      obj$updateLastInput(Sys.time())
+      plotUp()
+    }
+  )
   
-  # 
 } # End Server
 
 ## To be copied in the UI

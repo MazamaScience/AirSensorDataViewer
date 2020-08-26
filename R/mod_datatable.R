@@ -36,33 +36,51 @@ mod_datatable_ui <- function(id) {
 mod_datatable_server <- function(input, output, session, obj) {
   ns <- session$ns
   
+  w <- Waiter$new(ns("datatable"))
+  
   output$metatable <- renderTable({
-    obj[['data']][['pat']] %...>% {
-      data.frame( "Sensor" = .$meta$label,
-                  "Community" = .$meta$communityRegion,
-                  "Sensor Type" = .$meta$sensorType,
-                  "Longitude" = .$meta$longitude,
-                  "Latitude" = .$meta$latitude,
-                  "State" = .$meta$stateCode,
-                  "Country" = .$meta$countryCode ) 
-    } %...!%
-      catchError()
+    pat <- obj[['data']][['pat']]
+    
+    tryCatch(
+      expr = {
+        data.frame( "Sensor" = pat$meta$label,
+                    "Community" = pat$meta$communityRegion,
+                    "Sensor Type" = pat$meta$sensorType,
+                    "Longitude" = pat$meta$longitude,
+                    "Latitude" = pat$meta$latitude,
+                    "State" = pat$meta$stateCode,
+                    "Country" = pat$meta$countryCode )  
+      }, 
+      error = function(err) {
+        logger.error(err)
+        NULL
+      }
+    )
+    
   })
   
   output$datatable <- renderDT({ 
-    obj[['data']][['pat']] %...>% {
-      data <- .$data[c("datetime", "pm25_A", "pm25_B", "temperature", "humidity")]
-      names(data) <- c( "Datetime (UTC)",
-                        "PM2.5 Ch. A (\u03bcg / m\u00b)",
-                        "PM2.5 Ch. B (\u03bcg / m\u00b)",
-                        "Temperature (F)",
-                        "Relative Humidity (%)" )
-      
-      datatable(data, selection = "none", options = list(pageLength = 25) ) %>%
-        formatDate(1, method = 'toLocaleString', params = list('en-EN'))
-    } %...!% 
-      catchError()
-
+    #w$show()
+    pat <- obj[['data']][['pat']]
+    
+    tryCatch(
+      expr = {
+        data <- pat$data[c("datetime", "pm25_A", "pm25_B", "temperature", "humidity")]
+        names(data) <- c( "Datetime (UTC)",
+                          "PM2.5 Ch. A (\u03bcg / m\u00b)",
+                          "PM2.5 Ch. B (\u03bcg / m\u00b)",
+                          "Temperature (F)",
+                          "Relative Humidity (%)" )
+        
+        datatable(data, selection = "none", options = list(pageLength = 25) ) %>%
+          formatDate(1, method = 'toLocaleString', params = list('en-EN'))
+      }, 
+      error = function(err) {
+        logger.error(err)
+        NULL
+      }
+    )
+  
   })
   
 }

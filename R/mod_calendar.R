@@ -18,7 +18,7 @@ mod_calendar_ui <- function(id){
     )
   )
 }
-    
+
 #' calendar Server Function
 #'
 #' @noRd 
@@ -27,35 +27,26 @@ mod_calendar_ui <- function(id){
 mod_calendar_server <- function(input, output, session, obj) {
   ns <- session$ns
   
-  observeEvent(
-    ignoreInit = TRUE, 
-    eventExpr = {
-      obj$selected$sensor
-      obj$selected$ed
-      obj$selected$sd
-      obj$selected$tab
-    }, 
-    handlerExpr = {
-      # if ( obj$selected$tab == 'calendar' )
-        # obj$updateAnnual(
-        #   pas = obj$data$pas, 
-        #   label = obj$selected$sensor, 
-        #   date = obj$selected$ed
-        # )
-    }
-  )
-  
   output$calendarPlot <- renderTimeseriesCalendar({
-      timeseriesCalendar(
-        data = obj$data$sensors$data, 
-        meta = obj$data$sensors$meta, 
-        inputId = 'main_panel_ui_1-sensor_select'
-      )
-    })
+    sensors <- obj[['data']][['sensors']]
+    tryCatch(
+      expr = {
+        timeseriesCalendar(
+          data = sensors[['data']], 
+          meta = sensors[['meta']], 
+          inputId = 'main_panel_ui_1-sensor_select'
+        )
+      }, 
+      error = function(err) {
+        logger.error(err)
+        NULL
+      }
+    )
+  })
 }
-    
+
 ## To be copied in the UI
 # mod_calendar_ui("calendar_ui_1")
-    
+
 ## To be copied in the server
 # callModule(mod_calendar_server, "calendar_ui_1")

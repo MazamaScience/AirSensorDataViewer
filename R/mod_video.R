@@ -25,25 +25,38 @@ mod_video_ui <- function(id){
 #' video Server Function
 #'
 #' @noRd 
+#' @importFrom lubridate ymd
 mod_video_server <- function(input, output, session, obj) {
   ns <- session$ns
   
   output$video <- renderUI({
-    if ( obj$selected$community != "All.." ) {
-      ed <- ymd(obj$selected$ed)
-      baseUrl <- "http://smoke.mazamascience.com/data/PurpleAir/videos/"
-      year    <- strftime(ed, "%Y")
-      mm      <- strftime(ed, "%m")
-      dd      <- strftime(ed, "%d")
-      id    <- com2id(obj$selected$community)
-      url <- paste0(baseUrl, year, "/", id, "_", year, mm, dd, ".mp4" )
-      tags$video(
-        id = "video",
-        type = "video/mp4",
-        src = url,
-        controls = "controls"
-      )
-    }
+    req(obj$selected$community, obj$selected$ed)
+    community <- obj$selected$community
+    ed <- ymd(obj$selected$ed)
+    tryCatch(
+      expr = {
+        if ( community != "All.." ) {
+          ed <- ed
+          baseUrl <- "http://smoke.mazamascience.com/data/PurpleAir/videos/"
+          year    <- strftime(ed, "%Y")
+          mm      <- strftime(ed, "%m")
+          dd      <- strftime(ed, "%d")
+          id    <- com2id(community)
+          url <- paste0(baseUrl, year, "/", id, "_", year, mm, dd, ".mp4" )
+          tags$video(
+            id = "video",
+            type = "video/mp4",
+            src = url,
+            controls = "controls"
+          )
+        }
+      }, 
+      error = function(err) {
+        logger.error(err)
+        NULL
+      }
+    )
+
   })
  
 }

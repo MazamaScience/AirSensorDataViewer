@@ -49,54 +49,60 @@ mod_raw_ui <- function(id){
 #' raw Server Function
 #'
 #' @noRd 
-#' @importFrom promises `%...>%` `%...!%`
+#' @importFrom ggplot2 theme_light 
+#' @importFrom waiter Waiter spin_throbber
 mod_raw_server <- function(input, output, session, obj){
   ns <- session$ns
-  
-  observeEvent(
-    ignoreNULL = TRUE, 
-    ignoreInit = TRUE,
-    eventExpr = {
-      obj[['selected']][['sensor']]
-      obj[['selected']][['sd']]
-      obj[['selected']][['ed']]
-      obj[['selected']][['page']]
-    },
-    handlerExpr = {
-      if ( obj[['selected']][['page']] != 'latest' ) {
-        obj[['updatePat']](
-          pas = obj[['data']][['pas']], 
-          label = obj[['selected']][['sensor']], 
-          sd = obj[['selected']][['sd']], 
-          ed = obj[['selected']][['ed']]
-          #pat = obj[['data']][['pat']]
-        )
-      }
-    }
+  w <- Waiter$new(
+    c(ns("multiPlot"), ns("comparePlot"), ns("lmPlot")), 
+    spin_throbber(), 
+    color = "#F8F8F8"
   )
   
-  output[['multiPlot']] <- renderPlot({
+  output[['multiPlot']] <- renderCachedPlot(
+    {
     req(obj[['data']][['pat']])
-    obj[['data']][['pat']] %...>% {
-      pat_multiPlot(.)
-    } %...!% catchError(.)
-  })
+    w$show()
+    pat <- obj[['data']][['pat']]
+    tryCatch(
+      expr = {
+        pat_multiPlot(pat)
+      }, 
+      error = function(err) {
+        logger.error(err)
+        NULL
+      }
+    )
+    
+  }, cacheKey("multiPlot", obj[['data']][['pat']]))
   
-  output[['comparePlot']] <- renderPlot({
+  output[['comparePlot']] <- renderCachedPlot({
     req(obj[['data']][['pat']])
-    obj[['data']][['pat']] %...>% {
-      asdv_internalFit(pat = .,tz = 'UTC', whichPlot = 'ab') +
-        ggplot2::theme_light()
-    } %...!% catchError(.)
-  })
+    pat <- obj[['data']][['pat']]
+    tryCatch( 
+      expr = {
+        asdv_internalFit(pat,tz = 'UTC', whichPlot = 'ab') + theme_light()
+      }, 
+      error = function(err) {
+        logger.error(err)
+        NULL
+      }
+    )
+  }, cacheKey("comparePlot", obj[['data']][['pat']]))
   
-  output[['lmPlot']] <- renderPlot({
+  output[['lmPlot']] <- renderCachedPlot({
     req(obj[['data']][['pat']])
-    obj[['data']][['pat']] %...>% {
-      asdv_internalFit(pat = .,tz = 'UTC', whichPlot = 'lm') +
-        ggplot2::theme_light()
-    } %...!% catchError(.)
-  })
+    pat <- obj[['data']][['pat']]
+    tryCatch(
+      expr = {
+        asdv_internalFit(pat,tz = 'UTC', whichPlot = 'lm') + theme_light()
+      }, 
+      error = function(err) {
+        logger.error(err)
+        NULL
+      }
+    )
+  }, cacheKey("lmPlot", obj[['data']][['pat']]))
   
 }
 

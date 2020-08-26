@@ -13,7 +13,7 @@ mod_overview_ui <- function(id){
   tagList(
     timeseriesMapOutput(
       outputId = ns("timeseriesMap"),
-      width = "100%", 
+      width = "inherit", 
       height = "80vh"
     ),
     absolutePanel(
@@ -22,7 +22,7 @@ mod_overview_ui <- function(id){
       left = "auto",
       right = "auto",
       bottom = 0,
-      width = "100%",
+      width = "inherit",
       height = "inherit",
       # Show/Hide barplot panel button
       HTML('<a id = "collapse_btn" class = "collapsed" data-toggle="collapse" data-target="#dem" style="margin-left:50%;">
@@ -48,7 +48,7 @@ mod_overview_ui <- function(id){
         /* Fade out while not hovering */
         opacity: 0.70;
         zoom: 0.9;
-        transition: opacity 300ms 500ms;
+        transition: opacity 200ms 400ms;
       }
       #plot_panel:hover {
         /* Fade in while hovering */
@@ -60,11 +60,7 @@ mod_overview_ui <- function(id){
       }'
     )
   )
-  
-  # .leaflet-bottom .leaflet-control {
-  #   margin-bottom: 352px;
-  # }
-  # 
+
 }
 
 #' overview Server Function
@@ -77,34 +73,44 @@ mod_overview_server <- function(input, output, session, obj) {
   
   output[['timeseriesMap']] <- renderTimeseriesMap({
     req(obj[['data']][['sensors']])
-    timeseriesMap(
-      data = obj[['data']][['sensors']][['data']], 
-      meta = obj[['data']][['sensors']][['meta']], 
-      inputId = 'main_panel_ui_1-sensor_select', 
-      selected = isolate(obj[['selected']][['sensor']])
+    selected <- isolate(obj[['selected']][['sensor']])
+    sensors <- obj[['data']][['sensors']]
+    tryCatch(
+      expr = {
+        timeseriesMap(
+          data = sensors[['data']], 
+          meta = sensors[['meta']], 
+          inputId = 'main_panel_ui_1-sensor_select', 
+          selected = selected
+        )
+      }, 
+      error = function(err) {
+        logger.error(err)
+        NULL
+      }
     )
+    
   })
   
   output$timeseriesBarChart <- renderBarChart({
     req(obj[['data']][['sensors']])
-    barChart(
-      data = obj[['data']][['sensors']][['data']], 
-      meta = obj[['data']][['sensors']][['meta']],
-      inputId = 'main_panel_ui_1-sensor_select',
-      ylab = "\u03bcg / m\u00b3"
+    sensors <- obj[['data']][['sensors']]
+    tryCatch(
+      expr = {
+        barChart(
+          data = sensors[['data']], 
+          meta = sensors[['meta']],
+          inputId = 'main_panel_ui_1-sensor_select',
+          ylab = "\u03bcg / m\u00b3"
+        ) 
+      }, 
+      error = function(err) {
+        logger.error(err)
+        NULL
+      }
     )
+    
   })
-  
-  observeEvent(
-    ignoreNULL = TRUE,
-    ignoreInit = TRUE, 
-    eventExpr = {
-      obj[['selected']][['sensor']]
-    },
-    handlerExpr = {
-      plotUp()
-    }
-  )
   
 }
 

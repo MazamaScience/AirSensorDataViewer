@@ -57,60 +57,77 @@ mod_compare_ui <- function(id) {
 #' @noRd 
 #' 
 #' @importFrom DT datatable formatRound renderDT
-#' @import leaflet
-#' @import ggplot2
+#' @importFrom leaflet renderLeaflet
+#' @importFrom waiter Waiter
 mod_compare_server <- function(input, output, session, obj) {
   ns <- session$ns
   
-  observeEvent(
-    ignoreInit = TRUE,
-    eventExpr = {
-      obj$selected$sensor
-      obj$selected$sd
-      obj$selected$ed
-    },
-    handlerExpr = {
-      obj$updateSensor(
-        obj$data$sensors, 
-        .data$label == obj$selected$sensor
-      )
-      
-      obj$updatePwfsl(
-        obj$data$sensor$meta$pwfsl_closestMonitorID,
-        obj$selected$sd,
-        obj$selected$ed
-      )
-    }
+  w <- Waiter$new(
+    c(ns("statusTable"), ns("sensorMonitorCorr"), ns("sensorMonitorComp"))
   )
   
   output$comparisonLeaflet <- renderLeaflet({
-    comparisonLeaflet(obj$data$sensor, obj$data$pwfsl)
+    sensor <- obj[['data']][['sensor']]
+    pwfsl <- obj[['data']][['pwfsl']]
+    tryCatch(
+      expr = {
+        comparisonLeaflet(sensor, pwfsl)
+      }, 
+      error = function(err) {
+        logger.error(err)
+        NULL
+      }
+    )
   })
   
-  output$sensorMonitorCorr <- renderPlot({
-    lmSensorMonitor(obj$data$sensor, obj$data$pwfsl) 
-  })
+  output$sensorMonitorCorr <- renderCachedPlot({
+    # w$show()
+    sensor <- obj[['data']][['sensor']]
+    pwfsl <- obj[['data']][['pwfsl']]
+    tryCatch(
+      expr = {
+        lmSensorMonitor(sensor, pwfsl) 
+      }, 
+      error = function(err) {
+        logger.error(err)
+        NULL
+      }
+    )
+  }, cacheKey("sensorMonitorCorr", obj[['data']][['sensor']]))
   
-  output$sensorMonitorComp <- renderPlot({
-    obj[['data']][['pat']] %...>%
-      pat_monitorComparison() %...!%
-      catchError()
-  })
-  
+  output$sensorMonitorComp <- renderCachedPlot({
+    # w$show()
+    pat <- obj[['data']][['pat']]
+    tryCatch(
+      expr = {
+        pat_monitorComparison(pat)
+      }, 
+      error = function(err) {
+        logger.error(err)
+        NULL
+      }
+    )
+  }, cacheKey("sensorMonitorComp", obj[['data']][['pat']]))
   
   output$statusTable <- renderDT({
-    obj[['data']][['pat']] %...>% {
-      datatable(
-        data = sensorMonitorCompTable(.),
-        selection = "none",
-        colnames = "",
-        options = list(dom = 't', bSort = FALSE),
-        class = 'cell-border stripe'
-      ) %>%
-        formatRound(columns = 1, digits = 2)
-    } %...!%
-      catchError()
-
+    #w$show()
+    pat <- obj[['data']][['pat']]
+    tryCatch(
+      expr = {
+        datatable(
+          data = sensorMonitorCompTable(pat),
+          selection = "none",
+          colnames = "",
+          options = list(dom = 't', bSort = FALSE),
+          class = 'cell-border stripe'
+        ) %>%
+          formatRound(columns = 1, digits = 2)
+      }, 
+      error = function(err) {
+        logger.error(err)
+        NULL
+      }
+    )
   })
   
 }

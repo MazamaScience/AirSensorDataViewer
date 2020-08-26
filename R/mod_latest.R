@@ -43,6 +43,8 @@ mod_latest_ui <- function(id){
 mod_latest_server <- function(input, output, session, obj){
   ns <- session$ns
   
+  w <- Waiter$new(c(ns("pm_latest")))
+  
   observeEvent(
     ignoreNULL = TRUE,
     ignoreInit = TRUE,
@@ -59,15 +61,51 @@ mod_latest_server <- function(input, output, session, obj){
   })
   
   output$pm_latest <- renderPlotly({
-    channelPlotly(obj$data$latest, channel = 'ab')
+    req(obj$data$latest)
+    latest <- obj$data$latest 
+    
+    tryCatch(
+      expr= {
+        channelPlotly(latest, channel = 'ab') 
+      }, 
+      error = function(err) {
+        logger.error(err)
+        NULL
+      }
+    )
+    
   })
   
   output$humidity_latest <- renderPlotly({
-        humidityPlotly(obj$data$latest)
+    req(obj$data$latest)
+    latest <- obj$data$latest
+    
+    tryCatch(
+      expr = {
+        humidityPlotly(latest)
+      }, 
+      error = function(err) {
+        logger.error(err)
+        NULL
+      }
+    )
+    
   })
   
   output$temperature_latest <- renderPlotly({
-    temperaturePlotly(obj$data$latest)
+    req(obj$data$latest)
+    latest <- obj$data$latest
+    
+    tryCatch(
+      expr = {
+        temperaturePlotly(latest)
+      }, 
+      error = function(err) {
+        logger.error(err)
+        NULL
+      }
+    )
+    
   })
 }
 
