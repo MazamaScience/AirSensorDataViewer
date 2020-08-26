@@ -42,8 +42,8 @@
 SERVICE_PATH=airsensor-dataviewer/v1
 SERVICE_PATH_TEST=airsensor-dataviewer/test
 
-# GLOBAL APP VERSION
-VERSION=0.9.5
+# Assign version from golem_config.yml configuration
+VERSION := $(shell grep -P -o '(\d+\.)+\d+' inst/golem-config.yml)
 
 # App configuration
 clean:
@@ -52,18 +52,19 @@ clean:
 
 # Update the app version inline (-i) with Makefile version
 configure_app:
-	sed -i 's%VERSION <<- ".*"%VERSION <<- "$(VERSION)"%' inst/app/global.R # Shiny App Version
-	sed -i 's%LABEL version=".*"%LABEL version="$(VERSION)"%' docker/Dockerfile-airsensordataviewer # Docker Image Version
-	sed -i 's%FROM .*%FROM mazamascience/airsensordataviewer:$(VERSION)%' docker/Dockerfile # Docker V1 Build Image Version
-	sed -i 's%location /.*/ {%location /$(SERVICE_PATH_TEST)/ {%' shiny-server.conf
+	#cat inst/golem-config.yml | grep -Po "(\d+\.)+\d+"
+#	sed -i 's%VERSION <<- ".*"%VERSION <<- "$(VERSION)"%' inst/app/global.R # Shiny App Version
+#	sed -i 's%LABEL version=".*"%LABEL version="$(VERSION)"%' docker/Dockerfile-airsensordataviewer # Docker Image Version
+#	sed -i 's%FROM .*%FROM mazamascience/airsensordataviewer:$(VERSION)%' docker/Dockerfile # Docker V1 Build Image Version
+#	sed -i 's%location /.*/ {%location /$(SERVICE_PATH_TEST)/ {%' shiny-server.conf
 
 # OSX -- Ugh!
 # https://unix.stackexchange.com/questions/13711/differences-between-sed-on-mac-osx-and-other-standard-sed
-configure_app_osx:
-	sed -i '' 's%VERSION <- ".*"%VERSION <- "$(VERSION)"%' inst/app/global.R
-	sed -i '' 's%LABEL version=".*"%LABEL version="$(VERSION)"%' docker/Dockerfile-airsensordataviewer
-	sed -i '' 's%FROM .*%FROM mazamascience/airsensordataviewer:$(VERSION)%' docker/Dockerfile
-	sed -i '' 's%location /.*/ {%location /$(SERVICE_PATH_TEST)/ {%' shiny-server.conf
+#configure_app_osx:
+#	sed -i '' 's%VERSION <- ".*"%VERSION <- "$(VERSION)"%' inst/app/global.R
+#	sed -i '' 's%LABEL version=".*"%LABEL version="$(VERSION)"%' docker/Dockerfile-airsensordataviewer
+#	sed -i '' 's%FROM .*%FROM mazamascience/airsensordataviewer:$(VERSION)%' docker/Dockerfile
+#	sed -i '' 's%location /.*/ {%location /$(SERVICE_PATH_TEST)/ {%' shiny-server.conf
 
 # AirSensorShiny DESKTOP version -----------------------------------------------
 
