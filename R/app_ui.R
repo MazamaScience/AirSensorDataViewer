@@ -4,22 +4,23 @@
 #'     DO NOT REMOVE.
 #' @import shiny
 #' @importFrom shinythemes shinytheme
-#' @importFrom waiter use_waiter use_waitress
+#' @importFrom waiter waiter_show_on_load spin_three_bounce
+#' @importFrom shinyjs extendShinyjs
 #' @noRd
 app_ui <- function(request) {
   fluidPage(
-    use_waiter(), 
-    use_waitress(), 
-    shinyjs::useShinyjs(),
+    golem_add_external_resources(),
+    waiter_show_on_load(html = spin_three_bounce(), color = "#006687"),
     
     # ------ Panel Module -Column ----------------------------------------------
     column(
       width = 2,
       wellPanel(
         id = "panel",
-        mod_main_panel_ui("main_panel_ui_1")
-      ),
-      tags$footer(id = "ver", paste0("Version: ", golem::get_golem_version()))
+        mod_main_panel_ui("main_panel_ui_1"), 
+        # ----- Blurb -------
+        tags$footer(id = "version", paste0("v", golem::get_golem_version())),
+      )
     ),
     
     navbarPage(
@@ -106,9 +107,8 @@ app_ui <- function(request) {
           ),
           # HELP
           column(
-            width = 2,
+            width = 1,
             mod_help_ui("help_ui_1")
-            
           )
         )
       ),
@@ -140,27 +140,38 @@ app_ui <- function(request) {
         fluidRow(
           column(
             width = 10,
-            shiny::includeHTML("inst/app/www/about.html")
+            includeHTML("inst/app/www/about.html")
           )
         )
       )
     ),
-    
-    # Use ShinyJS
-    #shinyjs::useShinyjs(debug = TRUE),
-    # Enable the "Share" Clipboard JS
-    #rclipboard::rclipboardSetup(),
-    # Enable Toastr ntofications
-    #shinytoastr::useToastr(),
+  
     # Load the extra JS script
-    shinyjs::extendShinyjs("inst/app/www/plotAnimate.js"),
+    extendShinyjs("inst/app/www/plotAnimate.js"),
     
     # Other Random CSS
-    tags$style(type="text/css", "body {padding-top: 70px;}"),
-    tags$style(type="text/css", "footer {padding-left: 5%; color: #808080; font-size: 11px}"),
-    tags$style(type="text/css", ".well {background-color: #fff}"),
-    tags$style(type="text/css", "#panel {min-width:200px;}"),
-    tags$style(type = "text/css", "#global-leaflet {height: calc(80vh) !important;}"),
+    tags$style(
+      type="text/css", 
+      "body {padding-top: 70px;}"
+    ),
+    tags$style(
+      type="text/css", 
+      "footer {
+        padding-top: 36px; 
+        color: #808080; 
+        font-size: 0.7em;  
+        text-align: right;
+      }"
+    ),
+    tags$style(
+      type="text/css", 
+      ".well {background-color: #fff}"
+    ),
+    tags$style(
+      type="text/css", 
+      ".col-sm-2 {min-width:254px;}"
+    ), 
+  
   )
   
 }
@@ -172,6 +183,9 @@ app_ui <- function(request) {
 #' 
 #' @import shiny
 #' @importFrom golem add_resource_path activate_js favicon bundle_resources
+#' @importFrom bsplus use_bs_tooltip
+#' @importFrom shinyjs useShinyjs 
+#' @importFrom waiter use_waiter use_waitress
 #' @noRd
 golem_add_external_resources <- function(){
   
@@ -184,9 +198,12 @@ golem_add_external_resources <- function(){
     bundle_resources(
       path = app_sys('app/www'),
       app_title = 'AirSensorDataViewer'
-    )
+    ),
     # Add here other external resources
-    # for example, you can add shinyalert::useShinyalert() 
+    use_waiter(), 
+    use_waitress(), 
+    use_bs_tooltip(),
+    useShinyjs()
   )
 }
 

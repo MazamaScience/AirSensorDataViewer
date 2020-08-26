@@ -3,12 +3,14 @@
 #' @param input,output,session Internal parameters for {shiny}. 
 #'     DO NOT REMOVE.
 #' @import shiny
+#' @importFrom waiter waiter_hide
+#' @importFrom future plan 
 #' @noRd
 app_server <- function( input, output, session ) {
   
   options(warn = -1)
   
-  future::plan(future::multiprocess)
+  plan(future::multiprocess)
   
   # Record session start 
   observe({ 
@@ -37,7 +39,6 @@ app_server <- function( input, output, session ) {
     logger.trace(paste("navbar:", input[['navbar']]))
     obj[['selected']][['page']] <- input[['navbar']]
   })
-  
   observeEvent(input[['tab']], {
     logger.trace(paste("tab:", input[['tab']]))
     obj[['selected']][['tab']] <- input[['tab']]
@@ -47,12 +48,15 @@ app_server <- function( input, output, session ) {
   callModule(mod_main_panel_server, "main_panel_ui_1", obj)
   callModule(mod_overview_server, "overview_ui_1", obj)
   callModule(mod_calendar_server, "calendar_ui_1", obj)
-  callModule(mod_raw_server, "raw_ui_1", obj) 
+  callModule(mod_raw_server, "raw_ui_1", obj)
   callModule(mod_patterns_server, "patterns_ui_1", obj)
   callModule(mod_compare_server, "compare_ui_1", obj)
   callModule(mod_video_server, "video_ui_1", obj)
   callModule(mod_latest_server, "latest_ui_1", obj)
   callModule(mod_datatable_server, "datatable_ui_1", obj)
   callModule(mod_help_server, "help_ui_1", obj)
+  
+  # Hide the waiter startup once the modules have been loaded 
+  waiter_hide()
   
 }
