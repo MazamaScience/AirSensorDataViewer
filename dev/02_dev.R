@@ -31,6 +31,9 @@ usethis::use_package("gridExtra")
 usethis::use_package("tidyr")
 usethis::use_package("clipr")
 usethis::use_package("shinyjs")
+usethis::use_package("bsplus")
+usethis::use_package("digest")
+usethis::use_package("tiotemp")
 
 
 ## Add modules ----

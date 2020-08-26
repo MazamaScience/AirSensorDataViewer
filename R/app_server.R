@@ -8,8 +8,10 @@
 #' @noRd
 app_server <- function( input, output, session ) {
   
+  # go rogue
   options(warn = -1)
   
+  # Specify how futures are resolved, e.g. sequentially or in parallel.
   plan(future::multiprocess)
   
   # Record session start 
@@ -45,6 +47,7 @@ app_server <- function( input, output, session ) {
   })
   
   # List the first level callModules here
+  #callModule(profvis::profvis_server, "profiler") # Dev Only
   callModule(mod_main_panel_server, "main_panel_ui_1", obj)
   callModule(mod_overview_server, "overview_ui_1", obj)
   callModule(mod_calendar_server, "calendar_ui_1", obj)
