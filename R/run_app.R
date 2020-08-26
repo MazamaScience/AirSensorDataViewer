@@ -12,7 +12,11 @@ run_app <- function(
     app = shinyApp(
       ui = app_ui, 
       server = app_server, 
-      enableBookmarking = "url"
+      enableBookmarking = "url", 
+      options = list(
+        "launch.browser" = TRUE,
+        "cache" = diskCache(file.path(dirname(tempdir()), "asdv-cache"))
+      )
     ), 
     golem_opts = list(...)
   )
