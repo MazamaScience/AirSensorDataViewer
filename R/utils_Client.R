@@ -2,7 +2,7 @@
 NULL
 
 #'@export
-#'@importFrom future future
+#'@importFrom future future `%<-%`
 Client <- R6::R6Class(
   # For speed, make classless and set portability to false
   # https://r6.r-lib.org/articles/Performance.html
@@ -29,91 +29,121 @@ Client <- R6::R6Class(
     ),
     
     initialize = function(session) {
-      logger.trace("init")
+      logger.trace("initializing...")
       token <<- session[['token']]
-      setArchiveBaseUrl(baseUrl)
       
+      setArchiveBaseUrl(baseUrl)
       data[['pas']] <<- tryCatch(
-        expr = get_pas(), 
+        expr = {
+          get_pas()
+        }, 
         error = function(err) { 
-          logger.trace(err)
+          logger.error(err)
           return(NULL)
         })
       
       data[['sensors']] <<- tryCatch(
-        get_sensors(today() - days(7), today()), 
+        expr = { 
+          get_sensors(today() - days(7), today())
+        }, 
         error = function(err) { 
-          logger.trace(err)
+          logger.error(err)
           return(NULL)
         })
       
-      inter <<- ipc::AsyncInterruptor$new()
+      
+      #inter <<- ipc::AsyncInterruptor$new()
       lastInput <<- as.numeric(Sys.time())
     },
     
     updatePas = function() {
-      setArchiveBaseUrl(baseUrl)
-      data[['pas']] <<- tryCatch(
-        get_pas(), 
-        error = function(err) { 
-          logger.trace(err)
-          return(NULL)
-        })
+      logger.trace("updating pas...")
+      f %<-% {
+        setArchiveBaseUrl(baseUrl)
+        tryCatch(
+          expr = {
+            get_pas()
+          }, 
+          error = function(err) { 
+            logger.error(err)
+            return(NULL)
+          })
+      }
+      data[['pas']] <<- f
     }, 
     
     updateSensors = function(sd, ed) {
-      setArchiveBaseUrl(baseUrl)
-      data[['sensors']] <<- tryCatch(
-        get_sensors(sd, ed), 
-        error = function(err) { 
-          logger.trace(err)
-          return(NULL)
-        })
+      logger.trace(paste("updating sensors -->", sd, ed))
+      f %<-% {
+        setArchiveBaseUrl(baseUrl)
+        tryCatch(
+          expr = {
+            get_sensors(sd, ed)
+          }, 
+          error = function(err) { 
+            logger.error(err)
+            return(NULL)
+          })
+      }
+      data[['sensors']] <<- f
     }, 
     
-    updateSensor = function(sensors, ...) {
-      data[['sensor']] <<- tryCatch(
-        AirSensor::sensor_filterMeta(sensors, ...),
-        error = function(err) { 
-          logger.trace(err)
-          return(NULL)
-        })
+    updateSensor = function(sensors, label) {
+      logger.trace(paste("updating sensor -->", label))
+      # Not really sure why, but this redef is absolutely neccesary. 
+      lab <- label
+      f <- {
+        sensor_filterMeta(future::value(sensors), .data$label == lab)
+      }
+      data[['sensor']] <<- f
     }, 
     
     updatePat = function(pas, label, sd, ed, ...) {
-      data[['pat']] <<- future({
+      logger.trace(paste("updating pat -->", label, sd, ed))
+      f %<-% {
         setArchiveBaseUrl(baseUrl)
         tryCatch(
-          get_pat(
+          expr = {
+            get_pat(
             pas = pas,
             label = label,
             sd = sd,
             ed = ed, 
             ...
-          ), 
+          )
+            }, 
           error = function(err) { 
             logger.error(err)
             return(NULL)
           }) 
-      })
+      }
+      data[['pat']] <<- f
     }, 
     
     updatePwfsl = function(id, sd, ed) {
-      data[['pwfsl']] <<- tryCatch(
-        PWFSLSmoke::monitor_load(sd, ed, id), 
-        error = function(err) { 
-          logger.error(err)
-          return(NULL)
-        })
+      logger.trace(paste("updating pwfsl -->", id, sd, ed))
+      f %<-% {
+        tryCatch(
+          PWFSLSmoke::monitor_load(sd, ed, id), 
+          error = function(err) { 
+            logger.error(err)
+            return(NULL)
+          })
+      }
+      data[['pwfsl']] <<- f
     }, 
     
     updateLatest = function(pas, label, tz = 'UTC') {
-      data[['latest']] <<- tryCatch(
-        get_pat_latest(pas, label, tz), 
-        error = function(err) { 
-          logger.error(err)
-          return(NULL)
-        })
+      logger.trace(paste("updating latest -->", label, tz))
+      f %<-% {
+        tryCatch(
+          get_pat_latest(pas, label, tz), 
+          error = function(err) { 
+            logger.error(err)
+            return(NULL)
+          })
+      }
+      data[['latest']] <<- f
     }, 
     
     updateAnnual = function(pas, label, date) {
