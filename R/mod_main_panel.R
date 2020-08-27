@@ -273,7 +273,19 @@ mod_main_panel_server <- function(input, output, session, obj) {
     handlerExpr = {
       req(obj[['url']])
       url <- obj[['url']]
-      #write_clip(url)
+      
+      tryCatch(
+        expr = {
+          # Why does this break shiny? 
+          # A: see allow_non_interactive in docs
+          write_clip(url, allow_non_interactive = TRUE)
+        }, 
+        error = function(err) {
+          logger.error(err)
+          NULL
+        }
+      )
+
     })
   
   # Handle the download button using shiny tools. see ?downloadHandler docs. 

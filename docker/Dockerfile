@@ -55,7 +55,7 @@ RUN Rscript -e 'remotes::install_github("mazamascience/MazamaSpatialUtils@f5359d
 RUN Rscript -e 'remotes::install_github("MazamaScience/tiotemp@8194ae4c78082503dafab4e4ea18d361600f6365")'
 RUN Rscript -e 'remotes::install_github("davidcarslaw/worldmet@0d440de4fffbb64c0c2a263c55dc4a5a16a259a3")'
 RUN Rscript -e 'remotes::install_github("MazamaScience/PWFSLSmoke@92f7ad31b5408a7542bae2c1a1db84e0131d0f03")'
-RUN Rscript -e 'remotes::install_github("MazamaScience/AirSensor@cfe0c3380dc3abc742f8c9eab3f2b759612c399f")'
+RUN Rscript -e 'remotes::install_github("MazamaScience/AirSensor@c5e7c887c03a32ef75e7ff02b82883a6b02c8cf2")'
 RUN Rscript -e 'remotes::install_github("ThinkR-open/golem@bf9d0411e337d80d878ed62168360f920668acc2")'
 RUN mkdir /build_zone
 ADD . /build_zone

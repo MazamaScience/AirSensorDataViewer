@@ -30,11 +30,12 @@ Client <- R6::R6Class(
     ),
     
     initialize = function(session) {
-      logger.trace("initializing...")
-      token <<- session[['token']]
+      self$token <- session[['token']]
+      logger.trace(paste("initializing a new client object session token:",self$token))
+      
       
       setArchiveBaseUrl(baseUrl)
-      data[['pas']] <<- tryCatch(
+      self$data[['pas']] <- tryCatch(
         expr = {
           get_pas()
         }, 
@@ -43,7 +44,7 @@ Client <- R6::R6Class(
           return(NULL)
         })
       
-      data[['sensors']] <<- tryCatch(
+      self$data[['sensors']] <- tryCatch(
         expr = { 
           get_sensors(today() - days(7), today())
         }, 
@@ -54,7 +55,7 @@ Client <- R6::R6Class(
       
       
       #inter <<- ipc::AsyncInterruptor$new()
-      lastInput <<- as.numeric(Sys.time())
+      self$lastInput <- as.numeric(Sys.time())
     },
     
     updatePas = function() {
@@ -70,7 +71,7 @@ Client <- R6::R6Class(
             return(NULL)
           })
       }
-      data[['pas']] <<- f
+      self$data[['pas']] <- f
     }, 
     
     updateSensors = function(sd, ed) {
@@ -86,7 +87,7 @@ Client <- R6::R6Class(
             return(NULL)
           })
       }
-      data[['sensors']] <<- f
+      self$data[['sensors']] <- f
     }, 
     
     updateSensor = function(sensors, label) {
@@ -96,7 +97,7 @@ Client <- R6::R6Class(
       f <- {
         sensor_filterMeta(future::value(sensors), .data$label == lab)
       }
-      data[['sensor']] <<- f
+      self$data[['sensor']] <- f
     }, 
     
     updatePat = function(pas, label, sd, ed, ...) {
@@ -118,7 +119,7 @@ Client <- R6::R6Class(
             return(NULL)
           }) 
       }
-      data[['pat']] <<- f
+      self$data[['pat']] <- f
     }, 
     
     updatePwfsl = function(id, sd, ed) {
@@ -131,7 +132,7 @@ Client <- R6::R6Class(
             return(NULL)
           })
       }
-      data[['pwfsl']] <<- f
+      self$data[['pwfsl']] <- f
     }, 
     
     updateLatest = function(pas, label, tz = 'US/Pacific') {
@@ -144,7 +145,7 @@ Client <- R6::R6Class(
             return(NULL)
           })
       }
-      data[['latest']] <<- f
+      self$data[['latest']] <- f
     }, 
     
     updateAnnual = function(pas, label, date) {
@@ -158,11 +159,11 @@ Client <- R6::R6Class(
     }, 
     
     updateLastInput = function(t) {
-      lastInput <<- as.numeric(t)
+      self$lastInput <- as.numeric(t)
     }, 
     
     setTz = function(timezone) {
-      tz <<- timezone
+      self$tz <- timezone
     }
   )
 )
