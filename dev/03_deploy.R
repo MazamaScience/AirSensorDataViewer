@@ -23,6 +23,7 @@ rhub::check_for_cran()
 ## Docker ----
 golem::add_dockerfile(
   output = "docker/Dockerfile", 
+  from = "rocker/shiny-verse:3.6.3",
   port = 3838, 
   sysreqs = TRUE, 
   expand = TRUE,

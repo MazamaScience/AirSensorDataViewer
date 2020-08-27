@@ -34,6 +34,7 @@ usethis::use_package("shinyjs")
 usethis::use_package("bsplus")
 usethis::use_package("digest")
 usethis::use_package("tiotemp")
+usethis::use_package("vctrs")
 
 
 # Add github personal access token if you build a lot and exceed rate limit
@@ -71,8 +72,8 @@ golem::add_utils("logs")
 
 ## Docker Stuff
 # golem::add_dockerfile(
-#   output = "docker/Dockerfile2",
-#   from = "rocker/r-ver:3.6.3", 
+#   output = "docker/Dockerfile",
+#   from = "rocker/shiny:3.3.2",
 #   port = 3838,
 # )
 

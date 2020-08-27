@@ -586,9 +586,9 @@ stat_meanByHour <- function(
 }
 
 
-StatMeanByGroup <- ggproto(
+StatMeanByGroup <- ggplot2::ggproto(
   "StatMeanByGroup",
-  Stat,
+  ggplot2::Stat,
   # BEGIN compute_group function
   compute_group = function(data,
                            scales,
@@ -917,7 +917,7 @@ lmSensorMonitor <- function(sensor, pwfsl) {
   
   #print(str(df))
   
-  ggplot(df, aes(x = pm25.pa, y = pm25.pwfsl)) +
+  ggplot(df, aes(x = .data$pm25.pa, y = .data$pm25.pwfsl)) +
     geom_point(color = 'black', shape = 15, alpha = 0.2, size = 1) +
     geom_smooth(method = "lm", se = FALSE, color = 'red', alpha = 0.3) +
     

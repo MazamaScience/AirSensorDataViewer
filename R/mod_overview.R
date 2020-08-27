@@ -89,7 +89,6 @@ mod_overview_server <- function(input, output, session, obj) {
         NULL
       }
     )
-    
   })
   
   output$timeseriesBarChart <- renderBarChart({

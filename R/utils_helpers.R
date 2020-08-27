@@ -124,15 +124,22 @@ catchError <- function(err) {
 #'
 #' @examples
 plotUp <- function() {
-  shinyjs::runjs(
-    "if(!$('#dem').hasClass('in')) {
+  shinyjs::runjs("
+$(document).on('shiny:value', function(event) {
+  // cancel the output of the element with id 
+  if (event.target.id === 'overview_ui_1-timeseriesMap') {
+    event.preventDefault();
+    if(!$('#dem').hasClass('in')) {
+      d3.select('#overview_ui_1-timeseriesMap')
+        .select('.leaflet-bottom .leaflet-control')
+        .transition()
+        .duration(75)
+        .style('margin-bottom', '20vh');
       $('#collapse_btn').click();
     };
-    d3.select('#overview_ui_1-timeseriesMap')
-      .select('.leaflet-bottom .leaflet-control')
-      .transition()
-      .duration(75)
-      .style('margin-bottom', '20vh')")
+  }
+});
+")
 }
 
 #' Animate plot down

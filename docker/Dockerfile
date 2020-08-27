@@ -1,4 +1,4 @@
-FROM rocker/r-ver:3.6.3
+FROM rocker/shiny-verse:3.6.3
 RUN apt-get update
 RUN apt-get install -y  default-jre-headless
 RUN apt-get install -y  gdal-bin
@@ -23,11 +23,13 @@ RUN rm -rf /var/lib/apt/lists/*
 RUN echo "options(repos = c(CRAN = 'https://cran.rstudio.com/'), download.file.method = 'libcurl')" >> /usr/local/lib/R/etc/Rprofile.site
 RUN R -e 'install.packages("remotes")'
 RUN Rscript -e 'remotes::install_version("glue",upgrade="never", version = "1.4.1")'
+RUN Rscript -e 'remotes::install_version("processx",upgrade="never", version = "3.4.3")'
 RUN Rscript -e 'remotes::install_version("rlang",upgrade="never", version = "0.4.7")'
 RUN Rscript -e 'remotes::install_version("digest",upgrade="never", version = "0.6.25")'
 RUN Rscript -e 'remotes::install_version("stringr",upgrade="never", version = "1.4.0")'
 RUN Rscript -e 'remotes::install_version("htmltools",upgrade="never", version = "0.5.0")'
-RUN Rscript -e 'remotes::install_version("processx",upgrade="never", version = "3.4.3")'
+RUN Rscript -e 'remotes::install_version("pkgload",upgrade="never", version = "1.1.0")'
+RUN Rscript -e 'remotes::install_version("vctrs",upgrade="never", version = "0.3.2")'
 RUN Rscript -e 'remotes::install_version("testthat",upgrade="never", version = "2.3.2")'
 RUN Rscript -e 'remotes::install_version("dplyr",upgrade="never", version = "1.0.2")'
 RUN Rscript -e 'remotes::install_version("clipr",upgrade="never", version = "0.7.0")'
@@ -59,5 +61,36 @@ RUN mkdir /build_zone
 ADD . /build_zone
 WORKDIR /build_zone
 RUN R -e 'remotes::install_local(upgrade="never")'
+
+# Remove sample apps
+RUN rm -rf /srv/shiny-server/
+
+# create app directory
+#RUN mkdir /asdv
+
+# copy app to image
+COPY . /srv/shiny-server/asdv
+
+# add .conf file to image/container to preserve log file
+COPY ./shiny-server.conf  /etc/shiny-server/shiny-server.conf
+
+
+##When run image and create a container, this container will listen on port 3838
 EXPOSE 3838
-CMD R -e "options('shiny.port'=3838,shiny.host='0.0.0.0');AirSensorDataViewer::run_app()"
+
+###Avoiding running as root --> run container as user instead
+# allow permission
+RUN sudo chown -R shiny:shiny /srv/shiny-server
+RUN chmod -R 755 /srv/shiny-server/asdv
+
+# execute in the following as user --> imortant to give permission before that step
+USER shiny
+
+##run app
+CMD ["/usr/bin/shiny-server.sh"]
+
+
+#EXPOSE 3838
+#CMD R -e 'shiny::runApp("app.R", port = 3838, host = "0.0.0.0")'
+#CMD R -e "options('shiny.port'=3838,shiny.host='0.0.0.0');AirSensorDataViewer::run_app()"
+

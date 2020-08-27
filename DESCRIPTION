@@ -1,6 +1,6 @@
 Package: AirSensorDataViewer
 Title: AirSensorDataViewer
-Version: 0.0.0.9000
+Version: 0.9.8
 Authors@R: person('Hans', 'Martin', email = 'hansmrtn@gmail.com', role = c('cre', 'aut'))
 Description: The AirSensor DataViewer.
 License: GPL-3
@@ -35,7 +35,9 @@ Imports:
     shinyjs,
     bsplus,
     digest,
-    tiotemp
+    tiotemp,
+    pkgload,
+    vctrs
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1

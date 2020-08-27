@@ -111,6 +111,7 @@ mod_main_panel_ui <- function(id) {
 #' @importFrom stats na.omit 
 #' @importFrom clipr write_clip
 #' @importFrom shinyjs show hide
+#' @importFrom utils write.csv
 mod_main_panel_server <- function(input, output, session, obj) {
   ns <- session$ns
   
@@ -265,10 +266,15 @@ mod_main_panel_server <- function(input, output, session, obj) {
   )
   
   # Write the url to the user clipboard on share click
-  observeEvent(input[['share_button']], {
-    url <- obj[['url']]
-    write_clip(url)
-  })
+  observeEvent(
+    ignoreNULL = TRUE, 
+    ignoreInit = TRUE, 
+    eventExpr = { input[['share_button']] }, 
+    handlerExpr = {
+      req(obj[['url']])
+      url <- obj[['url']]
+      #write_clip(url)
+    })
   
   # Handle the download button using shiny tools. see ?downloadHandler docs. 
   output$download_button <- downloadHandler(
@@ -331,10 +337,12 @@ mod_main_panel_server <- function(input, output, session, obj) {
       label <- input$sensor_select
       
       # Order matters
+      obj$updateSensors(sd, ed)
       obj$updateSensor(sensors, label)
       obj$updatePat(pas, label, sd, ed)
       obj$updatePwfsl(sensor$meta$pwfsl_closestMonitorID, sd, ed)
       obj$updateLastInput(Sys.time())
+      
       plotUp()
     }
   )

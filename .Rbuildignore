@@ -8,3 +8,5 @@ $run_dev.*
 ^Dockerfile$
 ^docker$
 ^dockerfile$
+^app\.R$
+^rsconnect$

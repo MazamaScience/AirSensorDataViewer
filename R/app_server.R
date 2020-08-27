@@ -5,6 +5,7 @@
 #' @import shiny
 #' @importFrom waiter waiter_hide
 #' @importFrom future plan 
+#' @import MazamaCoreUtils
 #' @noRd
 app_server <- function( input, output, session ) {
   
