@@ -2,40 +2,48 @@
 NULL
 
 #'@export
-#'@importFrom future future `%<-%`
+#'@importFrom future future `%<-%` `%globals%`
 Client <- R6::R6Class(
-  # For speed, make classless and set portability to false
-  # https://r6.r-lib.org/articles/Performance.html
-  class = FALSE, 
-  portable = FALSE,
-  "ClientObject",
+  "Client",
+  private = list(
+    session = NULL
+  ),
   public = list(
     baseUrl = "http://data.mazamascience.com/PurpleAir/v1",
     token = NULL, 
     tz = NULL,
     url = NULL,
-    inter = NULL, 
+    
     lastInput = NULL,
     
-    #TODO Preinit for speeeeed
-    selected = rv(),
-    data = rv(
-      pas = NULL, 
-      sensors = NULL, 
-      sensor = NULL, 
-      pat = NULL, 
-      pwfsl = NULL, 
-      latest = NULL, 
-      annual = NULL
-    ),
+    selected = NULL,
+    data = NULL,
     
     initialize = function(session) {
-      self$token <- session[['token']]
-      logger.trace(paste("initializing a new client object session token:",self$token))
+      
+      private$session <- session
+      
+      # NOTE: init of rv must be inside the init method itself. For some reason, 
+      # NOTE: if the init it outside, rv is shared across all instances. 
+      # NOTE: Found out why: see ?R6::R6Class details
+      self$data <- rv(
+        pas = NULL, 
+        sensors = NULL, 
+        sensor = NULL, 
+        pat = NULL, 
+        pwfsl = NULL, 
+        latest = NULL, 
+        annual = NULL
+      )
+      
+      self$selected <- rv()
+      
+      self$token <- session$token
+      logger.trace(paste("initializing a new client object session token:", self$token))
       
       
-      setArchiveBaseUrl(baseUrl)
-      self$data[['pas']] <- tryCatch(
+      setArchiveBaseUrl(self$baseUrl)
+      self$data$pas <- tryCatch(
         expr = {
           get_pas()
         }, 
@@ -44,7 +52,7 @@ Client <- R6::R6Class(
           return(NULL)
         })
       
-      self$data[['sensors']] <- tryCatch(
+      self$data$sensors<- tryCatch(
         expr = { 
           get_sensors(today() - days(7), today())
         }, 
@@ -54,14 +62,13 @@ Client <- R6::R6Class(
         })
       
       
-      #inter <<- ipc::AsyncInterruptor$new()
       self$lastInput <- as.numeric(Sys.time())
     },
     
     updatePas = function() {
       logger.trace("updating pas...")
       f %<-% {
-        setArchiveBaseUrl(baseUrl)
+        setArchiveBaseUrl(self$baseUrl)
         tryCatch(
           expr = {
             get_pas()
@@ -71,13 +78,14 @@ Client <- R6::R6Class(
             return(NULL)
           })
       }
-      self$data[['pas']] <- f
+      self$data$pas <- f
     }, 
     
     updateSensors = function(sd, ed) {
       logger.trace(paste("updating sensors -->", sd, ed))
+      print(self$data$sensors)
       f %<-% {
-        setArchiveBaseUrl(baseUrl)
+        setArchiveBaseUrl(self$baseUrl)
         tryCatch(
           expr = {
             get_sensors(sd, ed)
@@ -87,39 +95,39 @@ Client <- R6::R6Class(
             return(NULL)
           })
       }
-      self$data[['sensors']] <- f
+      self$data$sensors <- f
     }, 
     
     updateSensor = function(sensors, label) {
       logger.trace(paste("updating sensor -->", label))
       # Not really sure why, but this redef is absolutely neccesary. 
       lab <- label
-      f <- {
-        sensor_filterMeta(future::value(sensors), .data$label == lab)
+      self$data[['sensor']] <- {
+        sensor_filterMeta(sensors, .data$label == lab)
       }
-      self$data[['sensor']] <- f
+      # self$data[['sensor']] <- f
     }, 
     
     updatePat = function(pas, label, sd, ed, ...) {
       logger.trace(paste("updating pat -->", label, sd, ed))
       f %<-% {
-        setArchiveBaseUrl(baseUrl)
+        setArchiveBaseUrl(self$baseUrl)
         tryCatch(
           expr = {
             get_pat(
-            pas = pas,
-            label = label,
-            sd = sd,
-            ed = ed, 
-            ...
-          )
-            }, 
+              pas = pas,
+              label = label,
+              sd = sd,
+              ed = ed, 
+              ...
+            )
+          }, 
           error = function(err) { 
             logger.error(err)
             return(NULL)
           }) 
       }
-      self$data[['pat']] <- f
+      self$data$pat <- f
     }, 
     
     updatePwfsl = function(id, sd, ed) {
@@ -132,7 +140,7 @@ Client <- R6::R6Class(
             return(NULL)
           })
       }
-      self$data[['pwfsl']] <- f
+      self$data$pwfsl <- f
     }, 
     
     updateLatest = function(pas, label, tz = 'US/Pacific') {
@@ -145,11 +153,11 @@ Client <- R6::R6Class(
             return(NULL)
           })
       }
-      self$data[['latest']] <- f
+      self$data$latest <- f
     }, 
     
     updateAnnual = function(pas, label, date) {
-      data[['annual']] <<- tryCatch(
+      self$data[['annual']] <- tryCatch(
         get_pat_annual(pas, label, date) %>% 
           AirSensor::pat_createAirSensor(), 
         error = function(err) { 
