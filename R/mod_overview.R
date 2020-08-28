@@ -68,11 +68,11 @@ mod_overview_ui <- function(id){
 #' @noRd 
 #' @importFrom tiotemp renderTimeseriesMap timeseriesMap 
 #' @importFrom tiotemp renderBarChart barChart
-mod_overview_server <- function(input, output, session, tc) {
+mod_overview_server <- function(input, output, session, usr) {
   ns <- session$ns
   output$timeseriesMap <- renderTimeseriesMap({
-    selected <- isolate(tc$selected$sensor)
-    sensors <- tc$sensors
+    selected <- isolate(usr$selected$sensor)
+    sensors <- usr$sensors
     tryCatch(
       expr = {
         timeseriesMap(
@@ -90,7 +90,7 @@ mod_overview_server <- function(input, output, session, tc) {
   })
   
   output$timeseriesBarChart <- renderBarChart({
-    sensors <- tc$sensors
+    sensors <- usr$sensors
     tryCatch(
       expr = {
         barChart(

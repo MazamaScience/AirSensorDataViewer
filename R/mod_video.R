@@ -26,13 +26,13 @@ mod_video_ui <- function(id){
 #'
 #' @noRd 
 #' @importFrom lubridate ymd
-mod_video_server <- function(input, output, session, obj) {
+mod_video_server <- function(input, output, session, usr) {
   ns <- session$ns
   
   output$video <- renderUI({
-    req(obj$selected$community, obj$selected$ed)
-    community <- obj$selected$community
-    ed <- ymd(obj$selected$ed)
+    req(usr$selected$community, usr$selected$ed)
+    community <- usr$selected$community
+    ed <- ymd(usr$selected$ed)
     tryCatch(
       expr = {
         if ( community != "All.." ) {

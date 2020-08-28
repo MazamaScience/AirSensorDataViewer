@@ -59,7 +59,7 @@ mod_compare_ui <- function(id) {
 #' @importFrom DT datatable formatRound renderDT
 #' @importFrom leaflet renderLeaflet
 #' @importFrom waiter Waiter
-mod_compare_server <- function(input, output, session, obj) {
+mod_compare_server <- function(input, output, session, usr) {
   ns <- session$ns
   
   w <- Waiter$new(
@@ -67,8 +67,8 @@ mod_compare_server <- function(input, output, session, obj) {
   )
   
   output$comparisonLeaflet <- renderLeaflet({
-    sensor <- obj$sensor
-    pwfsl <- obj$pwfsl
+    sensor <- usr$sensor
+    pwfsl <- usr$pwfsl
     tryCatch(
       expr = {
         comparisonLeaflet(sensor, pwfsl)
@@ -82,8 +82,8 @@ mod_compare_server <- function(input, output, session, obj) {
   
   output$sensorMonitorCorr <- renderPlot({
     # w$show()
-    sensor <- obj$sensor
-    pwfsl <- obj$pwfsl
+    sensor <- usr$sensor
+    pwfsl <- usr$pwfsl
     tryCatch(
       expr = {
         lmSensorMonitor(sensor, pwfsl) 
@@ -97,7 +97,7 @@ mod_compare_server <- function(input, output, session, obj) {
   
   output$sensorMonitorComp <- renderPlot({
     # w$show()
-    pat <- obj$pat
+    pat <- usr$pat
     tryCatch(
       expr = {
         pat_monitorComparison(pat)
@@ -111,7 +111,7 @@ mod_compare_server <- function(input, output, session, obj) {
   
   output$statusTable <- renderDT({
     #w$show()
-    pat <- obj$pat
+    pat <- usr$pat
     tryCatch(
       expr = {
         datatable(

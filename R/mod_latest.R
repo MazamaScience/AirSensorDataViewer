@@ -40,13 +40,13 @@ mod_latest_ui <- function(id){
 #' @noRd 
 #' 
 #' @importFrom plotly renderPlotly
-mod_latest_server <- function(input, output, session, obj){
+mod_latest_server <- function(input, output, session, usr){
   ns <- session$ns
   
   w <- Waiter$new(c(ns("pm_latest")))
   
   output$pm_latest <- renderPlotly({
-    latest <- obj$latest 
+    latest <- usr$latest 
     
     tryCatch(
       expr= {
@@ -61,7 +61,7 @@ mod_latest_server <- function(input, output, session, obj){
   })
   
   output$humidity_latest <- renderPlotly({
-    latest <- obj$latest
+    latest <- usr$latest
     
     tryCatch(
       expr = {
@@ -76,7 +76,7 @@ mod_latest_server <- function(input, output, session, obj){
   })
   
   output$temperature_latest <- renderPlotly({
-    latest <- obj$latest
+    latest <- usr$latest
     
     tryCatch(
       expr = {

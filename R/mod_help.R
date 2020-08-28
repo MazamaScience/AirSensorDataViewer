@@ -30,12 +30,12 @@ mod_help_ui <- function(id){
 #'
 #' @noRd 
 #' @import bsplus
-mod_help_server <- function(input, output, session, obj){
+mod_help_server <- function(input, output, session, usr){
   ns <- session$ns
   
   output$help <- renderUI({
     
-    tab <- obj$selected$tab
+    tab <- usr$selected$tab
     
     help_path <- switch(
       tab,

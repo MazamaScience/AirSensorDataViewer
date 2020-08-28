@@ -107,22 +107,6 @@ app_server <- function( input, output, session ) {
     }
   )
   
-  # Watch the current page. if on the latest page, hide the date range input 
-  observeEvent(
-    ignoreNULL = TRUE,
-    ignoreInit = TRUE,
-    eventExpr = {
-      usr$selected$page
-    }, 
-    handlerExpr = {
-      if (usr$selected$page == 'latest') {
-        hide("date_range", anim = TRUE)
-      } else {
-        show("date_range", anim = TRUE)
-      }
-    }
-  )
-  
   # List the first level callModules here
   #callModule(profvis::profvis_server, "profiler") # Dev Only
   callModule(mod_main_panel_server, "main_panel_ui_1", usr)

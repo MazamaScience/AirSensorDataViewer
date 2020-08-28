@@ -45,7 +45,7 @@ mod_patterns_ui <- function(id){
 #' @noRd 
 #' @importFrom DT renderDT datatable
 #' @importFrom waiter Waiter
-mod_patterns_server <- function(input, output, session, obj){
+mod_patterns_server <- function(input, output, session, usr){
   ns <- session$ns
   
   w <- Waiter$new(
@@ -55,7 +55,7 @@ mod_patterns_server <- function(input, output, session, obj){
   )
   
   output$patternPlot <- renderPlot({
-    sensor <- obj$sensor
+    sensor <- usr$sensor
       w$show()
       tryCatch(
         expr = {

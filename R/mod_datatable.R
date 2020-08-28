@@ -33,13 +33,13 @@ mod_datatable_ui <- function(id) {
 #' @noRd 
 #' 
 #' @importFrom DT renderDT datatable formatDate
-mod_datatable_server <- function(input, output, session, obj) {
+mod_datatable_server <- function(input, output, session, usr) {
   ns <- session$ns
   
   w <- Waiter$new(ns("datatable"))
   
   output$metatable <- renderTable({
-    pat <- obj$pat
+    pat <- usr$pat
     
     tryCatch(
       expr = {
@@ -61,7 +61,7 @@ mod_datatable_server <- function(input, output, session, obj) {
   
   output$datatable <- renderDT({ 
     #w$show()
-    pat <- obj$pat
+    pat <- usr$pat
     
     tryCatch(
       expr = {

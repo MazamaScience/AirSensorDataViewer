@@ -60,9 +60,8 @@ mod_raw_server <- function(input, output, session, tc){
   )
   
   output$multiPlot <- renderPlot({
-    #req(obj[['data']][['pat']])
     w$show()
-    pat <- tc$pat#obj[['data']][['pat']]
+    pat <- tc$pat
     tryCatch(
       expr = {
         pat_multiPlot(pat)
@@ -76,7 +75,7 @@ mod_raw_server <- function(input, output, session, tc){
   })
   
   output$comparePlot <- renderPlot({
-    pat <- tc$pat#obj[['data']][['pat']]
+    pat <- tc$pat
     tryCatch( 
       expr = {
         asdv_internalFit(pat,tz = 'UTC', whichPlot = 'ab') + theme_light()
@@ -89,7 +88,7 @@ mod_raw_server <- function(input, output, session, tc){
   })
   
   output$lmPlot <- renderPlot({
-    pat <- tc$pat#obj[['data']][['pat']]
+    pat <- tc$pat
     tryCatch(
       expr = {
         asdv_internalFit(pat,tz = 'UTC', whichPlot = 'lm') + theme_light()

@@ -112,31 +112,29 @@ mod_main_panel_ui <- function(id) {
 #' @importFrom clipr write_clip
 #' @importFrom shinyjs show hide
 #' @importFrom utils write.csv
-mod_main_panel_server <- function(input, output, session, tc) {
+mod_main_panel_server <- function(input, output, session, usr) {
   ns <- session$ns
   
   w <- Waitress$new(min = 0, max = 100)
   
-  w$notify(html = tags[['h3']]("Loading Data..."), position = "bl")
+  w$notify(html = tags$h3("Loading Data..."), position = "bl")
   w$set(20)
-  
-  
   
   # initialize on every new token i.e. new client session object
   observeEvent(
     once = TRUE, 
     ignoreNULL = TRUE,
     eventExpr = {
-      tc$token
+      usr$token
     },
     handlerExpr = {
       # get the client timezone
       shinyjs::runjs("let tz = Intl.DateTimeFormat().resolvedOptions().timeZone; 
                       Shiny.setInputValue('main_panel_ui_1-client_tz', tz)")
       # set the client object timezone
-      tc$setTz("America/Los_Angeles")
+      usr$setTz("America/Los_Angeles")
       
-      sensors <- tc$sensors#obj[['data']][['sensors']]
+      sensors <- usr$sensors
       
       # Check diff bewteen sensors aobj in sensor obj and pas obj and only use
       # the sensors with mutual existence
@@ -163,7 +161,7 @@ mod_main_panel_server <- function(input, output, session, tc) {
   )
   
   # debounce the sensor input to avoid too many clicks & infinite loops
-  debouncedSelectSensor <- debounce(reactive(input[['sensor_select']]), 250)
+  debouncedSelectSensor <- debounce(reactive(input$sensor_select), 250)
   observeEvent(
     ignoreNULL = TRUE,
     eventExpr = {
@@ -175,12 +173,12 @@ mod_main_panel_server <- function(input, output, session, tc) {
       shinyjs::runjs(
         paste0(
           '$("select#main_panel_ui_1-sensor_select")[0].selectize.setValue("', 
-          input[['sensor_select']],
+          input$sensor_select,
           '", false)'
         )
       )
       # Update the client object sensor selection 
-      tc$selected$sensor <- input$sensor_select
+      usr$selected$sensor <- input$sensor_select
       
     }
   )
@@ -231,11 +229,11 @@ mod_main_panel_server <- function(input, output, session, tc) {
       }
       
       # update the client object date selections
-      tc$selected$sd <- sd
-      tc$selected$ed <- ed
+      usr$selected$sd <- sd
+      usr$selected$ed <- ed
       
       
-      tc$updateSensors(sd, ed)
+      usr$updateSensors(sd, ed)
       
     }
   )
@@ -249,7 +247,7 @@ mod_main_panel_server <- function(input, output, session, tc) {
     }, 
     handlerExpr = {
       
-      sensors <- tc$sensors
+      sensors <- usr$sensors
       meta <- sensors$meta
       
       # update the sensor selection per community if not on all
@@ -267,7 +265,7 @@ mod_main_panel_server <- function(input, output, session, tc) {
       )
       
       # update the client community selection input
-      tc$selected$community <- input$community_select
+      usr$selected$community <- input$community_select
     }
   )
   
@@ -277,7 +275,7 @@ mod_main_panel_server <- function(input, output, session, tc) {
     ignoreInit = TRUE, 
     eventExpr = { input$share_button }, 
     handlerExpr = {
-      url <- tc$url
+      url <- usr$url
       
       tryCatch(
         expr = {
@@ -290,25 +288,41 @@ mod_main_panel_server <- function(input, output, session, tc) {
           NULL
         }
       )
-      
-    })
+    }
+  )
+  
+  # Watch the current page. if on the latest page, hide the date range input 
+  observeEvent(
+    ignoreNULL = TRUE,
+    ignoreInit = TRUE,
+    eventExpr = {
+      usr$selected$page
+    }, 
+    handlerExpr = {
+      if (usr$selected$page == 'latest') {
+        hide("date_range", anim = TRUE)
+      } else {
+        show("date_range", anim = TRUE)
+      }
+    }
+  )
   
   # Handle the download button using shiny tools. see ?downloadHandler docs. 
   output$download_button <- downloadHandler(
     filename = function() {
-      sensor <- tc$selected$sensor
-      sd <- tc$selected$sd
-      ed <- tc$selected$ed
+      sensor <- usr$selected$sensor
+      sd <- usr$selected$sd
+      ed <- usr$selected$ed
       paste0(sensor,'_',sd,'_',ed,".csv")
     },
     content = function(file) {
-      pas <- tc$pas
-      label <- tc$selected$sensor
-      sd <- tc$selected$sd
-      ed <- tc$selected$ed
+      pas <- usr$pas
+      label <- usr$selected$sensor
+      sd <- usr$selected$sd
+      ed <- usr$selected$ed
       # Make sure pat is up to date in usr object
-      tc$updatePat(pas, label, sd, ed)
-      pat <- tc$pat
+      usr$updatePat(pas, label, sd, ed)
+      pat <- usr$pat
       write.csv(pat[['data']], file, row.names = FALSE)
     }
   )
