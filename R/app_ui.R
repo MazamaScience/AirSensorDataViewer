@@ -124,7 +124,7 @@ app_ui <- function(request) {
       #----- View Data Page ----------------------------------------------------
       tabPanel(
         title = tags$b("View Data"),
-        value = "dv",
+        value = "table",
         fluidRow(
           column(
             width = 8,

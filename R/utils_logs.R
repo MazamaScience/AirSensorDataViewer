@@ -5,7 +5,6 @@ if ( !dir.exists(paste0(getwd(),"/logs")) ) {
   dir.create(paste0(getwd(), "/logs"))
 }
 
-print(interactive())
 if ( interactive() ) { # Running from RStudio
   # Somewhere easy to find
   LOG_DIR <- "logs"

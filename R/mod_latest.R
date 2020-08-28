@@ -45,25 +45,8 @@ mod_latest_server <- function(input, output, session, obj){
   
   w <- Waiter$new(c(ns("pm_latest")))
   
-  observeEvent(
-    ignoreNULL = TRUE,
-    ignoreInit = TRUE,
-    eventExpr = {
-    obj$selected$page
-    obj$selected$sensor
-  }, {
-    if ( obj$selected$page == 'latest' ) {
-      obj$updateLatest(
-        pas = obj$data$pas,
-        label = obj$selected$sensor,
-        tz = obj$clientTz
-      )
-    }
-  })
-  
   output$pm_latest <- renderPlotly({
-    req(obj$data$latest)
-    latest <- obj$data$latest 
+    latest <- obj$latest 
     
     tryCatch(
       expr= {
@@ -78,8 +61,7 @@ mod_latest_server <- function(input, output, session, obj){
   })
   
   output$humidity_latest <- renderPlotly({
-    req(obj$data$latest)
-    latest <- obj$data$latest
+    latest <- obj$latest
     
     tryCatch(
       expr = {
@@ -94,8 +76,7 @@ mod_latest_server <- function(input, output, session, obj){
   })
   
   output$temperature_latest <- renderPlotly({
-    req(obj$data$latest)
-    latest <- obj$data$latest
+    latest <- obj$latest
     
     tryCatch(
       expr = {

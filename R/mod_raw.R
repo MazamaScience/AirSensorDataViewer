@@ -51,7 +51,7 @@ mod_raw_ui <- function(id){
 #' @noRd 
 #' @importFrom ggplot2 theme_light 
 #' @importFrom waiter Waiter spin_throbber
-mod_raw_server <- function(input, output, session, obj){
+mod_raw_server <- function(input, output, session, tc){
   ns <- session$ns
   w <- Waiter$new(
     c(ns("multiPlot"), ns("comparePlot"), ns("lmPlot")), 
@@ -59,11 +59,10 @@ mod_raw_server <- function(input, output, session, obj){
     color = "#F8F8F8"
   )
   
-  output[['multiPlot']] <- renderCachedPlot(
-    {
-    req(obj[['data']][['pat']])
+  output$multiPlot <- renderPlot({
+    #req(obj[['data']][['pat']])
     w$show()
-    pat <- obj[['data']][['pat']]
+    pat <- tc$pat#obj[['data']][['pat']]
     tryCatch(
       expr = {
         pat_multiPlot(pat)
@@ -74,11 +73,10 @@ mod_raw_server <- function(input, output, session, obj){
       }
     )
     
-  }, cacheKey("multiPlot", obj[['data']][['pat']]))
+  })
   
-  output[['comparePlot']] <- renderCachedPlot({
-    req(obj[['data']][['pat']])
-    pat <- obj[['data']][['pat']]
+  output$comparePlot <- renderPlot({
+    pat <- tc$pat#obj[['data']][['pat']]
     tryCatch( 
       expr = {
         asdv_internalFit(pat,tz = 'UTC', whichPlot = 'ab') + theme_light()
@@ -88,11 +86,10 @@ mod_raw_server <- function(input, output, session, obj){
         NULL
       }
     )
-  }, cacheKey("comparePlot", obj[['data']][['pat']]))
+  })
   
-  output[['lmPlot']] <- renderCachedPlot({
-    req(obj[['data']][['pat']])
-    pat <- obj[['data']][['pat']]
+  output$lmPlot <- renderPlot({
+    pat <- tc$pat#obj[['data']][['pat']]
     tryCatch(
       expr = {
         asdv_internalFit(pat,tz = 'UTC', whichPlot = 'lm') + theme_light()
@@ -102,7 +99,7 @@ mod_raw_server <- function(input, output, session, obj){
         NULL
       }
     )
-  }, cacheKey("lmPlot", obj[['data']][['pat']]))
+  })
   
 }
 

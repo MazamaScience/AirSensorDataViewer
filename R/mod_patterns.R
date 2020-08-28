@@ -54,8 +54,8 @@ mod_patterns_server <- function(input, output, session, obj){
     color = "#F8F8F8"
   )
   
-  output$patternPlot <- renderCachedPlot({
-    sensor <- obj[['data']][['sensor']]
+  output$patternPlot <- renderPlot({
+    sensor <- obj$sensor
       w$show()
       tryCatch(
         expr = {
@@ -66,7 +66,7 @@ mod_patterns_server <- function(input, output, session, obj){
           NULL
         }
       )
-  }, cacheKey("patternPlot", obj[['data']][['sensor']]))
+  })
   
   # output$noaaTable <- renderDT({
   #   req(values$noaa)

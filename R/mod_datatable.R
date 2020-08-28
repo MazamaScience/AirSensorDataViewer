@@ -39,7 +39,7 @@ mod_datatable_server <- function(input, output, session, obj) {
   w <- Waiter$new(ns("datatable"))
   
   output$metatable <- renderTable({
-    pat <- obj[['data']][['pat']]
+    pat <- obj$pat
     
     tryCatch(
       expr = {
@@ -61,7 +61,7 @@ mod_datatable_server <- function(input, output, session, obj) {
   
   output$datatable <- renderDT({ 
     #w$show()
-    pat <- obj[['data']][['pat']]
+    pat <- obj$pat
     
     tryCatch(
       expr = {

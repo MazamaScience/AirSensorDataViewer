@@ -35,7 +35,7 @@ mod_help_server <- function(input, output, session, obj){
   
   output$help <- renderUI({
     
-    tab <- obj[['selected']][['tab']]
+    tab <- obj$selected$tab
     
     help_path <- switch(
       tab,

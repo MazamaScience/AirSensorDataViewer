@@ -112,7 +112,7 @@ mod_main_panel_ui <- function(id) {
 #' @importFrom clipr write_clip
 #' @importFrom shinyjs show hide
 #' @importFrom utils write.csv
-mod_main_panel_server <- function(input, output, session, obj) {
+mod_main_panel_server <- function(input, output, session, tc) {
   ns <- session$ns
   
   w <- Waitress$new(min = 0, max = 100)
@@ -120,21 +120,23 @@ mod_main_panel_server <- function(input, output, session, obj) {
   w$notify(html = tags[['h3']]("Loading Data..."), position = "bl")
   w$set(20)
   
+  
+  
   # initialize on every new token i.e. new client session object
   observeEvent(
     once = TRUE, 
     ignoreNULL = TRUE,
     eventExpr = {
-      obj[['token']]
+      tc$token
     },
     handlerExpr = {
       # get the client timezone
       shinyjs::runjs("let tz = Intl.DateTimeFormat().resolvedOptions().timeZone; 
                       Shiny.setInputValue('main_panel_ui_1-client_tz', tz)")
       # set the client object timezone
-      obj$setTz(input$client_tz)
+      tc$setTz("America/Los_Angeles")
       
-      sensors <- obj[['data']][['sensors']]
+      sensors <- tc$sensors#obj[['data']][['sensors']]
       
       # Check diff bewteen sensors aobj in sensor obj and pas obj and only use
       # the sensors with mutual existence
@@ -178,12 +180,13 @@ mod_main_panel_server <- function(input, output, session, obj) {
         )
       )
       # Update the client object sensor selection 
-      obj[['selected']][['sensor']] <- input[['sensor_select']]
+      tc$selected$sensor <- input$sensor_select
+      
     }
   )
   
   # debounce the date input to avoid too many clicks & infinite loops
-  debouncedDateRange <- debounce(reactive(input[['date_range']]), 250)
+  debouncedDateRange <- debounce(reactive(input$date_range), 250)
   observeEvent(
     priority = 100,
     ignoreNULL = TRUE,
@@ -192,8 +195,8 @@ mod_main_panel_server <- function(input, output, session, obj) {
     }, 
     handlerExpr = {
       
-      sd <- input[['date_range']][1]
-      ed <- input[['date_range']][2]
+      sd <- input$date_range[1]
+      ed <- input$date_range[2]
       
       # Check dates before updating client object
       # NOTE: if the enddate is less than or equal to the startdate, then push 
@@ -228,8 +231,11 @@ mod_main_panel_server <- function(input, output, session, obj) {
       }
       
       # update the client object date selections
-      obj[['selected']][['sd']] <- sd
-      obj[['selected']][['ed']] <- ed     
+      tc$selected$sd <- sd
+      tc$selected$ed <- ed
+      
+      
+      tc$updateSensors(sd, ed)
       
     }
   )
@@ -239,19 +245,19 @@ mod_main_panel_server <- function(input, output, session, obj) {
     ignoreNULL = TRUE,
     ignoreInit = TRUE, 
     eventExpr = {
-      input[['community_select']]
+      input$community_select
     }, 
     handlerExpr = {
       
-      sensors <- obj[['data']][['sensors']]
-      meta <- sensors[['meta']]
+      sensors <- tc$sensors
+      meta <- sensors$meta
       
       # update the sensor selection per community if not on all
-      if ( input[['community_select']] == "All..." ) {
+      if ( input$community_select == "All..." ) {
         choices <- meta
       } else {
         community_str <- id2com(meta[['communityRegion']])
-        choices <- meta[community_str == input[['community_select']],]
+        choices <- meta[community_str == input$community_select,]
       }
       
       updateSelectizeInput(
@@ -261,7 +267,7 @@ mod_main_panel_server <- function(input, output, session, obj) {
       )
       
       # update the client community selection input
-      obj[['selected']][['community']] <- input[['community_select']]
+      tc$selected$community <- input$community_select
     }
   )
   
@@ -269,10 +275,9 @@ mod_main_panel_server <- function(input, output, session, obj) {
   observeEvent(
     ignoreNULL = TRUE, 
     ignoreInit = TRUE, 
-    eventExpr = { input[['share_button']] }, 
+    eventExpr = { input$share_button }, 
     handlerExpr = {
-      req(obj[['url']])
-      url <- obj[['url']]
+      url <- tc$url
       
       tryCatch(
         expr = {
@@ -285,77 +290,26 @@ mod_main_panel_server <- function(input, output, session, obj) {
           NULL
         }
       )
-
+      
     })
   
   # Handle the download button using shiny tools. see ?downloadHandler docs. 
   output$download_button <- downloadHandler(
     filename = function() {
-      sensor <- obj[['selected']][['sensor']]
-      sd <- obj[['selected']][['sd']]
-      ed <- obj[['selected']][['ed']]
+      sensor <- tc$selected$sensor
+      sd <- tc$selected$sd
+      ed <- tc$selected$ed
       paste0(sensor,'_',sd,'_',ed,".csv")
     },
     content = function(file) {
-      pat <- obj[['data']][['pat']]
+      pas <- tc$pas
+      label <- tc$selected$sensor
+      sd <- tc$selected$sd
+      ed <- tc$selected$ed
+      # Make sure pat is up to date in usr object
+      tc$updatePat(pas, label, sd, ed)
+      pat <- tc$pat
       write.csv(pat[['data']], file, row.names = FALSE)
-    }
-  )
-  
-  # Watch the current page. if on the latest page, hide the date range input 
-  observeEvent(
-    ignoreNULL = TRUE,
-    ignoreInit = TRUE,
-    eventExpr = {
-      obj[['selected']][['page']]
-    }, 
-    handlerExpr = {
-      if (obj[['selected']][['page']] == 'latest') {
-        hide("date_range", anim = TRUE)
-      } else {
-        show("date_range", anim = TRUE)
-      }
-    })
-  # # watch current tab for same as above (as listed in 0.9.7 suggestion notes??)
-  # observeEvent(
-  #   ignoreNULL = TRUE,
-  #   ignoreInit = TRUE,
-  #   eventExpr = {
-  #     obj[['selected']][['tab']]
-  #   }, 
-  #   handlerExpr = {
-  #     if (obj[['selected']][['tab']] == 'community') {
-  #       hide("date_range", anim = TRUE)
-  #     } else {
-  #       show("date_range", anim = TRUE)
-  #     }
-  #   })
-  
- 
-  # Watch the sensor and daterange input to promise the new client data values 
-  observeEvent(
-    ignoreNULL = TRUE, 
-    ignoreInit = TRUE, 
-    eventExpr = {
-      debouncedSelectSensor()
-      debouncedDateRange()
-    }, 
-    handlerExpr = {
-      sensors <- obj$data$sensors
-      sensor <- obj$data$sensor
-      pas <- obj$data$pas
-      sd <- obj$selected$sd
-      ed <- obj$selected$ed
-      label <- input$sensor_select
-      
-      # Order matters
-      obj$updateSensors(sd, ed)
-      obj$updateSensor(sensors, label)
-      obj$updatePat(pas, label, sd, ed)
-      obj$updatePwfsl(sensor$meta$pwfsl_closestMonitorID, sd, ed)
-      obj$updateLastInput(Sys.time())
-      
-      plotUp()
     }
   )
   

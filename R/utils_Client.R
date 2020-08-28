@@ -3,7 +3,7 @@ NULL
 
 #'@export
 #'@importFrom future future `%<-%` `%globals%`
-Client <- R6::R6Class(
+oldClient <- R6::R6Class(
   "Client",
   private = list(
     session = NULL
@@ -83,7 +83,6 @@ Client <- R6::R6Class(
     
     updateSensors = function(sd, ed) {
       logger.trace(paste("updating sensors -->", sd, ed))
-      print(self$data$sensors)
       f %<-% {
         setArchiveBaseUrl(self$baseUrl)
         tryCatch(
@@ -175,3 +174,4 @@ Client <- R6::R6Class(
     }
   )
 )
+

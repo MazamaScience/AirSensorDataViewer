@@ -67,8 +67,8 @@ mod_compare_server <- function(input, output, session, obj) {
   )
   
   output$comparisonLeaflet <- renderLeaflet({
-    sensor <- obj[['data']][['sensor']]
-    pwfsl <- obj[['data']][['pwfsl']]
+    sensor <- obj$sensor
+    pwfsl <- obj$pwfsl
     tryCatch(
       expr = {
         comparisonLeaflet(sensor, pwfsl)
@@ -80,10 +80,10 @@ mod_compare_server <- function(input, output, session, obj) {
     )
   })
   
-  output$sensorMonitorCorr <- renderCachedPlot({
+  output$sensorMonitorCorr <- renderPlot({
     # w$show()
-    sensor <- obj[['data']][['sensor']]
-    pwfsl <- obj[['data']][['pwfsl']]
+    sensor <- obj$sensor
+    pwfsl <- obj$pwfsl
     tryCatch(
       expr = {
         lmSensorMonitor(sensor, pwfsl) 
@@ -93,11 +93,11 @@ mod_compare_server <- function(input, output, session, obj) {
         NULL
       }
     )
-  }, cacheKey("sensorMonitorCorr", obj[['data']][['sensor']]))
+  })
   
-  output$sensorMonitorComp <- renderCachedPlot({
+  output$sensorMonitorComp <- renderPlot({
     # w$show()
-    pat <- obj[['data']][['pat']]
+    pat <- obj$pat
     tryCatch(
       expr = {
         pat_monitorComparison(pat)
@@ -107,11 +107,11 @@ mod_compare_server <- function(input, output, session, obj) {
         NULL
       }
     )
-  }, cacheKey("sensorMonitorComp", obj[['data']][['pat']]))
+  })
   
   output$statusTable <- renderDT({
     #w$show()
-    pat <- obj[['data']][['pat']]
+    pat <- obj$pat
     tryCatch(
       expr = {
         datatable(
