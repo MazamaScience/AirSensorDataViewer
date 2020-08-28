@@ -19,20 +19,28 @@ app_server <- function( input, output, session ) {
   #obj <- Client$new(session)
   usr <- User$new(session)
   
-  # Record session start 
-  observe({ 
-    logger.trace(paste("session started:", session$token)) 
-  })
-  # Record session end 
-  session$onSessionEnded(function() { 
-    logger.trace(paste("session ended:",  session$token)) 
-  })
+  # List the first level callModules here
+  #callModule(profvis::profvis_server, "profiler") # Dev Only
+  callModule(mod_stateman_server, "stateman_1", usr)
+  callModule(mod_main_panel_server, "main_panel_ui_1", usr)
+  callModule(mod_overview_server, "overview_ui_1", usr)
+  callModule(mod_calendar_server, "calendar_ui_1", usr)
+  callModule(mod_raw_server, "raw_ui_1", usr)
+  callModule(mod_patterns_server, "patterns_ui_1", usr)
+  callModule(mod_compare_server, "compare_ui_1", usr)
+  callModule(mod_video_server, "video_ui_1", usr)
+  callModule(mod_latest_server, "latest_ui_1", usr)
+  callModule(mod_datatable_server, "datatable_ui_1", usr)
+  callModule(mod_help_server, "help_ui_1", usr)
   
-  # Bookmarking
+  # Hide the waiter startup once the modules have been loaded 
+  waiter_hide()
+  
+  #Bookmarking
   observe({
     reactiveValuesToList(input)
-    session[['doBookmark']]()
-  }) 
+    session$doBookmark()
+  })
   onBookmarked(function(url) {
     updateQueryString(url)
     usr$url <- url
@@ -47,80 +55,5 @@ app_server <- function( input, output, session ) {
     logger.trace(paste("tab:", input$tab))
     usr$selected$tab <- input$tab
   })
-  
-  # Watch the 
-  observeEvent(
-    ignoreNULL = TRUE, 
-    ignoreInit = TRUE, 
-    eventExpr = {
-      usr$selected$sensor
-      usr$selected$sd
-      usr$selected$ed
-      usr$selected$page
-      usr$selected$tab
-    }, 
-    handlerExpr = {
-      
-      logger.trace("Some updates")
-      
-      label <- usr$selected$sensor
-      tab <- usr$selected$tab 
-      page <- usr$selected$page 
-      sd <- usr$selected$sd
-      ed <- usr$selected$ed
-      tz <- usr$tz
-      
-      # Explicit Loading.
-      if ( tab == 'raw' ) {
-        pas <- usr$pas
-        usr$updatePat(pas, label, sd, ed)
-      }
-      if ( tab == 'compare' ) {
-        pas <- usr$pas
-        usr$updatePat(pas, label, sd, ed)
-        sensors <- usr$sensors
-        usr$updateSensor(sensors, label)
-        sensor <- usr$sensor
-        usr$updatePwfsl(sensor$meta$pwfsl_closestMonitorID, sd, ed)
-      }
-      if ( tab == 'patterns' ) {
-        sensors <- usr$sensors
-        usr$updateSensor(sensors, label)
-      }
-      
-      if ( page == 'table' ) {
-        pas <- usr$pas
-        usr$updatePat(pas, label, sd, ed)
-      }
-      
-      if ( page == 'latest' ) {
-        pas <- usr$pas
-        usr$updateLatest(
-          pas = pas,
-          label = label,
-          tz = tz
-        )
-      }
-      
-      # plotUp()
-      
-    }
-  )
-  
-  # List the first level callModules here
-  #callModule(profvis::profvis_server, "profiler") # Dev Only
-  callModule(mod_main_panel_server, "main_panel_ui_1", usr)
-  callModule(mod_overview_server, "overview_ui_1", usr)
-  callModule(mod_calendar_server, "calendar_ui_1", usr)
-  callModule(mod_raw_server, "raw_ui_1", usr)
-  callModule(mod_patterns_server, "patterns_ui_1", usr)
-  callModule(mod_compare_server, "compare_ui_1", usr)
-  callModule(mod_video_server, "video_ui_1", usr)
-  callModule(mod_latest_server, "latest_ui_1", usr)
-  callModule(mod_datatable_server, "datatable_ui_1", usr)
-  callModule(mod_help_server, "help_ui_1", usr)
-  
-  # Hide the waiter startup once the modules have been loaded 
-  waiter_hide()
   
 }

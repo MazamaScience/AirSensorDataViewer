@@ -3,7 +3,7 @@
 #'@importFrom R6 R6Class
 #'@importFrom AirSensor setArchiveBaseUrl
 #'@import MazamaCoreUtils
-User <- R6Class(
+User <- R6::R6Class(
   "User", 
   
   active = list(
@@ -44,6 +44,7 @@ User <- R6Class(
     
     initialize = function(session) {
       
+      logger.trace(paste("User started on session token:", session$token)) 
       self$token <- session$token
       
       self$selected <- reactiveValues(

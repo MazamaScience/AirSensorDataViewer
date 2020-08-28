@@ -57,6 +57,8 @@ RUN Rscript -e 'remotes::install_github("davidcarslaw/worldmet@0d440de4fffbb64c0
 RUN Rscript -e 'remotes::install_github("MazamaScience/PWFSLSmoke@92f7ad31b5408a7542bae2c1a1db84e0131d0f03")'
 RUN Rscript -e 'remotes::install_github("MazamaScience/AirSensor@c5e7c887c03a32ef75e7ff02b82883a6b02c8cf2")'
 RUN Rscript -e 'remotes::install_github("ThinkR-open/golem@bf9d0411e337d80d878ed62168360f920668acc2")'
+
+# Create the build zone, copy the local directory over to the docker image, build and install R package.
 RUN mkdir /build_zone
 ADD . /build_zone
 WORKDIR /build_zone
@@ -65,9 +67,6 @@ RUN R -e 'remotes::install_local(upgrade="never")'
 # Remove sample apps
 RUN rm -rf /srv/shiny-server/
 
-# create app directory
-#RUN mkdir /asdv
-
 # copy app to image
 COPY . /srv/shiny-server/asdv
 
@@ -75,10 +74,10 @@ COPY . /srv/shiny-server/asdv
 COPY ./shiny-server.conf  /etc/shiny-server/shiny-server.conf
 
 
-##When run image and create a container, this container will listen on port 3838
+# When run image and create a container, this container will listen on port 3838
 EXPOSE 3838
 
-###Avoiding running as root --> run container as user instead
+# Avoiding running as root --> run container as user instead
 # allow permission
 RUN sudo chown -R shiny:shiny /srv/shiny-server
 RUN chmod -R 755 /srv/shiny-server/asdv
@@ -89,8 +88,4 @@ USER shiny
 ##run app
 CMD ["/usr/bin/shiny-server.sh"]
 
-
-#EXPOSE 3838
-#CMD R -e 'shiny::runApp("app.R", port = 3838, host = "0.0.0.0")'
-#CMD R -e "options('shiny.port'=3838,shiny.host='0.0.0.0');AirSensorDataViewer::run_app()"
 

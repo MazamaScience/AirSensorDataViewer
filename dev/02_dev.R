@@ -35,6 +35,7 @@ usethis::use_package("bsplus")
 usethis::use_package("digest")
 usethis::use_package("tiotemp")
 usethis::use_package("vctrs")
+usethis::use_package("R6")
 
 
 # Add github personal access token if you build a lot and exceed rate limit
@@ -55,6 +56,8 @@ golem::add_module( name = "video" )
 golem::add_module( name = "latest" ) # Latest dv navtab
 golem::add_module( name = "datatable" )
 golem::add_module( name = "help" )
+
+golem::add_module( name = "stateman" )
 
 ## Add helper functions ----
 ## Creates ftc_* and utils_*

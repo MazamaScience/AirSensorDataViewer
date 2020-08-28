@@ -213,6 +213,7 @@ mod_main_panel_server <- function(input, output, session, usr) {
         )
         
       }
+      
       # NOTE: if the difference between the enddate and startdate is greater 
       # NOTE: than or equal to 21 days, set the startdate to be the endate-21d, 
       # NOTE: and notity the user that their selection was too great.
