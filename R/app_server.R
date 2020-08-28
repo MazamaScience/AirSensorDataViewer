@@ -13,14 +13,14 @@ app_server <- function( input, output, session ) {
   options(warn = -1)
   
   # Specify how futures are resolved, e.g. sequentially or in parallel.
-  plan(future::multiprocess)
+  plan(future::sequential)
   
   # Create the client session object
   #obj <- Client$new(session)
   usr <- User$new(session)
   
   # List the first level callModules here
-  #callModule(profvis::profvis_server, "profiler") # Dev Only
+  # callModule(profvis::profvis_server, "profiler") # Dev Only
   callModule(mod_stateman_server, "stateman_1", usr)
   callModule(mod_main_panel_server, "main_panel_ui_1", usr)
   callModule(mod_overview_server, "overview_ui_1", usr)

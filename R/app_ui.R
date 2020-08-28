@@ -210,7 +210,7 @@ golem_add_external_resources <- function(){
       app_title = 'AirSensorDataViewer'
     ),
     # Add here other external resources
-    #profvis::profvis_ui("profiler"), # Dev Only
+    # profvis::profvis_ui("profiler"), # Dev Only
     use_waiter(), 
     use_waitress(), 
     use_bs_tooltip(),
