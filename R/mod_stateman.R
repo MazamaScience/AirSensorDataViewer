@@ -33,6 +33,9 @@ mod_stateman_server <- function(input, output, session, usr){
       sd <- usr$selected$sd
       ed <- usr$selected$ed
       usr$updateSensors(sd, ed)
+      
+      # TODO: only update on year changes
+      usr$updateAnnual(ed)
     }
   )
   
@@ -72,7 +75,7 @@ magicUpdate <- function(usr) {
     if ( tab == 'overview' ) {
       # Do nothing 
     } else if ( tab == 'calendar' ) {
-      # Do Nothing
+      # Do nothing
     } else if ( tab == 'raw' ) {
       usr$updatePat(label, sd, ed)
     } else if ( tab == 'patterns' ) {

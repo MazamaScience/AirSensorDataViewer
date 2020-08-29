@@ -30,6 +30,10 @@ User <- R6::R6Class(
     latest = function() {
       private$rx_latest$depend() 
       return(private$latest_promise)
+    }, 
+    annual = function() {
+      private$rx_annual$depend()
+      return(private$annual_promise)
     }
   ),
   
@@ -62,6 +66,7 @@ User <- R6::R6Class(
       private$rx_sensor <- reactiveTrigger()
       private$rx_pwfsl <- reactiveTrigger()
       private$rx_latest <- reactiveTrigger()
+      private$rx_annual <- reactiveTrigger()
       
       private$pas_promise <- future({ 
         setArchiveBaseUrl(self$baseUrl)
@@ -98,15 +103,15 @@ User <- R6::R6Class(
     updatePat = function(label, sd, ed) {
       logger.trace(paste("Updating pat ===>", label, sd, ed))
       private$rx_pat$trigger()
-     pas <- value(private$pas_promise)
+      pas <- value(private$pas_promise)
       private$pat_promise <- future({
         setArchiveBaseUrl(self$baseUrl)
-            get_pat(
-              pas = pas,
-              label = label,
-              sd = sd,
-              ed = ed
-            )
+        get_pat(
+          pas = pas,
+          label = label,
+          sd = sd,
+          ed = ed
+        )
       }, lazy = TRUE)
     }, 
     
@@ -141,6 +146,16 @@ User <- R6::R6Class(
       }, lazy = TRUE)
     }, 
     
+    updateAnnual = function(date) {
+      logger.trace(paste("Updating annual ===>"), date)
+      private$rx_annual$trigger()
+      sd <- strftime(date, "%Y-01-01")
+      ed <- strftime(date, "%Y-12-31")
+      private$annual_promise <- future({
+        sensor_load(startdate = sd, enddate = ed)
+      }, lazy = TRUE)
+    },
+    
     setTz = function(timezone) {
       logger.trace(paste("setting timezone ===>", timezone))
       self$tz <- timezone
@@ -149,22 +164,23 @@ User <- R6::R6Class(
   ), 
   
   private = list(
-    
     rx_pas = NULL,
     rx_sensors = NULL, 
     rx_pat = NULL,
     rx_sensor = NULL, 
     rx_pwfsl = NULL, 
     rx_latest = NULL,
+    rx_annual = NULL,
     
     pas_promise = NULL,
     sensors_promise = NULL,
     pat_promise = NULL, 
     sensor_promise = NULL, 
     pwfsl_promise = NULL, 
-    latest_promise = NULL
-    
-  ), 
+    latest_promise = NULL, 
+    annual_promise = NULL
+  )
+  
 )
 
 

@@ -29,12 +29,11 @@ mod_calendar_server <- function(input, output, session, usr) {
   ns <- session$ns
   
   output$calendarPlot <- renderTimeseriesCalendar({
-    sensors <- usr$sensors
     
-    usr$sensors %...>% (function(sensors) {
+    usr$annual %...>% (function(annual) {
       timeseriesCalendar(
-        data = sensors$data, 
-        meta = sensors$meta, 
+        data = annual$data, 
+        meta = annual$meta, 
         inputId = 'main_panel_ui_1-sensor_select'
       )
     }) %...!% (function(err) {
