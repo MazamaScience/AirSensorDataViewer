@@ -5,7 +5,7 @@
 #'
 #' @examples
 get_pas <- function() { 
-  logger.trace("loading pas obj...")
+  # logger.trace("loading pas obj...")
   pas_load()
 }
 
@@ -22,7 +22,7 @@ get_pas <- function() {
 #' @examples
 get_pat <- function(pas, label, sd, ed, pat = NULL) {
 
-  logger.trace(paste(label, sd, ed, "loading pat obj..."))
+  # logger.trace(paste(label, sd, ed, "loading pat obj..."))
   
   sd <- ymd(sd)
   ed <- ymd(ed)
@@ -41,14 +41,14 @@ get_pat <- function(pas, label, sd, ed, pat = NULL) {
     data_ed <- ymd_hms(max(pat$data$datetime))
     
     if ( sd %within% (data_sd %--% data_ed) ) {
-      logger.trace(paste("pat filter date to", sd, "--", ed))
+      # logger.trace(paste("pat filter date to", sd, "--", ed))
       pat <- pat_filterDate(
         pat = pat,
         startdate = strftime(sd, "%Y%m%d"),
         enddate = strftime(ed, "%Y%m%d")
       )
     } else {
-      logger.trace("reloading pat obj...")
+      # logger.trace("reloading pat obj...")
       pat <- pat_load(
         pas = pas, 
         label = label, 
@@ -72,7 +72,7 @@ get_pat <- function(pas, label, sd, ed, pat = NULL) {
 #'
 #' @examples
 get_sensor <- function(sensors, ...) {
-  logger.trace("loading sensor obj...")
+  # logger.trace("loading sensor obj...")
   sensor_filterMeta(sensors, ...) 
 }
 
@@ -91,7 +91,7 @@ get_sensors <- function(sd, ed, sensors = NULL) {
   sd <- ymd(sd) 
   
   if ( is.null(sensors) ) {
-    logger.trace(paste(sd, ed, "loading sensors obj..."))
+    # logger.trace(paste(sd, ed, "loading sensors obj..."))
     sensors <- sensor_load(
       startdate = strftime(sd, "%Y%m%d"),
       enddate = strftime(ed, "%Y%m%d")
@@ -101,14 +101,14 @@ get_sensors <- function(sd, ed, sensors = NULL) {
     data_ed <- ymd_hms(max(sensors$data$datetime))
     
     if ( sd %within% (data_sd %--% data_ed) ) {
-      logger.trace(paste("filter date to", sd, "--", ed))
+      # logger.trace(paste("filter date to", sd, "--", ed))
       sensors <- sensor_filterDate(
         sensor = sensors,
         startdate = strftime(sd, "%Y%m%d"),
         enddate = strftime(ed, "%Y%m%d")
       )
     } else {
-      logger.trace("reloading sensors obj...")
+      # logger.trace("reloading sensors obj...")
       sensors <- sensor_load(
         startdate = strftime(sd, "%Y%m%d"),
         enddate = strftime(ed, "%Y%m%d")
@@ -129,7 +129,7 @@ get_sensors <- function(sd, ed, sensors = NULL) {
 #'
 #' @examples
 get_pat_annual <- function(pas, label, date) {
-  logger.trace("loading annual pat obj...")
+  # logger.trace("loading annual pat obj...")
   # sd <- strftime(ymd(date), "%Y0101")
   # ed <- strftime(ymd(date), "%Y1231")
   get_pat(pas, label, "20180101", "20181231")
@@ -147,7 +147,7 @@ get_pat_annual <- function(pas, label, date) {
 #'
 #' @examples
 get_pat_latest <- function(pas, label, tz = 'UTC') {
-  logger.trace(paste(label, "loading latest pat obj..."))
+  # logger.trace(paste(label, "loading latest pat obj..."))
   pat_createNew(
     pas = pas, 
     label = label, 
@@ -166,7 +166,7 @@ get_pat_latest <- function(pas, label, tz = 'UTC') {
 #' 
 #' @importFrom worldmet importNOAA getMeta 
 get_noaa <- function(sensor) {
-  logger.trace("loading NOAA...")
+  # logger.trace("loading NOAA...")
   sd <- min(ymd_hms(sensor$data$datetime))
   ed <- max(ymd_hms(sensor$data$datetime))
   # Find wind data readings from the closest NOAA site

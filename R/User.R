@@ -9,27 +9,27 @@ User <- R6::R6Class(
   active = list(
     pas = function() {
       private$rx_pas$depend()
-      value(private$pas_promise)
+      return(private$pas_promise)
     },
     sensors = function() {
       private$rx_sensors$depend()
-      value(private$sensors_promise)
+      return(private$sensors_promise)
     },
     pat = function() {
       private$rx_pat$depend()
-      value(private$pat_promise)
+      return(private$pat_promise)
     }, 
     sensor = function() {
       private$rx_sensor$depend() 
-      value(private$sensor_promise)
+      return(private$sensor_promise)
     }, 
     pwfsl = function() {
       private$rx_pwfsl$depend()
-      value(private$pwfsl_promise)
+      return(private$pwfsl_promise)
     }, 
     latest = function() {
       private$rx_latest$depend() 
-      value(private$latest_promise)
+      return(private$latest_promise)
     }
   ),
   
@@ -65,28 +65,12 @@ User <- R6::R6Class(
       
       private$pas_promise <- future({ 
         setArchiveBaseUrl(self$baseUrl)
-        tryCatch(
-          expr = {
-            get_pas()
-          }, 
-          error = function(err) { 
-            logger.error(err)
-            return(NULL)
-          }
-        )
+        get_pas()
       })
       
       private$sensors_promise <- future({
         setArchiveBaseUrl(self$baseUrl)
-        tryCatch(
-          expr = { 
-            get_sensors(today() - days(7), today())
-          }, 
-          error = function(err) { 
-            logger.error(err)
-            return(NULL)
-          }
-        )
+        get_sensors(today() - days(7), today())
       })
     }, 
     
@@ -96,16 +80,8 @@ User <- R6::R6Class(
       private$rx_pas$trigger()
       private$pas_promise <- future({
         setArchiveBaseUrl(self$baseUrl)
-        tryCatch(
-          expr = {
-            get_pas()
-          }, 
-          error = function(err) { 
-            logger.error(err)
-            return(NULL)
-          }
-        )
-      })
+        get_pas()
+      }, lazy = TRUE)
     }, 
     
     # -- Update the sensors promise
@@ -114,87 +90,55 @@ User <- R6::R6Class(
       private$rx_sensors$trigger()
       private$sensors_promise <- future({
         setArchiveBaseUrl(self$baseUrl)
-        tryCatch(
-          expr = {
-            get_sensors(sd, ed)
-          }, 
-          error = function(err) { 
-            logger.error(err)
-            return(NULL)
-          }
-        )
-      })
+        get_sensors(sd, ed)
+      }, lazy = TRUE)
     },
     
     # -- Update the PAT promise
-    updatePat = function(pas, label, sd, ed) {
+    updatePat = function(label, sd, ed) {
       logger.trace(paste("Updating pat ===>", label, sd, ed))
       private$rx_pat$trigger()
+     pas <- value(private$pas_promise)
       private$pat_promise <- future({
         setArchiveBaseUrl(self$baseUrl)
-        tryCatch(
-          expr = {
             get_pat(
               pas = pas,
               label = label,
               sd = sd,
               ed = ed
             )
-          }, 
-          error = function(err) { 
-            logger.error(err)
-            return(NULL)
-          }
-        ) 
-      })
+      }, lazy = TRUE)
     }, 
     
-    updateSensor = function(sensors, label) {
+    updateSensor = function(label) {
       logger.trace(paste("updating sensor ===>", label))
       private$rx_sensor$trigger()
       # Not really sure why, but this redef is absolutely neccesary. 
       lab <- label
+      sensors <- value(private$sensors_promise)
       private$sensor_promise <- future({
-        tryCatch(
-          expr = {
-            sensor_filterMeta(sensors, .data$label == lab)
-          }, 
-          error = function(err) {
-            logger.error(err)
-            NULL
-          }
-        )
-      }
-      )
+        sensor_filterMeta(sensors, .data$label == lab)
+      }, lazy = TRUE)
       
     },
     
-    updatePwfsl = function(id, sd, ed) {
-      logger.trace(paste("Updating pwfsl ===>", id, sd, ed))
+    updatePwfsl = function(label, sd, ed) {
+      logger.trace(paste("Updating pwfsl ===>", sd, ed))
       private$rx_pwfsl$trigger()
+      sensor <- value(private$sensor_promise)
+      id <- sensor$meta$pwfsl_closestMonitorID
       private$pwfsl_promise <- future({
-        tryCatch(
-          PWFSLSmoke::monitor_load(sd, ed, id), 
-          error = function(err) { 
-            logger.error(err)
-            return(NULL)
-          }
-        )
-      })
+        PWFSLSmoke::monitor_load(sd, ed, id)
+      }, lazy = TRUE)
     }, 
     
-    updateLatest = function(pas, label, tz = 'UTC') {
+    updateLatest = function(label, tz = 'UTC') {
       logger.trace(paste("Updating latest ===>", label))
       private$rx_latest$trigger()
+      pas <- value(private$pas_promise)
       private$latest_promise <- future({
-        tryCatch(
-          get_pat_latest(pas, label, tz), 
-          error = function(err) { 
-            logger.error(err)
-            return(NULL)
-          }
-        )
-      })
+        get_pat_latest(pas = pas, label = label, tz = tz)
+      }, lazy = TRUE)
     }, 
     
     setTz = function(timezone) {

@@ -112,6 +112,7 @@ mod_main_panel_ui <- function(id) {
 #' @importFrom clipr write_clip
 #' @importFrom shinyjs show hide
 #' @importFrom utils write.csv
+#' @importFrom promises `%...>%` `%...!%`
 mod_main_panel_server <- function(input, output, session, usr) {
   ns <- session$ns
   
@@ -136,24 +137,30 @@ mod_main_panel_server <- function(input, output, session, usr) {
       
       sensors <- usr$sensors
       
-      # Check diff bewteen sensors aobj in sensor obj and pas obj and only use
-      # the sensors with mutual existence
-      communities <- na.omit(unique(id2com(sensors[["meta"]][['communityRegion']])))
-      sensor_labels <- na.omit(unique(sensors[["meta"]][['label']]))
+      usr$sensors %...>% (function(sensors) {
+          # Check diff bewteen sensors aobj in sensor obj and pas obj and only use
+          # the sensors with mutual existence
+          communities <- na.omit(unique(id2com(sensors[["meta"]][['communityRegion']])))
+          sensor_labels <- na.omit(unique(sensors[["meta"]][['label']]))
+          
+          # Fill the community selection
+          updateSelectizeInput(
+            session,
+            inputId = "community_select",
+            selected = "All...",
+            choices = c("Choose a community" = "","All...", communities)
+          )
+          # Fill the sensor selection
+          updateSelectizeInput(
+            session,
+            inputId = "sensor_select",
+            choices = sensor_labels
+          )
+        }) %...!% (function(err) {
+          catchError(err)
+        })
       
-      # Fill the community selection
-      updateSelectizeInput(
-        session,
-        inputId = "community_select",
-        selected = "All...",
-        choices = c("Choose a community" = "","All...", communities)
-      )
-      # Fill the sensor selection
-      updateSelectizeInput(
-        session,
-        inputId = "sensor_select",
-        choices = sensor_labels
-      )
+
       # Close the waitress
       w$close()
       
@@ -233,9 +240,6 @@ mod_main_panel_server <- function(input, output, session, usr) {
       usr$selected$sd <- sd
       usr$selected$ed <- ed
       
-      
-      usr$updateSensors(sd, ed)
-      
     }
   )
   
@@ -249,24 +253,28 @@ mod_main_panel_server <- function(input, output, session, usr) {
     handlerExpr = {
       
       sensors <- usr$sensors
-      meta <- sensors$meta
       
-      # update the sensor selection per community if not on all
-      if ( input$community_select == "All..." ) {
-        choices <- meta
-      } else {
-        community_str <- id2com(meta[['communityRegion']])
-        choices <- meta[community_str == input$community_select,]
-      }
+      usr$sensors %...>% (function(sensors) {
+        meta <- sensors$meta
+        # update the sensor selection per community if not on all
+        if ( input$community_select == "All..." ) {
+          choices <- meta
+        } else {
+          community_str <- id2com(meta[['communityRegion']])
+          choices <- meta[community_str == input$community_select,]
+        }
+        
+        updateSelectizeInput(
+          session,
+          "sensor_select",
+          choices = na.omit(choices[['label']])
+        )
+        
+        # update the client community selection input
+        usr$selected$community <- input$community_select
+        
+      })
       
-      updateSelectizeInput(
-        session,
-        "sensor_select",
-        choices = na.omit(choices[['label']])
-      )
-      
-      # update the client community selection input
-      usr$selected$community <- input$community_select
     }
   )
   
@@ -322,9 +330,13 @@ mod_main_panel_server <- function(input, output, session, usr) {
       sd <- usr$selected$sd
       ed <- usr$selected$ed
       # Make sure pat is up to date in usr object
-      usr$updatePat(pas, label, sd, ed)
-      pat <- usr$pat
-      write.csv(pat[['data']], file, row.names = FALSE)
+      usr$updatePat(label, sd, ed)
+      usr$pat %...>% (function(pat) {
+        write.csv(pat[['data']], file, row.names = FALSE)
+      }) %...!% (function(err) {
+        catchError(err)
+      })
+      
     }
   )
   

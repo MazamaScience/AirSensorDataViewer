@@ -34,7 +34,7 @@ mod_help_server <- function(input, output, session, usr){
   ns <- session$ns
   
   output$help <- renderUI({
-    
+    req(usr$selected$tab)
     tab <- usr$selected$tab
     
     help_path <- switch(

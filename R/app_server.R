@@ -14,6 +14,7 @@ app_server <- function( input, output, session ) {
   
   # Specify how futures are resolved, e.g. sequentially or in parallel.
   plan(future::sequential)
+  # plan(future::multiprocess)
   
   # Create the client session object
   #obj <- Client$new(session)

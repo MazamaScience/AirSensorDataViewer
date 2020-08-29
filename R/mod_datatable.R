@@ -33,6 +33,7 @@ mod_datatable_ui <- function(id) {
 #' @noRd 
 #' 
 #' @importFrom DT renderDT datatable formatDate
+#' @importFrom promises `%...>%` `%...!%`
 mod_datatable_server <- function(input, output, session, usr) {
   ns <- session$ns
   
@@ -41,21 +42,17 @@ mod_datatable_server <- function(input, output, session, usr) {
   output$metatable <- renderTable({
     pat <- usr$pat
     
-    tryCatch(
-      expr = {
-        data.frame( "Sensor" = pat$meta$label,
-                    "Community" = pat$meta$communityRegion,
-                    "Sensor Type" = pat$meta$sensorType,
-                    "Longitude" = pat$meta$longitude,
-                    "Latitude" = pat$meta$latitude,
-                    "State" = pat$meta$stateCode,
-                    "Country" = pat$meta$countryCode )  
-      }, 
-      error = function(err) {
-        logger.error(err)
-        NULL
-      }
-    )
+    usr$pat %...>% (function(pat) {
+      data.frame( "Sensor" = pat$meta$label,
+                  "Community" = pat$meta$communityRegion,
+                  "Sensor Type" = pat$meta$sensorType,
+                  "Longitude" = pat$meta$longitude,
+                  "Latitude" = pat$meta$latitude,
+                  "State" = pat$meta$stateCode,
+                  "Country" = pat$meta$countryCode )  
+    }) %...!% (function(err) {
+      catchError(err)
+    })
     
   })
   
@@ -63,23 +60,19 @@ mod_datatable_server <- function(input, output, session, usr) {
     #w$show()
     pat <- usr$pat
     
-    tryCatch(
-      expr = {
-        data <- pat$data[c("datetime", "pm25_A", "pm25_B", "temperature", "humidity")]
-        names(data) <- c( "Datetime (UTC)",
-                          "PM2.5 Ch. A (\u03bcg / m\u00b)",
-                          "PM2.5 Ch. B (\u03bcg / m\u00b)",
-                          "Temperature (F)",
-                          "Relative Humidity (%)" )
-        
-        datatable(data, selection = "none", options = list(pageLength = 25) ) %>%
-          formatDate(1, method = 'toLocaleString', params = list('en-EN'))
-      }, 
-      error = function(err) {
-        logger.error(err)
-        NULL
-      }
-    )
+    usr$pat %...>% (function(pat) {
+      data <- pat$data[c("datetime", "pm25_A", "pm25_B", "temperature", "humidity")]
+      names(data) <- c( "Datetime (UTC)",
+                        "PM2.5 Ch. A (\u03bcg / m\u00b)",
+                        "PM2.5 Ch. B (\u03bcg / m\u00b)",
+                        "Temperature (F)",
+                        "Relative Humidity (%)" )
+      
+      datatable(data, selection = "none", options = list(pageLength = 25) ) %>%
+        formatDate(1, method = 'toLocaleString', params = list('en-EN'))
+    }) %...!% (function(err) {
+      catchError(err)
+    })
   
   })
   

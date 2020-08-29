@@ -45,27 +45,26 @@ mod_patterns_ui <- function(id){
 #' @noRd 
 #' @importFrom DT renderDT datatable
 #' @importFrom waiter Waiter
+#' @importFrom promises `%...>%` `%...!%`
 mod_patterns_server <- function(input, output, session, usr){
   ns <- session$ns
   
   w <- Waiter$new(
     c(ns("patternPlot")), 
     spin_throbber(), 
-    color = "#F8F8F8"
+    color = "#fff"
   )
   
   output$patternPlot <- renderPlot({
     sensor <- usr$sensor
       w$show()
-      tryCatch(
-        expr = {
-          asdv_pm25Diurnal(sensor) + stat_meanByHour(output = "scaqmd")
-        }, 
-        error = function(err) {
-          logger.error(err)
-          NULL
-        }
-      )
+      
+      usr$sensor %...>% (function(sensor) {
+        asdv_pm25Diurnal(sensor) + stat_meanByHour(output = "scaqmd")
+      }) %...!% (function(err) {
+        catchError(err)
+      })
+    
   })
   
   # output$noaaTable <- renderDT({

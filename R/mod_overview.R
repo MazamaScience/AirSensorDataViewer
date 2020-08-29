@@ -68,43 +68,39 @@ mod_overview_ui <- function(id){
 #' @noRd 
 #' @importFrom tiotemp renderTimeseriesMap timeseriesMap 
 #' @importFrom tiotemp renderBarChart barChart
+#' @importFrom promises `%...>%` `%...!%`
 mod_overview_server <- function(input, output, session, usr) {
   ns <- session$ns
   output$timeseriesMap <- renderTimeseriesMap({
     selected <- isolate(usr$selected$sensor)
     sensors <- usr$sensors
-    tryCatch(
-      expr = {
-        timeseriesMap(
-          data = sensors[['data']], 
-          meta = sensors[['meta']], 
-          inputId = 'main_panel_ui_1-sensor_select', 
-          selected = selected
-        )
-      }, 
-      error = function(err) {
-        logger.error(err)
-        NULL
-      }
-    )
+    
+    usr$sensors %...>% (function(sensors) {
+      timeseriesMap(
+        data = sensors[['data']], 
+        meta = sensors[['meta']], 
+        inputId = 'main_panel_ui_1-sensor_select', 
+        selected = selected
+      )
+    }) %...!% (function(err) {
+      catchError(err)
+    })
+    
   })
   
   output$timeseriesBarChart <- renderBarChart({
     sensors <- usr$sensors
-    tryCatch(
-      expr = {
-        barChart(
-          data = sensors[['data']], 
-          meta = sensors[['meta']],
-          inputId = 'main_panel_ui_1-sensor_select',
-          ylab = "\u03bcg / m\u00b3"
-        ) 
-      }, 
-      error = function(err) {
-        logger.error(err)
-        NULL
-      }
-    )
+    
+    usr$sensors %...>% (function(sensors) {
+      barChart(
+        data = sensors[['data']], 
+        meta = sensors[['meta']],
+        inputId = 'main_panel_ui_1-sensor_select',
+        ylab = "\u03bcg / m\u00b3"
+      ) 
+    }) %...!% (function(err) {
+      catchError(err)
+    })
     
   })
   
