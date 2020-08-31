@@ -17,7 +17,6 @@ app_server <- function( input, output, session ) {
   # plan(future::multiprocess)
   
   # Create the client session object
-  #obj <- Client$new(session)
   usr <- User$new(session)
   
   # List the first level callModules here
@@ -36,16 +35,30 @@ app_server <- function( input, output, session ) {
   
   # Hide the waiter startup once the modules have been loaded 
   waiter_hide()
-  
+
   #Bookmarking
   observe({
-    reactiveValuesToList(input)
+    inputs <- reactiveValuesToList(input)
+    bookmarkable <- c(
+      "main_panel_ui_1-sensor_select", 
+      "main_panel_ui_1-community_select", 
+      "tab", 
+      "navbar",
+      "page",
+      "main_panel_ui_1-date_range"
+    )
+    nonBookmarkable <- names(input)[!names(input) %in% bookmarkable]
+    setBookmarkExclude(nonBookmarkable)
     session$doBookmark()
   })
   onBookmarked(function(url) {
     updateQueryString(url)
     usr$url <- url
   })
+  # onRestored(function(state) {
+  #   req(usr$sensors, usr$sensor, usr$pat, usr$pas)
+  #   print(state)
+  # })
   
   # Watch tabs and page
   observeEvent(input$navbar, {
