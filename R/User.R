@@ -34,6 +34,10 @@ User <- R6::R6Class(
     annual = function() {
       private$rx_annual$depend()
       return(private$annual_promise)
+    },
+    noaa = function() {
+      private$rx_noaa$depend()
+      return(private$noaa_promise)
     }
   ),
   
@@ -60,6 +64,7 @@ User <- R6::R6Class(
         tab = NULL
       )
       
+      # Create the reactive trigger got each loaded value
       private$rx_pas <- reactiveTrigger()
       private$rx_sensors <- reactiveTrigger()
       private$rx_pat <- reactiveTrigger()
@@ -67,12 +72,13 @@ User <- R6::R6Class(
       private$rx_pwfsl <- reactiveTrigger()
       private$rx_latest <- reactiveTrigger()
       private$rx_annual <- reactiveTrigger()
+      private$rx_noaa <- reactiveTrigger()
       
+      # Init load latest default pas and sensors
       private$pas_promise <- future({ 
         setArchiveBaseUrl(self$baseUrl)
         get_pas()
       })
-      
       private$sensors_promise <- future({
         setArchiveBaseUrl(self$baseUrl)
         get_sensors(today() - days(7), today())
@@ -115,6 +121,7 @@ User <- R6::R6Class(
       }, lazy = TRUE)
     }, 
     
+    # -- Update the sensor promise
     updateSensor = function(label) {
       logger.trace(paste("updating sensor ===>", label))
       private$rx_sensor$trigger()
@@ -127,6 +134,7 @@ User <- R6::R6Class(
       
     },
     
+    # -- Update the pwfsl monitor promise
     updatePwfsl = function(label, sd, ed) {
       logger.trace(paste("Updating pwfsl ===>", sd, ed))
       private$rx_pwfsl$trigger()
@@ -137,6 +145,7 @@ User <- R6::R6Class(
       }, lazy = TRUE)
     }, 
     
+    # -- Update the latest pat promise
     updateLatest = function(label, tz = 'UTC') {
       logger.trace(paste("Updating latest ===>", label))
       private$rx_latest$trigger()
@@ -146,6 +155,7 @@ User <- R6::R6Class(
       }, lazy = TRUE)
     }, 
     
+    # -- Update the annual pat 
     updateAnnual = function(date) {
       logger.trace(paste("Updating annual ===>"), date)
       private$rx_annual$trigger()
@@ -153,6 +163,28 @@ User <- R6::R6Class(
       ed <- strftime(date, "%Y-12-31")
       private$annual_promise <- future({
         sensor_load(startdate = sd, enddate = ed)
+      }, lazy = TRUE)
+    },
+    
+    # -- Update the noaa data
+    updateNoaa =  function(date) {
+      logger.trace(paste("Updating noaa ===>"))
+      private$rx_noaa$trigger()
+      sensor <- value(private$sensor_promise)
+      year <- lubridate::year(date)
+      lat <- sensor$meta$latitude
+      lon <- sensor$meta$longitude 
+      private$noaa_promise <- future({
+        metMeta <- worldmet::getMeta(
+          n = 1, 
+          lat = lat, 
+          lon = lon,
+          state = 'CA', 
+          plot = FALSE
+        )
+        
+        worldmet::importNOAA(metMeta$code, year = year, hourly = TRUE, n.cores = future::availableCores() - 1, quiet = TRUE)
+        
       }, lazy = TRUE)
     },
     
@@ -171,6 +203,7 @@ User <- R6::R6Class(
     rx_pwfsl = NULL, 
     rx_latest = NULL,
     rx_annual = NULL,
+    rx_noaa = NULL,
     
     pas_promise = NULL,
     sensors_promise = NULL,
@@ -178,7 +211,8 @@ User <- R6::R6Class(
     sensor_promise = NULL, 
     pwfsl_promise = NULL, 
     latest_promise = NULL, 
-    annual_promise = NULL
+    annual_promise = NULL, 
+    noaa_promise = NULL
   )
   
 )
