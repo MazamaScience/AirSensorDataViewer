@@ -19,14 +19,14 @@ mod_main_panel_ui <- function(id) {
       inputId = ns("community_select"),
       label = tags$h4("Community"), 
       selected = NULL,
-      choices = "Loading Communities..."
+      choices = list("Loading Communities..." = NULL)
     ),
     
     selectizeInput(
       inputId = ns("sensor_select"),
       label = tags$h4("Sensor"), 
       selected = NULL,
-      choices = "Loading Sensors..."
+      choices = list("Loading Sensors..." = NULL)
     ),
     
     dateRangeInput(

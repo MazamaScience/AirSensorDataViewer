@@ -16,9 +16,7 @@ mod_stateman_server <- function(input, output, session, usr){
       usr$selected$tab
     }, 
     handlerExpr = {
-    
       magicUpdate(usr)
-      
     }
   )
   
@@ -32,6 +30,7 @@ mod_stateman_server <- function(input, output, session, usr){
     handlerExpr = {
       sd <- usr$selected$sd
       ed <- usr$selected$ed
+      
       usr$updateSensors(sd, ed)
       
       # TODO: only update on year changes
@@ -80,6 +79,7 @@ magicUpdate <- function(usr) {
       usr$updatePat(label, sd, ed)
     } else if ( tab == 'patterns' ) {
       usr$updateSensor(label)
+      usr$updateNoaa(ed)
     } else if ( tab == 'compare' ) {
       usr$updatePat(label, sd, ed)
       usr$updateSensor(label)

@@ -8,6 +8,7 @@
 #'
 #' @importFrom shiny NS tagList 
 #' @importFrom DT DTOutput
+#' @importFrom gt gt_output render_gt
 mod_patterns_ui <- function(id){
   ns <- NS(id)
   tagList(
@@ -19,10 +20,9 @@ mod_patterns_ui <- function(id){
     fluidRow(
       column(
         width = 5,
-        
         tags$h4("Additional NOAA Weather Data"),
         wellPanel(
-          DTOutput(
+          gt_output(
             outputId = ns("noaaTable")
           )
         )
@@ -45,53 +45,72 @@ mod_patterns_ui <- function(id){
 #' @noRd 
 #' @importFrom DT renderDT datatable
 #' @importFrom waiter Waiter
-#' @importFrom promises `%...>%` `%...!%`
+#' @importFrom promises `%...>%` `%...!%` promise_all
 mod_patterns_server <- function(input, output, session, usr){
   ns <- session$ns
   
-  w <- Waiter$new(
-    c(ns("patternPlot")), 
-    spin_throbber(), 
-    color = "#fff"
-  )
+  # w <- Waiter$new(
+  #   c(ns("patternPlot")), 
+  #   spin_throbber(), 
+  #   color = "#fff"
+  # )
   
   output$patternPlot <- renderPlot({
-    sensor <- usr$sensor
-      w$show()
+    req(usr$sensor)
+    
+    usr$sensor %...>% (function(sensor) {
+      asdv_pm25Diurnal(sensor) + stat_meanByHour(output = "scaqmd")
+    }) %...!% (function(err) {
+      catchError(err)
+    })
+    
+  })
+  
+  output$noaaTable <- render_gt({
+    req(usr$noaa)
+    
+    usr$noaa %...>% (function(noaa) {
+
+      table <- noaa %>%
+        summarise(
+          avg_ws = mean(ws, na.rm = TRUE),
+          min_ws = min(ws, na.rm = TRUE),
+          max_ws = max(ws, na.rm = TRUE),
+          avg_wd = mean(wd, na.rm = TRUE),
+          avg_t = mean(air_temp, na.rm = TRUE),
+          min_t = min(air_temp, na.rm = TRUE),
+          max_t = max(air_temp, na.rm = TRUE),
+          avg_rh = mean(RH, na.rm = TRUE),
+          min_rh = min(RH, na.rm = TRUE),
+          max_rh = max(RH, na.rm = TRUE),
+          )
       
-      usr$sensor %...>% (function(sensor) {
-        asdv_pm25Diurnal(sensor) + stat_meanByHour(output = "scaqmd")
+      gt(table) %>%
+        tab_header(
+          title = "Addtional NOAA Weather Data",
+          subtitle = ""
+        ) %>%
+        tab_source_note(
+          source_note = "Source: Integrated Surface Database (ISD) https://www.ncdc.noaa.gov/isd"
+        )
+      
+    }) %...!% (function(err) {
+      catchError(err)
+    })
+    
+  })
+  
+  output$windPlot <- renderPlot({
+    req(usr$sensor, usr$noaa)
+    
+    promise_all(sensor = usr$sensor, noaa = usr$noaa) %...>% 
+      with({
+        sensor_pollutionRose(sensor, noaa)
       }) %...!% (function(err) {
         catchError(err)
       })
     
   })
-  
-  # output$noaaTable <- renderDT({
-  #   req(values$noaa)
-  #   L2$show()
-  #   then(values$noaa, function(d) {
-  #     datatable(
-  #       data = noaaTable(d),
-  #       selection = "none",
-  #       colnames = "",
-  #       options = list(dom = 't', bSort = FALSE),
-  #       class = 'cell-border stripe'
-  #     ) %>%
-  #       formatRound(columns = 1, digits = 2)
-  #   })
-  # })
-  # 
-  # output$windPlot <- renderPlot({
-  #   req(values$sensor)
-  #   req(values$noaa)
-  #   L3$show()
-  #   then(values$sensor, function(d) {
-  #     then(values$noaa, function(h) {
-  #       sensor_pollutionRose(d, h)  
-  #     })
-  #   })
-  # })
   
 }
 

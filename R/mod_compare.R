@@ -62,15 +62,14 @@ mod_compare_ui <- function(id) {
 mod_compare_server <- function(input, output, session, usr) {
   ns <- session$ns
   
-  w <- Waiter$new(
-    c(ns("statusTable"), ns("sensorMonitorCorr"), ns("sensorMonitorComp")), 
-    spin_throbber(), 
-    color = "#fff"
-  )
-  
+  # w <- Waiter$new(
+  #   c(ns("statusTable"), ns("sensorMonitorCorr"), ns("sensorMonitorComp")), 
+  #   spin_throbber(), 
+  #   color = "#fff"
+  # )
+
   output$comparisonLeaflet <- renderLeaflet({
-    
-    w$show()
+    req(usr$sensor, usr$pwfsl)
 
     promise_all(sensor = usr$sensor, pwfsl = usr$pwfsl) %...>% with({
         comparisonLeaflet(sensor, pwfsl)
@@ -81,6 +80,7 @@ mod_compare_server <- function(input, output, session, usr) {
   })
   
   output$sensorMonitorCorr <- renderPlot({
+    req(usr$sensor, usr$pwfsl)
     
     promise_all(sensor = usr$sensor, pwfsl = usr$pwfsl) %...>% with({
       lmSensorMonitor(sensor, pwfsl) 
@@ -91,6 +91,7 @@ mod_compare_server <- function(input, output, session, usr) {
   })
   
   output$sensorMonitorComp <- renderPlot({
+    req(usr$pat)
     
     usr$pat %...>% (function(pat) {
       pat_monitorComparison(pat)

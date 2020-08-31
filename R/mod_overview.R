@@ -71,7 +71,9 @@ mod_overview_ui <- function(id){
 #' @importFrom promises `%...>%` `%...!%`
 mod_overview_server <- function(input, output, session, usr) {
   ns <- session$ns
+  
   output$timeseriesMap <- renderTimeseriesMap({
+    req(usr$sensors)
     selected <- isolate(usr$selected$sensor)
     sensors <- usr$sensors
     
@@ -89,7 +91,7 @@ mod_overview_server <- function(input, output, session, usr) {
   })
   
   output$timeseriesBarChart <- renderBarChart({
-    sensors <- usr$sensors
+    req(usr$sensors)
     
     usr$sensors %...>% (function(sensors) {
       barChart(

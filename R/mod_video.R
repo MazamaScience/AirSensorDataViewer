@@ -31,8 +31,10 @@ mod_video_server <- function(input, output, session, usr) {
   
   output$video <- renderUI({
     req(usr$selected$community, usr$selected$ed)
+    
     community <- usr$selected$community
     ed <- ymd(usr$selected$ed)
+    
     tryCatch(
       expr = {
         if ( community != "All.." ) {

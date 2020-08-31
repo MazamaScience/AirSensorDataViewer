@@ -14,8 +14,7 @@ run_app <- function(
       server = app_server, 
       enableBookmarking = "url", 
       options = list(
-        "launch.browser" = TRUE,
-        "cache" = diskCache(file.path(dirname(tempdir()), "asdv-cache"))
+        "launch.browser" = TRUE
       )
     ), 
     golem_opts = list(...)

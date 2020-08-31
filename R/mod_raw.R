@@ -50,20 +50,19 @@ mod_raw_ui <- function(id){
 #' @importFrom ggplot2 theme_light 
 #' @importFrom waiter Waiter spin_throbber
 #' @importFrom promises `%...>%` `%...!%`
-mod_raw_server <- function(input, output, session, usr){
+mod_raw_server <- function(input, output, session, usr) {
   ns <- session$ns
-  w <- Waiter$new(
-    c(ns("multiPlot"), ns("comparePlot"), ns("lmPlot")), 
-    spin_throbber(), 
-    color = "#fff"
-  )
+  # w <- Waiter$new(
+  #   c(ns("multiPlot"), ns("comparePlot"), ns("lmPlot")), 
+  #   spin_throbber(), 
+  #   color = "#fff"
+  # )
   
   output$multiPlot <- renderPlot({
-    w$show()
-    pat <- usr$pat
+    req(usr$pat, usr$tz)
     
     usr$pat %...>% (function(pat) {
-      pat_multiPlot(pat) 
+      pat_multiPlot(pat, timezone = usr$tz) 
     }) %...!% (function(err) {
       catchError(err)
     })
@@ -71,10 +70,10 @@ mod_raw_server <- function(input, output, session, usr){
   })
   
   output$comparePlot <- renderPlot({
-    pat <- usr$pat
+    req(usr$pat, usr$tz)
     
     usr$pat %...>% (function(pat) {
-      asdv_internalFit(pat, tz = 'UTC', whichPlot = 'ab') + theme_light()
+      asdv_internalFit(pat, tz = usr$tz, whichPlot = 'ab') + theme_light()
     }) %...!% (function(err) {
       catchError(err)
     })
@@ -82,10 +81,10 @@ mod_raw_server <- function(input, output, session, usr){
   })
   
   output$lmPlot <- renderPlot({
-    pat <- usr$pat
+    req(usr$pat, usr$tz)
     
     usr$pat %...>% (function(pat) {
-      asdv_internalFit(pat,tz = 'UTC', whichPlot = 'lm') + theme_light()
+      asdv_internalFit(pat, tz = usr$tz, whichPlot = 'lm') + theme_light()
     }) %...!% (function(err) {
       catchError(err)
     })

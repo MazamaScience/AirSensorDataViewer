@@ -58,6 +58,7 @@ mod_latest_server <- function(input, output, session, usr){
   )
   
   output$pm_latest <- renderPlotly({
+    req(usr$latest)
 
     usr$latest %...>% (function(latest) {
       channelPlotly(latest, channel = 'ab') 
@@ -68,6 +69,7 @@ mod_latest_server <- function(input, output, session, usr){
   })
   
   output$humidity_latest <- renderPlotly({
+    req(usr$latest)
 
     usr$latest %...>% (function(latest) {
       humidityPlotly(latest)
@@ -78,6 +80,7 @@ mod_latest_server <- function(input, output, session, usr){
   })
   
   output$temperature_latest <- renderPlotly({
+    req(usr$latest)
 
     usr$latest %...>% (function(latest) {
       temperaturePlotly(latest)

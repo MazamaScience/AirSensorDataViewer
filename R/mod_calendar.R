@@ -29,6 +29,7 @@ mod_calendar_server <- function(input, output, session, usr) {
   ns <- session$ns
   
   output$calendarPlot <- renderTimeseriesCalendar({
+    req(usr$annual)
     
     usr$annual %...>% (function(annual) {
       timeseriesCalendar(

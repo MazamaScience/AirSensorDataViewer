@@ -40,7 +40,7 @@ mod_datatable_server <- function(input, output, session, usr) {
   w <- Waiter$new(ns("datatable"))
   
   output$metatable <- renderTable({
-    pat <- usr$pat
+    req(usr$pat)
     
     usr$pat %...>% (function(pat) {
       data.frame( "Sensor" = pat$meta$label,
@@ -57,8 +57,7 @@ mod_datatable_server <- function(input, output, session, usr) {
   })
   
   output$datatable <- renderDT({ 
-    #w$show()
-    pat <- usr$pat
+    req(usr$pat)
     
     usr$pat %...>% (function(pat) {
       data <- pat$data[c("datetime", "pm25_A", "pm25_B", "temperature", "humidity")]
