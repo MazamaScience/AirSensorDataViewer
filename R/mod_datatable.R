@@ -23,7 +23,7 @@ mod_datatable_ui <- function(id) {
       width = 10,
       DTOutput(
         outputId = ns("datatable")
-      ) 
+      ) %>% withLoader()
     )
   )
 }

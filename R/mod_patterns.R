@@ -15,16 +15,16 @@ mod_patterns_ui <- function(id){
     wellPanel(
       plotOutput(
         outputId = ns("patternPlot")
-      ) 
+      ) %>% withLoader() 
     ),
     fluidRow(
       column(
         width = 5,
-        tags$h4("Additional NOAA Weather Data"),
+        # tags$h4("Additional NOAA Weather Data"),
         wellPanel(
           gt_output(
             outputId = ns("noaaTable")
-          )
+          ) %>% withLoader()
         )
       ),
       column(
@@ -33,7 +33,7 @@ mod_patterns_ui <- function(id){
         wellPanel(
           plotOutput(
             outputId = ns("windPlot")
-          ) 
+          ) %>% withLoader()
         )
       )
     )
@@ -43,17 +43,12 @@ mod_patterns_ui <- function(id){
 #' patterns Server Function
 #'
 #' @noRd 
-#' @importFrom DT renderDT datatable
+#' @importFrom gt gt tab_header tab_source_note fmt_number cols_label
 #' @importFrom waiter Waiter
 #' @importFrom promises `%...>%` `%...!%` promise_all
+#' @importFrom tidyr everything pivot_longer
 mod_patterns_server <- function(input, output, session, usr){
   ns <- session$ns
-  
-  # w <- Waiter$new(
-  #   c(ns("patternPlot")), 
-  #   spin_throbber(), 
-  #   color = "#fff"
-  # )
   
   output$patternPlot <- renderPlot({
     req(usr$sensor)
@@ -70,20 +65,20 @@ mod_patterns_server <- function(input, output, session, usr){
     req(usr$noaa)
     
     usr$noaa %...>% (function(noaa) {
-
       table <- noaa %>%
         summarise(
-          avg_ws = mean(ws, na.rm = TRUE),
-          min_ws = min(ws, na.rm = TRUE),
-          max_ws = max(ws, na.rm = TRUE),
-          avg_wd = mean(wd, na.rm = TRUE),
-          avg_t = mean(air_temp, na.rm = TRUE),
-          min_t = min(air_temp, na.rm = TRUE),
-          max_t = max(air_temp, na.rm = TRUE),
-          avg_rh = mean(RH, na.rm = TRUE),
-          min_rh = min(RH, na.rm = TRUE),
-          max_rh = max(RH, na.rm = TRUE),
-          )
+          "Average Windspeed (m/s)" = mean(ws, na.rm = TRUE),
+          "Minimum Windspeed (m/s)" = min(ws, na.rm = TRUE),
+          "Maximum Windspeed (m/s)" = max(ws, na.rm = TRUE),
+          "Average Wind Direction (deg)" = mean(wd, na.rm = TRUE),
+          "Average Air Temperature (C)" = mean(air_temp, na.rm = TRUE),
+          "Minimum Air Temperature (C)"= min(air_temp, na.rm = TRUE),
+          "Maximum Air Temperature (C)" = max(air_temp, na.rm = TRUE),
+          "Average Relative Humidity (%)" = mean(RH, na.rm = TRUE),
+          "Minimum Relative Humidity (%)" = min(RH, na.rm = TRUE),
+          "Maximum Relative Humidity (%)" = max(RH, na.rm = TRUE),
+        ) %>% 
+        pivot_longer(everything())
       
       gt(table) %>%
         tab_header(
@@ -92,8 +87,10 @@ mod_patterns_server <- function(input, output, session, usr){
         ) %>%
         tab_source_note(
           source_note = "Source: Integrated Surface Database (ISD) https://www.ncdc.noaa.gov/isd"
-        )
-      
+        ) %>% 
+        fmt_number(2, decimals = 1) %>%
+        cols_label(name = "", value = "")
+        
     }) %...!% (function(err) {
       catchError(err)
     })

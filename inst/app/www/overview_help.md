@@ -8,4 +8,6 @@ Take a closer look at the data in the plot by highlighting the section you are i
 
 Note, the PM2.5 values displayed on the map are the average PM2.5 levels for the same timeframe displayed in the plot.
 
-The colors in the map and in the plot correspond to different levels of PM2.5 and the scale in the [location on app] shows which colors correspond to which concentration ranges. 
+The colors in the map and in the plot correspond to different levels of PM2.5. The
+scale is provided in the About page and shows which colors correspond to which
+concentration ranges.

@@ -16,7 +16,7 @@ mod_video_ui <- function(id){
       wellPanel(
         uiOutput(
           outputId = ns("video")
-        ) 
+        )
       )
     )
   )

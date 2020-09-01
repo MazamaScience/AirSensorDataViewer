@@ -8,7 +8,7 @@
 #'
 #' @importFrom shiny NS tagList 
 #' @importFrom leaflet leafletOutput
-#' @importFrom DT DTOutput
+#' @importFrom gt gt_output
 mod_compare_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -17,7 +17,7 @@ mod_compare_ui <- function(id) {
         wellPanel(
           leafletOutput(
             outputId = ns("comparisonLeaflet")
-          )
+          ) %>% withLoader()
         )
     ),
     fluidRow(
@@ -27,13 +27,13 @@ mod_compare_ui <- function(id) {
         wellPanel(
           plotOutput(
             outputId = ns("sensorMonitorCorr")
-          ) 
+          ) %>% withLoader()
         ),
         #tags$h4("Sensor-Monitor Correlation"),
         wellPanel(
-          DTOutput(
+          gt_output(
             outputId = ns("statusTable")
-          )
+          ) %>% withLoader()
         )
       ),
       column(
@@ -43,7 +43,7 @@ mod_compare_ui <- function(id) {
           plotOutput(
             height = "30vh",
             outputId = ns("sensorMonitorComp")
-          ) 
+          ) %>% withLoader()
         )
       )
     )
@@ -55,7 +55,7 @@ mod_compare_ui <- function(id) {
 #'
 #' @noRd 
 #' 
-#' @importFrom DT datatable formatRound renderDT
+#' @importFrom gt gt 
 #' @importFrom leaflet renderLeaflet
 #' @importFrom waiter Waiter
 #' @importFrom promises `%...>%` `%...!%` promise_all 
@@ -101,17 +101,23 @@ mod_compare_server <- function(input, output, session, usr) {
 
   })
   
-  output$statusTable <- renderDT({
+  output$statusTable <- render_gt({
     
     usr$pat %...>% (function(pat) {
-      datatable(
-        data = sensorMonitorCompTable(pat),
-        selection = "none",
-        colnames = "",
-        options = list(dom = 't', bSort = FALSE),
-        class = 'cell-border stripe'
-      ) %>%
-        formatRound(columns = 1, digits = 2)
+      
+      table <- pat$data %>% 
+        summarise(
+          "Number of Measurments" = length(pm25_A),
+          "Recovered (%)" = mean(sum(!is.na(pm25_A))/length(pm25_A), sum(!is.na(pm25_B))/length(pm25_B))*100
+          ) %>%
+        pivot_longer(everything())
+        
+      
+      gt(table) %>% 
+        fmt_number(2, decimals = 0) %>% 
+        cols_label(name = "", value = "") %>% 
+        tab_header(pat$meta$label)
+      
     })
 
   })

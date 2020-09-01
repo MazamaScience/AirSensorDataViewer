@@ -112,7 +112,7 @@ mod_main_panel_ui <- function(id) {
 #' @importFrom clipr write_clip
 #' @importFrom shinyjs show hide
 #' @importFrom utils write.csv
-#' @importFrom promises `%...>%` `%...!%`
+#' @importFrom promises `%...>%` `%...!%` promise_all
 mod_main_panel_server <- function(input, output, session, usr) {
   ns <- session$ns
   
@@ -135,32 +135,40 @@ mod_main_panel_server <- function(input, output, session, usr) {
       # set the client object timezone
       usr$setTz("America/Los_Angeles")
       
-      sensors <- usr$sensors
       
-      usr$sensors %...>% (function(sensors) {
+      promise_all(sensors = usr$sensors, pas = usr$pas) %...>% 
+        with({
           # Check diff bewteen sensors aobj in sensor obj and pas obj and only use
           # the sensors with mutual existence
-          communities <- na.omit(unique(id2com(sensors[["meta"]][['communityRegion']])))
-          sensor_labels <- na.omit(unique(sensors[["meta"]][['label']]))
+          pas_communities <- na.omit(unique(id2com(pas[['communityRegion']])))
+          pas_labels <- na.omit(unique(pas[['label']]))
+          
+          sensors_communities <- na.omit(unique(id2com(sensors[["meta"]][['communityRegion']])))
+          sensors_labels <- na.omit(unique(sensors[["meta"]][['label']]))
+          
+          community_choices <- sensors_communities[sensors_communities %in% pas_communities]
+          sensor_choices <- sensors_labels[sensors_labels %in% pas_labels]
+          
           
           # Fill the community selection
           updateSelectizeInput(
             session,
             inputId = "community_select",
             selected = "All...",
-            choices = c("Choose a community" = "","All...", communities)
+            choices = c("Choose a community" = NULL,"All...", community_choices)
           )
           # Fill the sensor selection
           updateSelectizeInput(
             session,
             inputId = "sensor_select",
-            choices = sensor_labels
+            choices = sensor_choices
           )
+          
         }) %...!% (function(err) {
           catchError(err)
         })
       
-
+      
       # Close the waitress
       w$close()
       
@@ -300,18 +308,26 @@ mod_main_panel_server <- function(input, output, session, usr) {
     }
   )
   
-  # Watch the current page. if on the latest page, hide the date range input 
+  # Watch the current page and tab. 
+  # if on the latest page, hide the date range input 
+  # if on community timelapse tab hide sensor selection
   observeEvent(
     ignoreNULL = TRUE,
     ignoreInit = TRUE,
     eventExpr = {
       usr$selected$page
+      usr$selected$tab
     }, 
     handlerExpr = {
       if (usr$selected$page == 'latest') {
         hide("date_range", anim = TRUE)
       } else {
         show("date_range", anim = TRUE)
+      }
+      if ( usr$selected$tab == 'video' ) {
+        hide("sensor_select", anim = TRUE)
+      } else {
+        show("sensor_select", anim = TRUE)
       }
     }
   )

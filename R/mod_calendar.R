@@ -14,7 +14,7 @@ mod_calendar_ui <- function(id){
     wellPanel(
       timeseriesCalendarOutput(
         outputId = ns("calendarPlot"), width = 800, height = 800
-      )
+      ) %>% withLoader()
     )
   )
 }

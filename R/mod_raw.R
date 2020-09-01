@@ -10,34 +10,37 @@
 mod_raw_ui <- function(id){
   ns <- NS(id)
   tagList(
-    column(
-      width = 12,
-      height = "800",
-      tags$h4("Raw Data"),
-      wellPanel(
-        plotOutput(
-          outputId = ns("multiPlot"),
-          height = "800"
+    tags$div(
+      id = "raw-tab-content",
+      fluidRow(
+        column(
+          width = 6,
+          # tags$h4("Channel Overlay"),
+          wellPanel(
+            plotOutput(
+              outputId = ns("comparePlot")
+            ) %>% withLoader() 
+          )
+        ),
+        column(
+          width = 6,
+          # tags$h4("Channel Correlation"),
+          wellPanel(
+            plotOutput(
+              outputId = ns("lmPlot")
+            ) %>% withLoader() 
+          )
         )
-      )
-    ),
-    fluidRow(
+      ), 
       column(
-        width = 6,
-        tags$h4("Channel Overlay"),
+        width = 12,
+        height = "800",
+        # tags$h4("Raw Data"),
         wellPanel(
           plotOutput(
-            outputId = ns("comparePlot")
-          ) 
-        )
-      ),
-      column(
-        width = 6,
-        tags$h4("Channel Correlation"),
-        wellPanel(
-          plotOutput(
-            outputId = ns("lmPlot")
-          ) 
+            outputId = ns("multiPlot"),
+            height = "800"
+          ) %>% withLoader() 
         )
       )
     )
@@ -52,17 +55,16 @@ mod_raw_ui <- function(id){
 #' @importFrom promises `%...>%` `%...!%`
 mod_raw_server <- function(input, output, session, usr) {
   ns <- session$ns
-  # w <- Waiter$new(
-  #   c(ns("multiPlot"), ns("comparePlot"), ns("lmPlot")), 
-  #   spin_throbber(), 
-  #   color = "#fff"
-  # )
+  w <- Waiter$new(
+    id = "raw-tab-content",
+    spin_throbber(),
+    color = "#fff"
+  )
   
   output$multiPlot <- renderPlot({
     req(usr$pat, usr$tz)
-    
     usr$pat %...>% (function(pat) {
-      pat_multiPlot(pat, timezone = usr$tz) 
+      pat_multiPlot(pat, timezone = usr$tz, columns = 1) 
     }) %...!% (function(err) {
       catchError(err)
     })

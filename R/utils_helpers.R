@@ -165,3 +165,16 @@ cacheKey <- function(...) {
   x <- list(...)
   digest(x)
 }
+
+#' Title
+#'
+#' @param el 
+#'
+#' @return
+#' @export
+#' @importFrom shinycssloaders withSpinner
+#'
+#' @examples
+withLoader <- function(el) {
+  withSpinner(el, color = "#008cba", type = 7) 
+}

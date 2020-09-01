@@ -17,7 +17,7 @@ mod_latest_ui <- function(id){
       wellPanel(
         plotlyOutput(
           outputId = ns("pm_latest")
-        )
+        ) %>% withLoader()
       )
     ),
     fluidRow(
@@ -26,7 +26,7 @@ mod_latest_ui <- function(id){
         wellPanel(
           plotlyOutput(
             outputId = ns("humidity_latest")
-          ) 
+          ) %>% withLoader()
         )
       ),
       column(
@@ -34,7 +34,7 @@ mod_latest_ui <- function(id){
         wellPanel(
           plotlyOutput(
             outputId = ns("temperature_latest")
-          ) 
+          ) %>% withLoader()
         )
       )
     )

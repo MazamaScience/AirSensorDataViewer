@@ -36,6 +36,8 @@ usethis::use_package("digest")
 usethis::use_package("tiotemp")
 usethis::use_package("vctrs")
 usethis::use_package("R6")
+usethis::use_package("gt")
+usethis::use_package("shinycssloaders")
 
 
 # Add github personal access token if you build a lot and exceed rate limit

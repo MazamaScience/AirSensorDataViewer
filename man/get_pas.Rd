@@ -4,7 +4,7 @@
 \alias{get_pas}
 \title{Title}
 \usage{
-get_pas()
+get_pas(date = NULL)
 }
 \value{
 

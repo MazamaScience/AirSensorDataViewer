@@ -15,7 +15,7 @@ mod_overview_ui <- function(id){
       outputId = ns("timeseriesMap"),
       width = "inherit", 
       height = "80vh"
-    ),
+    ) %>% withLoader(),
     absolutePanel(
       id = "plot_panel",
       fixed = FALSE,
@@ -34,7 +34,7 @@ mod_overview_ui <- function(id){
         barChartOutput(
           outputId = ns("timeseriesBarChart"), 
           height = "20vh"
-        )
+        ) %>% withLoader()
       )
     ),
     # Barplot panel opacity CSS and leaflet padding fix
