@@ -55,10 +55,47 @@ app_server <- function( input, output, session ) {
     updateQueryString(url)
     usr$url <- url
   })
-  # onRestored(function(state) {
-  #   req(usr$sensors, usr$sensor, usr$pat, usr$pas)
-  #   print(state)
-  # })
+  onRestored(function(state) {
+    logger.trace("Restoring from url")
+    shinyjs::delay(1500, {
+      
+      tab <- state$input$tab
+      page <- state$input$page
+      sded <- state$input$`main_panel_ui_1-date_range`
+      label <-   state$input$`main_panel_ui_1-sensor_select`
+      community <-  state$input$`main_panel_ui_1-community_select`
+      
+      # TODO: Add page and tab?
+      
+      shinyjs::runjs(
+        paste0(
+          '$("select#`main_panel_ui_1-community_select`")[0]
+                .selectize
+                .setValue("', community,'", false)'
+        )
+      )
+      
+      shinyjs::runjs(
+        paste0(
+          '$("select#main_panel_ui_1-sensor_select")[0]
+                .selectize
+                .setValue("', label,'", false)'
+        )
+      )
+      
+      shinyjs::runjs(
+        paste0(
+          '$("select#`main_panel_ui_1-date_range`")[0]
+                .selectize
+                .setValue("', sded,'", false)'
+        )
+      )
+      
+      plotUp()
+      
+    })
+    
+  })
   
   # Watch tabs and page
   observeEvent(input$navbar, {
