@@ -1,6 +1,5 @@
 #'@export
 #'@importFrom future future value
-#'@importFrom R6 R6Class
 #'@importFrom AirSensor setArchiveBaseUrl
 #'@import MazamaCoreUtils
 User <- R6::R6Class(
@@ -48,13 +47,13 @@ User <- R6::R6Class(
     url = NULL, 
     tz = NULL, 
     token = NULL,
-    trigger = NULL,
     
     initialize = function(session) {
       
       logger.trace(paste("User started on session token:", session$token)) 
       self$token <- session$token
       
+      # Create reactive values of the inputs
       self$selected <- reactiveValues(
         sensor = NULL,
         community = NULL,
@@ -86,12 +85,17 @@ User <- R6::R6Class(
     }, 
     
     # -- Update the PAS promise
-    updatePas = function() {
+    updatePas = function(date = NULL) {
       logger.trace(paste("Updating pas ===>"))
       private$rx_pas$trigger()
+      if ( !lubridate::ymd(date) < lubridate::ymd(20190505) ) {
+        date <- strftime(date, "%Y%m%d") 
+      } else {
+        date <- 20190505
+      }
       private$pas_promise <- future({
         setArchiveBaseUrl(self$baseUrl)
-        get_pas()
+        get_pas(date)
       }, lazy = TRUE)
     }, 
     
@@ -125,7 +129,7 @@ User <- R6::R6Class(
     updateSensor = function(label) {
       logger.trace(paste("updating sensor ===>", label))
       private$rx_sensor$trigger()
-      # Not really sure why, but this redef is absolutely neccesary. 
+      # Not really sure why, but this redef is absolutely necessary. 
       lab <- label
       sensors <- value(private$sensors_promise)
       private$sensor_promise <- future({
@@ -141,7 +145,7 @@ User <- R6::R6Class(
       sensor <- value(private$sensor_promise)
       id <- sensor$meta$pwfsl_closestMonitorID
       private$pwfsl_promise <- future({
-        PWFSLSmoke::monitor_load(sd, ed, id)
+        get_pwfsl(sd, ed, id)
       }, lazy = TRUE)
     }, 
     
@@ -174,6 +178,7 @@ User <- R6::R6Class(
       year <- lubridate::year(date)
       lat <- sensor$meta$latitude
       lon <- sensor$meta$longitude 
+      # TODO: Put in get_noaa function
       private$noaa_promise <- future({
         metMeta <- worldmet::getMeta(
           n = 1, 
@@ -183,7 +188,13 @@ User <- R6::R6Class(
           plot = FALSE
         )
         
-        worldmet::importNOAA(metMeta$code, year = year, hourly = TRUE, n.cores = future::availableCores() - 1, quiet = TRUE)
+        worldmet::importNOAA(
+          metMeta$code, 
+          year = year, 
+          hourly = TRUE, 
+          n.cores = future::availableCores() - 1, 
+          quiet = TRUE
+        )
         
       }, lazy = TRUE)
     },
@@ -195,6 +206,7 @@ User <- R6::R6Class(
     
   ), 
   
+  # Private fields used to house the reactive trigger control and data promises
   private = list(
     rx_pas = NULL,
     rx_sensors = NULL, 
