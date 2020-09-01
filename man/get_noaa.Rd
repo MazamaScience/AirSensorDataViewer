@@ -4,7 +4,7 @@
 \alias{get_noaa}
 \title{Title}
 \usage{
-get_noaa(sensor)
+get_noaa(sensor, sd, ed)
 }
 \arguments{
 \item{sensor}{}

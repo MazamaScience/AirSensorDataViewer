@@ -171,31 +171,12 @@ User <- R6::R6Class(
     },
     
     # -- Update the noaa data
-    updateNoaa =  function(date) {
+    updateNoaa =  function(sd, ed) {
       logger.trace(paste("Updating noaa ===>"))
       private$rx_noaa$trigger()
       sensor <- value(private$sensor_promise)
-      year <- lubridate::year(date)
-      lat <- sensor$meta$latitude
-      lon <- sensor$meta$longitude 
-      # TODO: Put in get_noaa function
       private$noaa_promise <- future({
-        metMeta <- worldmet::getMeta(
-          n = 1, 
-          lat = lat, 
-          lon = lon,
-          state = 'CA', 
-          plot = FALSE
-        )
-        
-        worldmet::importNOAA(
-          metMeta$code, 
-          year = year, 
-          hourly = TRUE, 
-          n.cores = future::availableCores() - 1, 
-          quiet = TRUE
-        )
-        
+        get_noaa(sensor, sd, ed)
       }, lazy = TRUE)
     },
     

@@ -27,7 +27,6 @@ Imports:
     shinythemes,
     plotly,
     stringr,
-    worldmet,
     waiter,
     gridExtra,
     tidyr,
@@ -39,7 +38,10 @@ Imports:
     pkgload,
     vctrs,
     gt,
-    shinycssloaders
+    shinycssloaders,
+    data.table,
+    xts,
+    geodist
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1

@@ -82,7 +82,7 @@ magicUpdate <- function(usr) {
       usr$updatePat(label, sd, ed)
     } else if ( tab == 'patterns' ) {
       usr$updateSensor(label)
-      usr$updateNoaa(ed)
+      usr$updateNoaa(sd, ed)
     } else if ( tab == 'compare' ) {
       usr$updatePat(label, sd, ed)
       usr$updateSensor(label)
