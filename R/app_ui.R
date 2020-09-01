@@ -52,7 +52,7 @@ app_ui <- function(request) {
             width = 8,
             # ----- Tabs -----
             tabsetPanel(
-              type = "tabs",
+              type = "pills",
               id = "tab",
               # ---- Overview Tab ----
               tabPanel(
@@ -74,7 +74,6 @@ app_ui <- function(request) {
                 fluidRow(
                   column(
                     width = 12,
-                    tags$h4("Calendar"),
                     mod_calendar_ui("calendar_ui_1")
                   )
                 )
