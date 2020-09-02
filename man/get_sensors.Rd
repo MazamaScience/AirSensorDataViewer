@@ -2,18 +2,18 @@
 % Please edit documentation in R/fct_load.R
 \name{get_sensors}
 \alias{get_sensors}
-\title{Title}
+\title{Get Sensors for date range}
 \usage{
 get_sensors(sd, ed, sensors = NULL)
 }
 \arguments{
-\item{sd}{}
+\item{sd}{a startdate (YYYYmmdd)}
 
-\item{ed}{}
+\item{ed}{an enddate (YYYYmmdd)}
 }
 \value{
-
+an airsensor object
 }
 \description{
-Title
+Get Sensors for date range
 }

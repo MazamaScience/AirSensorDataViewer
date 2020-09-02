@@ -2,22 +2,22 @@
 % Please edit documentation in R/fct_load.R
 \name{get_pat}
 \alias{get_pat}
-\title{Title}
+\title{Get PurpleAir Timeseries Data}
 \usage{
 get_pat(pas, label, sd, ed, pat = NULL)
 }
 \arguments{
-\item{pas}{}
+\item{pas}{a pas object.}
 
-\item{label}{}
+\item{label}{a sensor label}
 
-\item{sd}{}
+\item{sd}{a startdate (YYYYmmdd)}
 
-\item{ed}{}
+\item{ed}{a enddate (YYYYmmdd)}
 }
 \value{
-
+a pa_timeseries object
 }
 \description{
-Title
+Get PurpleAir Timeseries Data
 }

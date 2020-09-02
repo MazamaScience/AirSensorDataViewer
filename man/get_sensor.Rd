@@ -2,22 +2,22 @@
 % Please edit documentation in R/fct_load.R
 \name{get_sensor}
 \alias{get_sensor}
-\title{Title}
+\title{Get A Sensor from Sensors}
 \usage{
 get_sensor(sensors, ...)
 }
 \arguments{
-\item{sensors}{}
+\item{sensors}{an airsensor object}
 
-\item{label}{}
+\item{label}{a label to filter the airsensor object by}
 
-\item{sd}{}
+\item{sd}{a startdate (YYYYmmdd)}
 
-\item{ed}{}
+\item{ed}{an enddate (YYYYmmdd)}
 }
 \value{
-
+a univariate airsensor object
 }
 \description{
-Title
+Get A Sensor from Sensors
 }

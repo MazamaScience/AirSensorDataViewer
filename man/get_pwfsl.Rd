@@ -2,20 +2,20 @@
 % Please edit documentation in R/fct_load.R
 \name{get_pwfsl}
 \alias{get_pwfsl}
-\title{Title}
+\title{Get PWFSL Monitor Data}
 \usage{
 get_pwfsl(sd, ed, id)
 }
 \arguments{
-\item{sd}{}
+\item{sd}{a startdate (YYYYmmdd)}
 
-\item{ed}{}
+\item{ed}{an enddate (YYYYmmdd)}
 
-\item{id}{}
+\item{id}{a valid PWFSL Monitor ID}
 }
 \value{
-
+a ws_monitor object
 }
 \description{
-Title
+Get PWFSL Monitor Data
 }

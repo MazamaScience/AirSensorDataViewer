@@ -2,19 +2,22 @@
 % Please edit documentation in R/fct_load.R
 \name{get_noaa}
 \alias{get_noaa}
-\title{Title}
+\title{Get NOAA Data From ISD
+ 
+ A homebrew solution to the acquiring NOAA data from their database, following
+ the worldmet importNOAA function.}
 \usage{
 get_noaa(sensor, sd, ed)
 }
 \arguments{
-\item{sensor}{}
+\item{sensor}{A univariate airsensor object}
 }
 \value{
-
+a data.frame
 }
 \description{
-Title
-}
-\examples{
-
+Get NOAA Data From ISD
+ 
+ A homebrew solution to the acquiring NOAA data from their database, following
+ the worldmet importNOAA function.
 }

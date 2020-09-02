@@ -2,20 +2,46 @@
 % Please edit documentation in R/fct_load.R
 \name{get_pat_latest}
 \alias{get_pat_latest}
-\title{Title}
+\title{#' Get Annual 
+#'
+#' @param pas a pas obj
+#' @param label a sensor label
+#' @param date a date in the format 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_pat_annual <- function(pas, label, date) {
+  get_pat(pas, label, "20180101", "20181231")
+}
+Get Latest PurpleAir Timeseries Data}
 \usage{
 get_pat_latest(pas, label, tz = "UTC")
 }
 \arguments{
-\item{pas}{}
+\item{pas}{a pas obj}
 
-\item{label}{}
+\item{label}{a sensor label}
 
-\item{tz}{}
+\item{tz}{a timezone}
 }
 \value{
 
 }
 \description{
-Title
+#' Get Annual 
+#'
+#' @param pas a pas obj
+#' @param label a sensor label
+#' @param date a date in the format 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_pat_annual <- function(pas, label, date) {
+  get_pat(pas, label, "20180101", "20181231")
+}
+Get Latest PurpleAir Timeseries Data
 }

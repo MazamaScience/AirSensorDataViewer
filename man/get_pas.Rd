@@ -2,13 +2,16 @@
 % Please edit documentation in R/fct_load.R
 \name{get_pas}
 \alias{get_pas}
-\title{Title}
+\title{Get PurpleAir Synoptic Data}
 \usage{
 get_pas(date = NULL)
 }
+\arguments{
+\item{date}{a datestamp (YYYYmmdd)}
+}
 \value{
-
+a pa_synoptic object
 }
 \description{
-Title
+Get PurpleAir Synoptic Data
 }
