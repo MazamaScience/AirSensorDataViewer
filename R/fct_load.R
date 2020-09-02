@@ -1,9 +1,9 @@
-#' Title
-#'
-#' @return
+#' Get PurpleAir Synoptic Data
+#' 
+#' @param date a datestamp (YYYYmmdd)
+#' 
+#' @return a pa_synoptic object
 #' @export
-#'
-#' @examples
 get_pas <- function(date = NULL) { 
   # logger.trace("loading pas obj...")
   tryCatch(
@@ -12,17 +12,15 @@ get_pas <- function(date = NULL) {
   )
 }
 
-#' Title
+#' Get PurpleAir Timeseries Data
 #'
-#' @param pas 
-#' @param label 
-#' @param sd 
-#' @param ed 
+#' @param pas a pas object.
+#' @param label a sensor label
+#' @param sd a startdate (YYYYmmdd)
+#' @param ed a enddate (YYYYmmdd)
 #'
-#' @return
+#' @return a pa_timeseries object
 #' @export
-#'
-#' @examples
 get_pat <- function(pas, label, sd, ed, pat = NULL) {
   
   # logger.trace(paste(label, sd, ed, "loading pat obj..."))
@@ -72,17 +70,15 @@ get_pat <- function(pas, label, sd, ed, pat = NULL) {
   )
 }
 
-#' Title
+#' Get A Sensor from Sensors 
 #'
-#' @param sensors 
-#' @param label 
-#' @param sd 
-#' @param ed 
+#' @param sensors an airsensor object
+#' @param label a label to filter the airsensor object by
+#' @param sd a startdate (YYYYmmdd)
+#' @param ed an enddate (YYYYmmdd)
 #'
-#' @return
+#' @return a univariate airsensor object
 #' @export
-#'
-#' @examples
 get_sensor <- function(sensors, ...) {
   # logger.trace("loading sensor obj...")
   tryCatch(
@@ -91,15 +87,13 @@ get_sensor <- function(sensors, ...) {
   )
 }
 
-#' Title
+#' Get Sensors for date range
 #'
-#' @param sd 
-#' @param ed 
+#' @param sd a startdate (YYYYmmdd)
+#' @param ed an enddate (YYYYmmdd)
 #'
-#' @return
+#' @return an airsensor object
 #' @export
-#'
-#' @examples
 get_sensors <- function(sd, ed, sensors = NULL) {
   
   tryCatch(
@@ -141,31 +135,29 @@ get_sensors <- function(sd, ed, sensors = NULL) {
   )
 }
 
-#' Title
+#' #' Get Annual 
+#' #'
+#' #' @param pas a pas obj
+#' #' @param label a sensor label
+#' #' @param date a date in the format 
+#' #'
+#' #' @return
+#' #' @export
+#' #'
+#' #' @examples
+#' get_pat_annual <- function(pas, label, date) {
+#'   get_pat(pas, label, "20180101", "20181231")
+#' }
+
+
+#' Get Latest PurpleAir Timeseries Data
 #'
-#' @param pas 
-#' @param label 
-#' @param date 
+#' @param pas a pas obj
+#' @param label a sensor label
+#' @param tz a timezone 
 #'
 #' @return
 #' @export
-#'
-#' @examples
-get_pat_annual <- function(pas, label, date) {
-  get_pat(pas, label, "20180101", "20181231")
-}
-
-
-#' Title
-#'
-#' @param pas 
-#' @param label 
-#' @param tz 
-#'
-#' @return
-#' @export
-#'
-#' @examples
 get_pat_latest <- function(pas, label, tz = 'UTC') {
   # logger.trace(paste(label, "loading latest pat obj..."))
   tryCatch(
@@ -178,18 +170,18 @@ get_pat_latest <- function(pas, label, tz = 'UTC') {
   )
 }
 
-#' Title
+#' Get NOAA Data From ISD
+#'  
+#'  A homebrew solution to the acquiring NOAA data from their database, following
+#'  the worldmet importNOAA function.
 #'
-#' @param sensor 
+#' @param sensor A univariate airsensor object
 #'
-#' @return
+#' @return a data.frame 
 #' @export
-#'
-#' @examples
-#' 
 #' @importFrom worldmet importNOAA getMeta 
 #' @importFrom lubridate ymd `%--%` `%within%` year ymd_hms round_date
-#' @importFrom data.table fread data.table tstrsplit `%between%`
+#' @importFrom data.table fread data.table tstrsplit `%between%` setcolorder as.xts.data.table as.data.table
 #' @importFrom geodist geodist
 #' @importFrom xts period.apply endpoints
 get_noaa <- function(sensor, sd, ed) {
@@ -247,16 +239,14 @@ get_noaa <- function(sensor, sd, ed) {
   )
 }
 
-#' Title
+#' Get PWFSL Monitor Data
 #'
-#' @param sd 
-#' @param ed 
-#' @param id 
+#' @param sd a startdate (YYYYmmdd)
+#' @param ed an enddate (YYYYmmdd)
+#' @param id a valid PWFSL Monitor ID
 #'
-#' @return
+#' @return a ws_monitor object
 #' @export
-#'
-#' @examples
 get_pwfsl <- function(sd, ed, id) {
   tryCatch(
     PWFSLSmoke::monitor_load(sd, ed, id), 
