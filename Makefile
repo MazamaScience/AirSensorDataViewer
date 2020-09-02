@@ -48,10 +48,9 @@ VERSION := $(shell grep -P -o '(\d+\.)+\d+' inst/golem-config.yml)
 # App configuration
 clean:
 	if [ -d logs ]; then sudo rm -Rf logs; mkdir logs; fi
-	if [ -d inst/logs ]; then sudo rm -Rf inst/logs; mkdir inst/logs; fi
 
 # Update the app version inline (-i) with Makefile version
-configure_app:
+# configure_app:
 	#cat inst/golem-config.yml | grep -Po "(\d+\.)+\d+"
 #	sed -i 's%VERSION <<- ".*"%VERSION <<- "$(VERSION)"%' inst/app/global.R # Shiny App Version
 #	sed -i 's%LABEL version=".*"%LABEL version="$(VERSION)"%' docker/Dockerfile-airsensordataviewer # Docker Image Version
@@ -94,7 +93,7 @@ desktop_reboot: desktop_build desktop_bounce
 
 # AirSensordataviewer TEST version --------------------------------------------------
 
-test_build: configure_app
+test_build: 
 	sed -i 's%location\/.*\/ {%location\/$(SERVICE_PATH_TEST)\/ {%' shiny-server.conf
 	###-mkdir airsensordataviewer/test
 	docker build -t airsensor-dataviewer-test:$(VERSION) \
