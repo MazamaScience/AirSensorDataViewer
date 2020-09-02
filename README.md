@@ -5,21 +5,26 @@ AirSensor DataViewer provides an interface web application for visualizing time 
 
 ## Usage
 
-To use interactively (un-hosted) download the application as a package via github and use the included function `run_app()` to run via local R session.   
+There are a couple of ways to launch and use AirSensor DataViewer - either 
+through R itself, interactively, or hosted with a ready-to-serve docker image for 
+server use, which can be created using [this guide](#docker).
 
 ### Installation
 
-`install.packages(“remotes”)`
+```
+install.packages(“remotes”)
+remotes::install_github(“MazamaScience/AirSensorDataViewer”)
 
-`remotes::install_github(“MazamaScience/AirSensorDataViewer”)`
+AirSensorDataViewer::run_app()
+```
 
-### Run via R session
+Yup, thats it.
 
-`AirSensorDataViewer::run_app()`
 
 ### Docker
 
-To deploy the application on a server with Docker ready to go:
+To create the docker image, navigate to the project root directory and use `make` to 
+build the docker image. The docker image should contain all necessary libraries and dependencies, as well as being preconfigured for `shiny-server`. 
 
 Create docker image : 
 
@@ -31,27 +36,11 @@ Run desktop client:
 
 `make desktop_up`
 
-By default, the application will be forwarded to `0.0.0.0:8000`. 
+By default, the `desktop_*` version will be available at `0.0.0.0:8000/asdv/test`. 
+
+To shut the close and exit the docker image:
+`make desktop_down`
 
 ## Notes 
 
-AirSensor DataViewer is built with Shiny utilizing {golem} framework.  The AirSensor R package functions as the primary backend for data processing and visualization. 
-
-### General Application Pipeline
-```
-load pas 
-load sensors
-from sensors or pas: 
-  fill sensor_select and comunity_select
-on select sensor:
-  load sensor
-  load pat
-  load latest
-  load annunal
-on select community:
-  fill sensor_select where sensor in select community
-on select date: 
-  load sensors
-  load sensor
-  load pat
-```
+AirSensor DataViewer is built with Shiny utilizing {golem} framework.  The AirSensor and tiotemp R packages for data processing and visualization. 
