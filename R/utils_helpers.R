@@ -113,28 +113,34 @@ catchError <- function(err) {
 #' @export
 plotUp <- function() {
   shinyjs::runjs("
-$(document).on('shiny:value', function(event) {
-  // cancel the output of the element with id 
-  if (event.target.id === 'overview_ui_1-timeseriesMap') {
-    event.preventDefault();
     if(!$('#dem').hasClass('in')) {
-      d3.select('#overview_ui_1-timeseriesMap')
-        .select('.leaflet-bottom .leaflet-control')
-        .transition()
-        .duration(75)
-        .style('margin-bottom', '20vh');
       $('#collapse_btn').click();
     };
-  }
-});
-")
+  ")
 }
 
 #' Animate plot down
 #'
 #' @export
 plotDown <- function() {
-  
+  shinyjs::runjs("
+    if($('#dem').hasClass('in')) {
+      $('#collapse_btn').click();
+    };
+  ")
+}
+
+#' Animate the tiotemp map slider up
+#'
+#' @export
+sliderUp <- function() {
+  shinyjs::runjs("
+    d3.select('#overview_ui_1-timeseriesMap')
+        .select('.leaflet-bottom .leaflet-control')
+        .transition()
+        .duration(75)
+        .style('margin-bottom', '20vh');
+  ")
 }
 
 #' Create a hash-cache key for caching
@@ -157,4 +163,22 @@ cacheKey <- function(...) {
 #' @importFrom shinycssloaders withSpinner
 withLoader <- function(el) {
   withSpinner(el, color = "#008cba", type = 7) 
+}
+
+#' A Shiny notification wrapper
+#'
+#' @param msg A message to display
+#'
+#' @return
+#' @export
+notify <- function(msg) {
+  shiny::showNotification(
+    HTML(paste0(
+      "<b>Oops. Something has gone wrong!</b>
+      <br>", msg
+    )), 
+    type = "warn", 
+    duration = 6, 
+    id = "caught"
+  )
 }
