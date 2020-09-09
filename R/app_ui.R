@@ -86,6 +86,19 @@ app_ui <- function(request) {
                 tags$br(),
                 mod_raw_ui("raw_ui_1")
               ),
+              #----- View Data tab ----
+              tabPanel(
+                title = tags$b("Tabular Data"),
+                icon = icon("table"), 
+                value = "table",
+                tags$br(),
+                fluidRow(
+                  column(
+                    width = 12,
+                    mod_datatable_ui("datatable_ui_1")
+                  )
+                )
+              ),
               # ----- Daily patterns tab -----
               tabPanel(
                 title = tags$b("Daily Patterns"),
@@ -121,17 +134,17 @@ app_ui <- function(request) {
         )
       ),
       
-      #----- View Data Page ----------------------------------------------------
-      tabPanel(
-        title = tags$b("View Data"),
-        value = "table",
-        fluidRow(
-          column(
-            width = 8,
-            mod_datatable_ui("datatable_ui_1")
-          )
-        )
-      ),
+      # #----- View Data Page ----------------------------------------------------
+      # tabPanel(
+      #   title = tags$b("View Data"),
+      #   value = "table",
+      #   fluidRow(
+      #     column(
+      #       width = 8,
+      #       mod_datatable_ui("datatable_ui_1")
+      #     )
+      #   )
+      # ),
       
       # ----- Latest Data page -------------------------------------------------
       tabPanel(

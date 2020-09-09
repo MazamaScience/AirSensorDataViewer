@@ -87,13 +87,15 @@ magicUpdate <- function(usr) {
       usr$updatePat(label, sd, ed)
       usr$updateSensor(label)
       usr$updatePwfsl(label, sd, ed)
+    } else if ( tab == 'table' ) {
+      usr$updatePat(label, sd, ed)
     } else { # tab == 'video'
       # Do nothing
     }
     
-  } else if ( page == 'table' ) {
-    
-    usr$updatePat(label, sd, ed)
+  # } else if ( page == 'table' ) {
+  #   
+  #   usr$updatePat(label, sd, ed)
     
   } else if ( page == 'latest' ) {
     
