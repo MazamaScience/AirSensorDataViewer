@@ -76,6 +76,7 @@ magicUpdate <- function(usr) {
     
     if ( tab == 'overview' ) {
       # Do nothing 
+      shinyjs::delay(100, plotUp())
     } else if ( tab == 'calendar' ) {
       usr$updateAnnual(ed)
     } else if ( tab == 'raw' ) {
@@ -104,4 +105,5 @@ magicUpdate <- function(usr) {
   } else {
     # Do nothing
   }
+  
 }
