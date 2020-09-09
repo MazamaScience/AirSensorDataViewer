@@ -151,12 +151,13 @@ User <- R6::R6Class(
     #' Update the users airsensor object.
     #' @param sd startdate YYYYmmdd.
     #' @param ed enddate YYYYmmdd.
-    updateSensors = function(sd, ed) {
+    #' @param ... additional params.
+    updateSensors = function(sd, ed, ...) {
       logger.trace(paste("Updating sensors ===>", sd, ed))
       private$rx_sensors$trigger()
       private$sensors_promise <- future({
         setArchiveBaseUrl(self$baseUrl)
-        get_sensors(sd, ed)
+        get_sensors(sd, ed, ...)
       }, lazy = TRUE)
     },
     

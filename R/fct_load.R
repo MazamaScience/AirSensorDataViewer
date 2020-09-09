@@ -94,6 +94,7 @@ get_sensor <- function(sensors, ...) {
 #'
 #' @return an airsensor object
 #' @export
+#' @import lubridate
 get_sensors <- function(sd, ed, sensors = NULL) {
   
   tryCatch(
