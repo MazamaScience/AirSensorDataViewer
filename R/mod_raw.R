@@ -66,6 +66,7 @@ mod_raw_server <- function(input, output, session, usr) {
     usr$pat %...>% (function(pat) {
       pat_multiPlot(pat, timezone = usr$tz, columns = 1) 
     }) %...!% (function(err) {
+      notify("Failed to load sensor data. Try selecting a different date or a different sensor.")
       catchError(err)
     })
     

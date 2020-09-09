@@ -168,7 +168,6 @@ mod_main_panel_server <- function(input, output, session, usr) {
           catchError(err)
         })
       
-      
       # Close the waitress
       w$close()
       
@@ -240,7 +239,7 @@ mod_main_panel_server <- function(input, output, session, usr) {
           "date_range",
           start = ymd(ed) - days(21)
         )
-        showNotification("Dates range too long!", "Max date range is 21 days.", type = "warn")
+        showNotification("Dates range too long!", "Max date range is 21 days.", type = "warn", id = "date-range")
         
       }
       

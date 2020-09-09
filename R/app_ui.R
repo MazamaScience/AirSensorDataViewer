@@ -6,6 +6,7 @@
 #' @importFrom shinythemes shinytheme
 #' @importFrom waiter waiter_show_on_load spin_three_bounce
 #' @importFrom shinyjs extendShinyjs
+#' @importFrom shinyFeedback useShinyFeedback
 #' @noRd
 app_ui <- function(request) {
   fluidPage(
@@ -194,6 +195,26 @@ app_ui <- function(request) {
       type="text/css", 
       ".col-sm-2 {min-width:254px;}"
     ), 
+    
+    tags$style(
+      type="text/css",
+      "#shiny-notification-panel {
+          position: fixed;
+          left: 30%;
+          right: 30%;
+          background-color: rgba(0,0,0,0);
+          padding: 26px;
+          width: auto;
+          z-index: 99999;
+          text-align: -webkit-center;
+      }"
+    ), 
+    tags$style(
+      type="text/css", 
+      ".shiny-notification-content-text {
+        font-size: 1.2em;
+      }"
+    )
   
   )
   
@@ -228,6 +249,7 @@ golem_add_external_resources <- function(){
     use_waitress(), 
     use_bs_tooltip(),
     useShinyjs(),
+    useShinyFeedback()
   )
 }
 

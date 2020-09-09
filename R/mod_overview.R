@@ -101,6 +101,7 @@ mod_overview_server <- function(input, output, session, usr) {
         ylab = "\u03bcg / m\u00b3"
       ) 
     }) %...!% (function(err) {
+      notify("Failed to load sensor data. Try selecting a different date or a different sensor.")
       catchError(err)
     })
     

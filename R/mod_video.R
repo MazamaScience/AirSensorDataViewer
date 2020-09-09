@@ -51,7 +51,7 @@ mod_video_server <- function(input, output, session, usr) {
             src = url,
             controls = "controls"
           )
-        }
+        } 
       }, 
       error = function(err) {
         logger.error(err)

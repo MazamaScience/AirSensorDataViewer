@@ -104,6 +104,7 @@ mod_patterns_server <- function(input, output, session, usr){
       with({
         sensor_pollutionRose(sensor, noaa)
       }) %...!% (function(err) {
+        notify("Failed to load NOAA data. Try selecting a different date or a different sensor.")
         catchError(err)
       })
     

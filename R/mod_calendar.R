@@ -38,6 +38,7 @@ mod_calendar_server <- function(input, output, session, usr) {
         inputId = 'main_panel_ui_1-sensor_select'
       )
     }) %...!% (function(err) {
+      notify("Failed to load annual data. Try selecting a different date (of year) or a different sensor.")
       catchError(err)
     })
     
