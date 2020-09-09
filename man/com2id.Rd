@@ -7,10 +7,10 @@
 com2id(X)
 }
 \arguments{
-\item{X}{}
+\item{X}{a friendly community string.}
 }
 \value{
-
+an unfriendly community string.
 }
 \description{
 Community name to 4 digit code

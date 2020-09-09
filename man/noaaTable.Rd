@@ -7,10 +7,10 @@
 noaaTable(noaa)
 }
 \arguments{
-\item{noaa}{}
+\item{noaa}{a noaa data frame generated from get_noaa().}
 }
 \value{
-
+a data.frame
 }
 \description{
 NOAA table constructor

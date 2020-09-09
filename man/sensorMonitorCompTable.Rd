@@ -10,7 +10,7 @@ sensorMonitorCompTable(pat)
 \item{pat}{pa timeseries obh}
 }
 \value{
-
+a data.frame
 }
 \description{
 Monitor Sensor Comparison Table

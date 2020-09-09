@@ -2,16 +2,13 @@
 % Please edit documentation in R/utils_helpers.R
 \name{withLoader}
 \alias{withLoader}
-\title{Title}
+\title{A CSS loader feedback wrapper function}
 \usage{
 withLoader(el)
 }
 \arguments{
-\item{el}{}
-}
-\value{
-
+\item{el}{an element to append to.}
 }
 \description{
-Title
+A CSS loader feedback wrapper function
 }

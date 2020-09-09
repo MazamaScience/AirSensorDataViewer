@@ -2,16 +2,13 @@
 % Please edit documentation in R/utils_helpers.R
 \name{catchError}
 \alias{catchError}
-\title{Title}
+\title{Error handling function}
 \usage{
 catchError(err)
 }
 \arguments{
-\item{err}{}
-}
-\value{
-
+\item{err}{an error string, try-error, etc.}
 }
 \description{
-Title
+Error handling function
 }

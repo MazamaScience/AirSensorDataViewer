@@ -2,18 +2,18 @@
 % Please edit documentation in R/fct_leaflet.R
 \name{comparisonLeaflet}
 \alias{comparisonLeaflet}
-\title{Title}
+\title{Comparison Leaflet}
 \usage{
 comparisonLeaflet(sensor, pwfsl)
 }
 \arguments{
-\item{sensor}{}
+\item{sensor}{An airsensor object.}
 
-\item{pwfsl}{}
+\item{pwfsl}{A ws_monitor object.}
 }
 \value{
-
+a leaflet map
 }
 \description{
-Title
+Map an airsensor and ws_monitor object.
 }

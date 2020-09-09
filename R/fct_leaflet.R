@@ -1,12 +1,13 @@
-#' Title
+#' Comparison Leaflet
+#' 
+#' @description Map an airsensor and ws_monitor object.
 #'
-#' @param sensor 
-#' @param pwfsl 
+#' @param sensor An airsensor object.
+#' @param pwfsl A ws_monitor object.
 #'
-#' @return
+#' @return a leaflet map
 #' @export
 #' @import leaflet
-#' @examples
 comparisonLeaflet <- function(sensor, pwfsl) {
   
   d <- sensor

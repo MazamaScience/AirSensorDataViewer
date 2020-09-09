@@ -6,9 +6,6 @@
 \usage{
 plotDown()
 }
-\value{
-
-}
 \description{
 Animate plot down
 }

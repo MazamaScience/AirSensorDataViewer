@@ -2,16 +2,16 @@
 % Please edit documentation in R/utils_helpers.R
 \name{cacheKey}
 \alias{cacheKey}
-\title{Title}
+\title{Create a hash-cache key for caching}
 \usage{
 cacheKey(...)
 }
 \arguments{
-\item{x}{}
+\item{x}{an object, expression, anything.}
 }
 \value{
-
+a hash
 }
 \description{
-Title
+Create a hash-cache key for caching
 }

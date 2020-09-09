@@ -1,11 +1,9 @@
 #' 4 Digit code to Community name
 #'
-#' @param X 
+#' @param X an unfriendly id string
 #'
-#' @return
+#' @return a friendly community string.
 #' @export
-#'
-#' @examples
 id2com <- function(X) {
   # Helpful conversion list
   com_id  <-
@@ -30,12 +28,10 @@ id2com <- function(X) {
 
 #' Community name to 4 digit code
 #'
-#' @param X 
+#' @param X a friendly community string.
 #'
-#' @return
+#' @return an unfriendly community string.
 #' @export
-#'
-#' @examples
 com2id <- function(X) {
   # Helpful conversion list
   com_id  <-
@@ -58,9 +54,9 @@ com2id <- function(X) {
   unlist(lapply(X, function(x) {i<-which(com_id == x); ifelse(length(i)!=0, names(com_id[i]), x)}))
 }
 
-#' Title
+#' Waiter wrapper function
 #'
-#' @param id 
+#' @param id an element ID to append to.
 #'
 #' @export
 #' @noRd
@@ -74,11 +70,9 @@ waiter <- function(id = NULL) {
   )
 }
 
-#' Title
-#'
-#' @return
-#' @export
+#' Waitress wrapper function
 #' 
+#' @export
 #' @noRd
 #' 
 #' @importFrom waiter Waitress
@@ -86,13 +80,12 @@ waitress <- function() {
   Waitress$new(min = 0, max = 100)
 }
 
-#' Title
+#' A Waitress notification wrapper
 #'
-#' @param expr 
-#' @param msg 
+#' @param expr an expression to make loading notification for
+#' @param msg a message to show the user.
 #'
 #' @export
-#'
 #' @noRd
 #' 
 #' @importFrom stats runif
@@ -104,25 +97,20 @@ makeWaitress <- function(expr, msg) {
   w$close()
 }
 
-#' Title
+#' Error handling function 
 #'
-#' @param err 
+#' @param err an error string, try-error, etc.
 #'
-#' @return
+#' @return NULL
 #' @export
-#'
-#' @examples
 catchError <- function(err) {
   logger.error(err)
   NULL
 }
 
 #' Animate Plot up
-#'
-#' @return
+#' 
 #' @export
-#'
-#' @examples
 plotUp <- function() {
   shinyjs::runjs("
 $(document).on('shiny:value', function(event) {
@@ -144,37 +132,29 @@ $(document).on('shiny:value', function(event) {
 
 #' Animate plot down
 #'
-#' @return
 #' @export
-#'
-#' @examples
 plotDown <- function() {
   
 }
 
-#' Title
+#' Create a hash-cache key for caching
 #'
-#' @param x 
+#' @param x an object, expression, anything. 
 #'
-#' @return
+#' @return a hash
 #' @export
 #' @importFrom digest digest
-#'
-#' @examples
 cacheKey <- function(...) {
   x <- list(...)
   digest(x)
 }
 
-#' Title
+#' A CSS loader feedback wrapper function
 #'
-#' @param el 
+#' @param el an element to append to.
 #'
-#' @return
 #' @export
 #' @importFrom shinycssloaders withSpinner
-#'
-#' @examples
 withLoader <- function(el) {
   withSpinner(el, color = "#008cba", type = 7) 
 }

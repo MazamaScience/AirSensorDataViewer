@@ -2,7 +2,7 @@
 #'
 #' @param pat pa timeseries obh
 #'
-#' @return
+#' @return a data.frame
 #' @export
 #' 
 #' @importFrom utils head tail
@@ -46,9 +46,9 @@ sensorMonitorCompTable <- function(pat) {
 
 #' NOAA table constructor
 #'
-#' @param noaa 
+#' @param noaa a noaa data frame generated from get_noaa().
 #'
-#' @return
+#' @return a data.frame
 #' @export
 noaaTable <- function(noaa) {
   

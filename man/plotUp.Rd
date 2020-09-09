@@ -6,9 +6,6 @@
 \usage{
 plotUp()
 }
-\value{
-
-}
 \description{
 Animate Plot up
 }
