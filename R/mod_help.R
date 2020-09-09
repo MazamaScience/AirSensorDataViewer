@@ -34,18 +34,25 @@ mod_help_server <- function(input, output, session, usr){
   ns <- session$ns
   
   output$help <- renderUI({
-    req(usr$selected$tab)
-    tab <- usr$selected$tab
+    req(usr$selected$tab, usr$selected$page)
     
-    help_path <- switch(
-      tab,
-      "overview" = "inst/app/www/overview_help.md", 
-      "calendar" = "inst/app/www/calendar_help.md", 
-      "raw" = "inst/app/www/raw_help.md", 
-      "patterns" = "inst/app/www/patterns_help.md", 
-      "compare" = "inst/app/www/comparison_help.md", 
-      "video" = "inst/app/www/video_help.md"
-    )
+    if ( usr$selected$page != 'latest' ) {
+      tab <- usr$selected$tab
+      
+      help_path <- switch(
+        tab,
+        "overview" = "inst/app/www/overview_help.md", 
+        "calendar" = "inst/app/www/calendar_help.md", 
+        "raw" = "inst/app/www/raw_help.md", 
+        "table" = "inst/app/www/table_help.md",
+        "patterns" = "inst/app/www/patterns_help.md", 
+        "compare" = "inst/app/www/comparison_help.md", 
+        "video" = "inst/app/www/video_help.md"
+      )
+    } else {
+      help_path <- "inst/app/www/latest_help.md"
+    }
+
     
     bs_modal(
       id = ns("help_modal"), 
