@@ -55,6 +55,7 @@ RUN Rscript -e 'remotes::install_version("plotly",upgrade="never", version = "4.
 RUN Rscript -e 'remotes::install_version("waiter",upgrade="never", version = "0.1.2")'
 RUN Rscript -e 'remotes::install_version("shinythemes",upgrade="never", version = "1.1.2")'
 RUN Rscript -e 'remotes::install_version("shinyWidgets",upgrade="never", version = "0.5.3")'
+RUN Rscript -e 'remotes::install_version("shinyFeedback",upgrade="never", version = "0.2.0")'
 RUN Rscript -e 'remotes::install_version("future",upgrade="never", version = "1.18.0")'
 RUN Rscript -e 'remotes::install_github("mazamascience/MazamaSpatialUtils@f5359d1ddd5652b869631ce82409a0c8f90a0fc5")'
 RUN Rscript -e 'remotes::install_github("MazamaScience/AirSensor@eef84ddd485515a9ccfb533d1af4cb22c2cb7f46")'

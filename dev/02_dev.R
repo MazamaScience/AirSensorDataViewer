@@ -39,6 +39,7 @@ usethis::use_package("shinycssloaders")
 usethis::use_package("data.table")
 usethis::use_package("xts")
 usethis::use_package("geodist")
+usethis::use_package("shinyFeedback")
 
 
 # Add github personal access token if you build a lot and exceed rate limit
