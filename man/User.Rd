@@ -104,7 +104,7 @@ Update the users pa_synoptic data.
 \if{latex}{\out{\hypertarget{method-updateSensors}{}}}
 \subsection{Method \code{updateSensors()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{User$updateSensors(sd, ed)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{User$updateSensors(sd, ed, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -113,6 +113,8 @@ Update the users pa_synoptic data.
 \item{\code{sd}}{startdate YYYYmmdd.}
 
 \item{\code{ed}}{enddate YYYYmmdd.}
+
+\item{\code{...}}{additional params.}
 }
 \if{html}{\out{</div>}}
 }
