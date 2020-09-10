@@ -247,6 +247,14 @@ mod_main_panel_server <- function(input, output, session, usr) {
       usr$selected$sd <- sd
       usr$selected$ed <- ed
       
+      usr$updateSensors(sd, ed)
+      
+      usr$updatePas(ed)
+      
+      # TODO: only update on year changes
+      
+      usr$updateAnnual(ed)
+      
     }
   )
   
