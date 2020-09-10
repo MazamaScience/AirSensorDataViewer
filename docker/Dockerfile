@@ -58,7 +58,7 @@ RUN Rscript -e 'remotes::install_version("shinyWidgets",upgrade="never", version
 RUN Rscript -e 'remotes::install_version("shinyFeedback",upgrade="never", version = "0.2.0")'
 RUN Rscript -e 'remotes::install_version("future",upgrade="never", version = "1.18.0")'
 RUN Rscript -e 'remotes::install_github("mazamascience/MazamaSpatialUtils@f5359d1ddd5652b869631ce82409a0c8f90a0fc5")'
-RUN Rscript -e 'remotes::install_github("MazamaScience/AirSensor@eef84ddd485515a9ccfb533d1af4cb22c2cb7f46")'
+RUN Rscript -e 'remotes::install_github("MazamaScience/AirSensor@338d30b7e1bd6fecc1133c98b95e3edb0b440bc3")'
 RUN Rscript -e 'remotes::install_github("MazamaScience/tiotemp@8194ae4c78082503dafab4e4ea18d361600f6365")'
 RUN Rscript -e 'remotes::install_github("davidcarslaw/worldmet@0d440de4fffbb64c0c2a263c55dc4a5a16a259a3")'
 RUN Rscript -e 'remotes::install_github("MazamaScience/PWFSLSmoke@92f7ad31b5408a7542bae2c1a1db84e0131d0f03")'
