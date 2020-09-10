@@ -43,7 +43,8 @@ SERVICE_PATH=airsensor-dataviewer/v1
 SERVICE_PATH_TEST=airsensor-dataviewer/test
 
 # Assign version from golem_config.yml configuration
-VERSION := $(shell grep -P -o '(\d+\.)+\d+' inst/golem-config.yml)
+###VERSION := $(shell grep -P -o '(\d+\.)+\d+' inst/golem-config.yml)
+VERSION := $(shell grep golem_version inst/golem-config.yml | cut -d':' -f2 | sed 's/ //g')
 
 # App configuration
 clean:
@@ -95,6 +96,12 @@ desktop_reboot: desktop_build desktop_bounce
 
 test_build: 
 	sed -i 's%location\/.*\/ {%location\/$(SERVICE_PATH_TEST)\/ {%' shiny-server.conf
+	###-mkdir airsensordataviewer/test
+	docker build -t airsensor-dataviewer-test:$(VERSION) \
+		-t airsensor-dataviewer-test:latest -f docker/Dockerfile .
+
+test_build_osx: 
+	sed -i '' 's%location\/.*\/ {%location\/$(SERVICE_PATH_TEST)\/ {%' shiny-server.conf
 	###-mkdir airsensordataviewer/test
 	docker build -t airsensor-dataviewer-test:$(VERSION) \
 		-t airsensor-dataviewer-test:latest -f docker/Dockerfile .

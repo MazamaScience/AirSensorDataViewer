@@ -1,0 +1,10 @@
+version: '3'
+services:
+   shiny:
+      container_name: airsensor-dataviewer-test
+      image: airsensor-dataviewer-test
+      ports:
+          - "6709:3838"
+      volumes:
+          - /var/www/html/logs/airsensor-dataviewer/test/app:/var/log/shiny-server/
+      restart: unless-stopped

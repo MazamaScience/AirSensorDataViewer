@@ -1,7 +1,11 @@
 # AirSensor DataViewer 
 
 Welcome to the AirSensor DataViewer repository! 
-AirSensor DataViewer provides an interface web application for visualizing time series PurpleAir air sensor data. The package is an extension of the AirSensor  R package with support by Mazama Science and the South Coast Air Quality Management District. 
+
+AirSensor DataViewer provides an interface web application for visualizing time 
+series PurpleAir air sensor data. The package is an extension of the **AirSensor**
+R package with support by Mazama Science and the South Coast Air Quality 
+Management District. 
 
 ## Usage
 
@@ -23,8 +27,9 @@ Yup, thats it.
 
 ### Docker
 
-To create the docker image, navigate to the project root directory and use `make` to 
-build the docker image. The docker image should contain all necessary libraries and dependencies, as well as being preconfigured for `shiny-server`. 
+To create the docker image, navigate to the project root directory and use `make` 
+to build the docker image. The docker image should contain all necessary 
+libraries and dependencies, as well as being preconfigured for `shiny-server`. 
 
 Create docker image : 
 
@@ -36,11 +41,13 @@ Run desktop client:
 
 `make desktop_up`
 
-By default, the `desktop_*` version will be available at `0.0.0.0:8000/asdv/test`. 
+By default, the `desktop_*` version will be available at `localhost:8080/asdv/test`. 
 
 To shut the close and exit the docker image:
 `make desktop_down`
 
 ## Notes 
 
-AirSensor DataViewer is built with Shiny utilizing {golem} framework.  The AirSensor and tiotemp R packages for data processing and visualization. 
+AirSensor DataViewer is built with Shiny utilizing {golem} framework.  The 
+**AirSensor** and **tiotemp** R packages for data processing and visualization. 
+

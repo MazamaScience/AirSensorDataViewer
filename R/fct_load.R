@@ -180,7 +180,6 @@ get_pat_latest <- function(pas, label, tz = 'UTC') {
 #'
 #' @return a data.frame 
 #' @export
-#' @importFrom worldmet importNOAA getMeta 
 #' @importFrom lubridate ymd `%--%` `%within%` year ymd_hms round_date
 #' @importFrom data.table fread data.table tstrsplit `%between%` setcolorder as.xts.data.table as.data.table
 #' @importFrom geodist geodist

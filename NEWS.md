@@ -1,3 +1,7 @@
+# AirSensorDataViewer 0.9.9
+
+* Removed **worldmet** dependency.
+
 # AirSensorDataViewer 0.9.8
 
 * Revamped codebase to follow `{golem}` shiny framework
