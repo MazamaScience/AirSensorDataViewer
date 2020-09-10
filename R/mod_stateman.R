@@ -79,7 +79,7 @@ magicUpdate <- function(usr) {
       # Do nothing 
       shinyjs::delay(100, plotUp())
     } else if ( tab == 'calendar' ) {
-      usr$updateAnnual(ed)
+      # Do nothing
     } else if ( tab == 'raw' ) {
       usr$updatePat(label, sd, ed)
     } else if ( tab == 'patterns' ) {

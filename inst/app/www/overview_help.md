@@ -16,3 +16,5 @@ same time frame displayed in the plot.
 The colors in the map and in the plot correspond to different levels of PM2.5. The
 scale is provided in the About page and shows which colors correspond to which
 concentration ranges.
+
+![Chart Legend](inst/app/www/scaqmd_colors.png)
