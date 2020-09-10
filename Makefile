@@ -136,39 +136,39 @@ test_reboot: test_build test_bounce
 
 # AirSensordataviewer JOULE version --------------------------------------------------
 
-joule_build: configure_app
+joule_test_build:
 	sed -i 's%location\/.*\/ {%location\/$(SERVICE_PATH)\/ {%' shiny-server.conf
 	###-mkdir airsensordataviewer/v1
-	docker build -t airsensor-dataviewer-v1:$(VERSION) \
-		-t airsensor-dataviewer-v1:latest -f docker/Dockerfile .
+	docker build -t airsensor-dataviewer-test:$(VERSION) \
+		-t airsensor-dataviewer-test:latest -f docker/Dockerfile .
 
-joule_up:
-	docker-compose -f docker/docker-compose-v1_joule.yml \
-		-p airsensordataviewerv1 up -d
+joule_test_up:
+	docker-compose -f docker/docker-compose-test_joule.yml \
+		-p airsensordataviewertest up -d
 
-joule_down:
-	docker-compose -f docker/docker-compose-v1_joule.yml \
-		-p airsensordataviewerv1 down
+joule_test_down:
+	docker-compose -f docker/docker-compose-test_joule.yml \
+		-p airsensordataviewertest down
 
-joule_container_logs:
-	docker-compose -f docker/docker-compose-v1_joule.yml \
-		-p airsensordataviewerv1 logs
+joule_test_container_logs:
+	docker-compose -f docker/docker-compose-test_joule.yml \
+		-p airsensordataviewertest logs
 
-joule_trace_log:
+joule_test_trace_log:
 	cat /var/www/tools.mazamascience.com/html/logs/$(SERVICE_PATH)/app/TRACE.log
 
-joule_debug_log:
+joule_test_debug_log:
 	cat /var/www/tools.mazamascience.com/html/logs/$(SERVICE_PATH)/app/DEBUG.log
 
-joule_info_log:
+joule_test_info_log:
 	cat /var/www/tools.mazamascience.com/html/logs/$(SERVICE_PATH)/app/INFO.log
 
-joule_error_log:
+joule_test_error_log:
 	cat /var/www/tools.mazamascience.com/html/logs/$(SERVICE_PATH)/app/ERROR.log
 
-joule_bounce: joule_down joule_up
+joule_test_bounce: joule_test_down joule_test_up
 
-joule_reboot: joule_build joule_bounce
+joule_test_reboot: joule_test_build joule_test_bounce
 
 # AirSensordataviewer DOCKER CORE ---------------------------------------------------
 
