@@ -210,13 +210,14 @@ mod_main_panel_server <- function(input, output, session, usr) {
     handlerExpr = {
       
       # Update the selector using js for speediness
-      shinyjs::runjs(
-        paste0(
-          '$("select#main_panel_ui_1-sensor_select")[0].selectize.setValue("', 
-          input$sensor_select,
-          '", false)'
-        )
-      )
+      # shinyjs::runjs(
+      #   paste0(
+      #     '$("select#main_panel_ui_1-sensor_select")[0].selectize.setValue("', 
+      #     input$sensor_select,
+      #     '", false)'
+      #   )
+      # )
+      
       # Update the client object sensor selection 
       usr$selected$sensor <- input$sensor_select
       
