@@ -35,7 +35,8 @@ mod_calendar_server <- function(input, output, session, usr) {
       timeseriesCalendar(
         data = annual$data, 
         meta = annual$meta, 
-        inputId = 'main_panel_ui_1-sensor_select'
+        inputId = 'main_panel_ui_1-sensor_select', 
+        unitString = "  (\u00B5g/m\u00B3)"
       )
     }) %...!% (function(err) {
       notify("Failed to load annual data. Try selecting a different date (of year) or a different sensor.")

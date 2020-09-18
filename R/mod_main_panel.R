@@ -89,6 +89,32 @@ mod_main_panel_ui <- function(id) {
             });')
         ),
         width =  5
+      ), 
+      
+      # Handle the community selection using javascript and tiotemp internals :)
+      shinyjs::extendShinyjs(
+        text = "
+          shinyjs.communityFilter = function(params) {
+          
+            let defaultParams = {
+              labels: null
+            }; 
+            
+            params = shinyjs.getParams(params, defaultParams); 
+            
+            d3.selectAll('.point-map')
+              .transition()
+              .duration(1000)
+              .attr('visibility', 'hidden');
+            
+            d3.selectAll(params.labels + '.point-map')
+              .transition()
+              .duration(1000)
+              .attr('visibility', 'visible');
+          
+          };
+          ", 
+        functions = c("communityFilter")
       )
       
     )
@@ -284,6 +310,11 @@ mod_main_panel_server <- function(input, output, session, usr) {
           "sensor_select",
           choices = na.omit(choices[['label']])
         )
+        
+        # Run the javascript to update the community selection on the map
+        html_labels <- paste0("circle#",na.omit(choices$label))
+        shinyjs::js$communityFilter(html_labels)
+
         
         # update the client community selection input
         usr$selected$community <- input$community_select
