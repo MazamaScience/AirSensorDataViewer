@@ -208,16 +208,7 @@ mod_main_panel_server <- function(input, output, session, usr) {
       debouncedSelectSensor()
     }, 
     handlerExpr = {
-      
-      # Update the selector using js for speediness
-      # shinyjs::runjs(
-      #   paste0(
-      #     '$("select#main_panel_ui_1-sensor_select")[0].selectize.setValue("', 
-      #     input$sensor_select,
-      #     '", false)'
-      #   )
-      # )
-      
+    
       # Update the client object sensor selection 
       usr$selected$sensor <- input$sensor_select
       
@@ -239,14 +230,14 @@ mod_main_panel_server <- function(input, output, session, usr) {
       
       # Check dates before updating client object
       # NOTE: if the enddate is less than or equal to the startdate, then push 
-      # NOTE: the startdate to the enddate-1d
+      # NOTE: the startdate to the enddate-2d
       if ( ymd(ed) <= ymd(sd) ) {
         
         sd <- strftime(ymd(sd) - days(1), "%Y-%m-%d")
         updateDateRangeInput(
           session,
           "date_range",
-          start = ymd(ed) - days(1)
+          start = ymd(ed) - days(3)
         )
         # Validate that dates are valid before continuing
         validate(
