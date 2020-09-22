@@ -32,10 +32,10 @@ mod_main_panel_ui <- function(id) {
     dateRangeInput(
       inputId = ns("date_range"), 
       label = tags$h4("Date Range"), 
-      start = (today(tzone = TZ) - days(1)) - days(7), 
-      end = (today(tzone = TZ) - days(1)), 
+      start = (today(tzone = TZ) - days(7)), 
+      end = today(tzone = TZ), 
       min = ymd(20171001), 
-      max = (today(tzone = TZ) - days(1))
+      max = today(tzone = TZ)
     ), 
     
     # Hacky way to get the client timezone stored in the client object
@@ -227,6 +227,9 @@ mod_main_panel_server <- function(input, output, session, usr) {
       
       sd <- input$date_range[1]
       ed <- input$date_range[2]
+      
+      # Plot down to avoid weird bugs 
+      plotDown()
       
       # Check dates before updating client object
       # NOTE: if the enddate is less than or equal to the startdate, then push 
