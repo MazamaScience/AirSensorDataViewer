@@ -12,6 +12,9 @@ app_server <- function( input, output, session ) {
   # go rogue
   options(warn = -1)
   
+  # set up logs per session 
+  setupSessionLogs(session)
+  
   # Specify how futures are resolved, e.g. sequentially or in parallel.
   plan(future::sequential)
   # plan(future::multiprocess)
