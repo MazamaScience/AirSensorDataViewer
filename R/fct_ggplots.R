@@ -6,7 +6,9 @@
 #'
 #' @title Linear model fitting of PurpleAir and federal PWFSL time series data
 #'
-#' @param pat PurpleAir Timeseries \emph{pat} object.
+#' @param sensor PurpleAir Timeseries \emph{pat} object.
+#' @param startdate A startdate. 
+#' @param enddate A enddate. 
 #' @param showPlot Logical specifying whether to generate a model fit plot.
 #' @param size Size of points.
 #' @param pa_color Color of hourly points.
@@ -25,6 +27,7 @@
 #' @param qc_algorithm Named QC algorithm to apply to hourly aggregation stats.
 #' @param min_count Aggregation bins with fewer than `min_count` measurements
 #' will be marked as `NA`.
+#' @param tz The ISO timezone. 
 #'
 #' @description Produces a linear model between data from PurpleAir and data
 #' from the closest PWFSL monitor.
@@ -173,6 +176,7 @@ asdv_externalFit <-
 #'
 #' @param pat PurpleAir Timeseries \emph{pat} object.
 #' @param showPlot Logical specifying whether to generate a model fit plot.
+#' @param whichPlot Which plot to show. 
 #' @param size Size of points.
 #' @param a_color Color of time series channel A points.
 #' @param b_color Color of time series channel B points.
@@ -185,6 +189,7 @@ asdv_externalFit <-
 #' @param ts_shape Symbol to use for time series points.
 #' @param xylim Vector of (lo,hi) limits used as limits on the correlation plot
 #' axes -- useful for zooming in.
+#' @param tz a timezone. 
 #'
 #' @description Uses a linear model to fit data from channel B to data from
 #' channel A.
@@ -877,8 +882,8 @@ custom_pm25DiurnalScales <- function(
 
 #' Sensor Monitor Correlation Plot
 #'
-#' @param sensor 
-#' @param pwfsl 
+#' @param sensor A airsensor object
+#' @param pwfsl A ws_monitor object
 #'
 #' @return
 #' @export

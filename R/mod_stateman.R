@@ -60,12 +60,9 @@ mod_stateman_server <- function(input, output, session, usr){
 #' A tool  intended to minimize local computational cost that handles the current 
 #' client object state to best determine what to update. 
 #'
-#' @param usr 
+#' @param usr The user object.
 #'
-#' @return
 #' @export
-#'
-#' @examples
 magicUpdate <- function(usr) {
   label <- usr$selected$sensor
   sd <- usr$selected$sd

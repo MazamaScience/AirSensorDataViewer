@@ -59,7 +59,6 @@ com2id <- function(X) {
 #' @param id an element ID to append to.
 #'
 #' @export
-#' @noRd
 #' 
 #' @importFrom waiter Waiter spin_throbber transparent
 waiter <- function(id = NULL) { 
@@ -73,7 +72,6 @@ waiter <- function(id = NULL) {
 #' Waitress wrapper function
 #' 
 #' @export
-#' @noRd
 #' 
 #' @importFrom waiter Waitress
 waitress <- function() {
@@ -86,7 +84,6 @@ waitress <- function() {
 #' @param msg a message to show the user.
 #'
 #' @export
-#' @noRd
 #' 
 #' @importFrom stats runif
 makeWaitress <- function(expr, msg) {
@@ -145,7 +142,7 @@ sliderUp <- function() {
 
 #' Create a hash-cache key for caching
 #'
-#' @param x an object, expression, anything. 
+#' @param ... an object, expression, anything to be used to create unique key. 
 #'
 #' @return a hash
 #' @export

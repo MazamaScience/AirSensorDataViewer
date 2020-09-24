@@ -14,6 +14,8 @@ get_pat(pas, label, sd, ed, pat = NULL)
 \item{sd}{a startdate (YYYYmmdd)}
 
 \item{ed}{a enddate (YYYYmmdd)}
+
+\item{pat}{an optional pat to attempt filtering on.}
 }
 \value{
 a pa_timeseries object

@@ -7,7 +7,7 @@
 cacheKey(...)
 }
 \arguments{
-\item{x}{an object, expression, anything.}
+\item{...}{an object, expression, anything to be used to create unique key.}
 }
 \value{
 a hash

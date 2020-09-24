@@ -9,11 +9,7 @@ get_sensor(sensors, ...)
 \arguments{
 \item{sensors}{an airsensor object}
 
-\item{label}{a label to filter the airsensor object by}
-
-\item{sd}{a startdate (YYYYmmdd)}
-
-\item{ed}{an enddate (YYYYmmdd)}
+\item{...}{filtering argument.}
 }
 \value{
 a univariate airsensor object

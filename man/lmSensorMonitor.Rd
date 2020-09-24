@@ -7,9 +7,9 @@
 lmSensorMonitor(sensor, pwfsl)
 }
 \arguments{
-\item{sensor}{}
+\item{sensor}{A airsensor object}
 
-\item{pwfsl}{}
+\item{pwfsl}{A ws_monitor object}
 }
 \value{
 

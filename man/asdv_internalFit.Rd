@@ -27,6 +27,8 @@ asdv_internalFit(
 
 \item{showPlot}{Logical specifying whether to generate a model fit plot.}
 
+\item{whichPlot}{Which plot to show.}
+
 \item{size}{Size of points.}
 
 \item{a_color}{Color of time series channel A points.}
@@ -49,6 +51,8 @@ asdv_internalFit(
 
 \item{xylim}{Vector of (lo,hi) limits used as limits on the correlation plot
 axes -- useful for zooming in.}
+
+\item{tz}{a timezone.}
 }
 \value{
 A linear model, fitting the `pat` B channel readings to A channel

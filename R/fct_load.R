@@ -1,13 +1,13 @@
 #' Get PurpleAir Synoptic Data
 #' 
-#' @param date a datestamp (YYYYmmdd)
+#' @param datestamp a datestamp (YYYYmmdd)
 #' 
 #' @return a pa_synoptic object
 #' @export
-get_pas <- function(date = NULL) { 
+get_pas <- function(datestamp = NULL) { 
   # logger.trace("loading pas obj...")
   tryCatch(
-    pas_load(date), 
+    pas_load(datestamp, archival = TRUE), 
     error = function(err) catchError(err)
   )
 }
@@ -18,6 +18,7 @@ get_pas <- function(date = NULL) {
 #' @param label a sensor label
 #' @param sd a startdate (YYYYmmdd)
 #' @param ed a enddate (YYYYmmdd)
+#' @param pat an optional pat to attempt filtering on. 
 #'
 #' @return a pa_timeseries object
 #' @export
@@ -35,16 +36,18 @@ get_pat <- function(pas, label, sd, ed, pat = NULL) {
         pat <- pat_load(
           pas = pas, 
           label = label, 
-          startdate = sd, 
-          enddate = ed
+          startdate = strftime(sd, "%Y%m%d"), 
+          enddate = strftime(ed, "%Y%m%d")
         ) 
       } else {
         
-        # Add label check
-        data_sd <- ymd_hms(min(pat$data$datetime))
-        data_ed <- ymd_hms(max(pat$data$datetime))
+        domain <- ymd_hms(pat$data$datetime)
         
-        if ( sd %within% (data_sd %--% data_ed) ) {
+        # Add label check
+        data_sd <- range(domain)[1]
+        data_ed <- range(domain)[2]
+        
+        if ( (sd %--% ed) %within% (data_sd %--% data_ed) ) {
           # logger.trace(paste("pat filter date to", sd, "--", ed))
           pat <- pat_filterDate(
             pat = pat,
@@ -56,16 +59,22 @@ get_pat <- function(pas, label, sd, ed, pat = NULL) {
           pat <- pat_load(
             pas = pas, 
             label = label, 
-            startdate = sd, 
-            enddate = ed
+            startdate = strftime(sd, "%Y%m%d"), 
+            enddate = strftime(ed, "%Y%m%d")
           ) 
         }
       }
       return(pat)
       
     }, 
+    # Fallback: If the above throws an error attempt loading with the default parameters. 
     error = function(err) {
       catchError(err)
+      pat <- tryCatch(
+        pat_load(pas = pas, label = label), 
+        error = function(err) catchError(err)
+      )
+      return(pat)
     }
   )
 }
@@ -73,9 +82,7 @@ get_pat <- function(pas, label, sd, ed, pat = NULL) {
 #' Get A Sensor from Sensors 
 #'
 #' @param sensors an airsensor object
-#' @param label a label to filter the airsensor object by
-#' @param sd a startdate (YYYYmmdd)
-#' @param ed an enddate (YYYYmmdd)
+#' @param ... filtering argument.
 #'
 #' @return a univariate airsensor object
 #' @export
@@ -91,6 +98,7 @@ get_sensor <- function(sensors, ...) {
 #'
 #' @param sd a startdate (YYYYmmdd)
 #' @param ed an enddate (YYYYmmdd)
+#' @param sensors an optional sensors object to attmept filtering by.
 #'
 #' @return an airsensor object
 #' @export
@@ -177,6 +185,8 @@ get_pat_latest <- function(pas, label, tz = 'UTC') {
 #'  the worldmet importNOAA function.
 #'
 #' @param sensor A univariate airsensor object
+#' @param sd A startdate. 
+#' @param ed A enddate. 
 #'
 #' @return a data.frame 
 #' @export

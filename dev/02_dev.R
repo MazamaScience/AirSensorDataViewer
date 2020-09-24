@@ -73,7 +73,6 @@ golem::add_fct( "load" )
 golem::add_fct( "leaflet" )
 
 # Util functions
-golem::add_utils("Client")
 golem::add_utils("helpers")
 golem::add_utils("logs")
 

@@ -7,10 +7,7 @@
 magicUpdate(usr)
 }
 \arguments{
-\item{usr}{}
-}
-\value{
-
+\item{usr}{The user object.}
 }
 \description{
 A tool  intended to minimize local computational cost that handles the current 

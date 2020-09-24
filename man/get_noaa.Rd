@@ -11,6 +11,10 @@ get_noaa(sensor, sd, ed)
 }
 \arguments{
 \item{sensor}{A univariate airsensor object}
+
+\item{sd}{A startdate.}
+
+\item{ed}{A enddate.}
 }
 \value{
 a data.frame

@@ -4,10 +4,10 @@
 \alias{get_pas}
 \title{Get PurpleAir Synoptic Data}
 \usage{
-get_pas(date = NULL)
+get_pas(datestamp = NULL)
 }
 \arguments{
-\item{date}{a datestamp (YYYYmmdd)}
+\item{datestamp}{a datestamp (YYYYmmdd)}
 }
 \value{
 a pa_synoptic object

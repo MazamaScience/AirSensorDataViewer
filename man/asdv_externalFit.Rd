@@ -28,6 +28,12 @@ asdv_externalFit(
 )
 }
 \arguments{
+\item{sensor}{PurpleAir Timeseries \emph{pat} object.}
+
+\item{startdate}{A startdate.}
+
+\item{enddate}{A enddate.}
+
 \item{showPlot}{Logical specifying whether to generate a model fit plot.}
 
 \item{size}{Size of points.}
@@ -62,7 +68,7 @@ axes -- useful for zooming in.}
 \item{min_count}{Aggregation bins with fewer than `min_count` measurements
 will be marked as `NA`.}
 
-\item{pat}{PurpleAir Timeseries \emph{pat} object.}
+\item{tz}{The ISO timezone.}
 }
 \value{
 A linear model, fitting the `pat` PurpleAir readings to the closest

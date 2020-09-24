@@ -10,6 +10,8 @@ get_sensors(sd, ed, sensors = NULL)
 \item{sd}{a startdate (YYYYmmdd)}
 
 \item{ed}{an enddate (YYYYmmdd)}
+
+\item{sensors}{an optional sensors object to attmept filtering by.}
 }
 \value{
 an airsensor object
