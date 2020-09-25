@@ -167,14 +167,14 @@ get_sensors <- function(sd, ed, sensors = NULL) {
 #'
 #' @return
 #' @export
-get_pat_latest <- function(pas, label, tz = 'UTC') {
+get_pat_latest <- function(pas, label, tz = "America/Los_Angeles") {
   # logger.trace(paste(label, "loading latest pat obj..."))
   tryCatch(
     pat_createNew(
       pas = pas, 
       label = label, 
       timezone = tz 
-    ), 
+    ) %>% pat_filterDate(lubridate::today(tzone = tz) - lubridate::days(2)),
     error = function(err) catchError(err)
   )
 }
