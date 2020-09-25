@@ -149,7 +149,7 @@ app_ui <- function(request) {
       
       # ----- Latest Data page -------------------------------------------------
       tabPanel(
-        title = tags$b("Latest Data"),
+        title = tags$b("Latest 48-Hr Data"),
         value = "latest",
         fluidRow(
           column(
@@ -193,7 +193,7 @@ app_ui <- function(request) {
     ),
     tags$style(
       type="text/css", 
-      ".col-sm-2 {min-width:254px;}"
+      ".col-sm-2 {min-width:288px;}"
     ), 
     
     tags$style(
