@@ -62,8 +62,8 @@ mod_datatable_server <- function(input, output, session, usr) {
     usr$pat %...>% (function(pat) {
       data <- pat$data[c("datetime", "pm25_A", "pm25_B", "temperature", "humidity")]
       names(data) <- c( "Datetime (UTC)",
-                        "PM2.5 Ch. A (\u03bcg / m\u00b)",
-                        "PM2.5 Ch. B (\u03bcg / m\u00b)",
+                        "PM2.5 Ch. A (\u03bcg / m\u00b3)",
+                        "PM2.5 Ch. B (\u03bcg / m\u00b3)",
                         "Temperature (F)",
                         "Relative Humidity (%)" )
       
