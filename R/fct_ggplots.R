@@ -414,10 +414,10 @@ asdv_pm25Diurnal <- function(
   if ( is.null(timezone) ) {
     if ( length(unique(ws_tidy$timezone) ) > 1) {
       timezone <- "UTC"
-      xlab <- "Time of Day (UTC)"
+      xlab <- "Hour of Day (UTC)"
     } else {
       timezone <- ws_tidy$timezone[1]
-      xlab <- "Time of Day (Local)"
+      xlab <- "Hour of Day (Local)"
     }
   } else if ( is.null(xlab) ) {
     xlab <- paste0("Time of Day (", timezone, ")")
@@ -643,7 +643,7 @@ StatMeanByGroup <- ggplot2::ggproto(
     } else if (output == "scaqmd") {
       
       scaqmd_breaks <- c(0, 12, 35, 55, 75, 6000)
-      scaqmd_colors <- c("#ABEBFF", "#3B8AFF", "#002ADE", "#9F00DE", "#6B0096")
+      scaqmd_colors <- c("#abe3f4", "#118cba", "#286096", "#8659a5", "#6a367a") 
       
       data$aqi <- .bincode(means$mean, breaks = scaqmd_breaks, include.lowest = TRUE)
       
