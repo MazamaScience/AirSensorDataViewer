@@ -28,15 +28,43 @@ mod_main_panel_ui <- function(id) {
       selected = NULL,
       choices = list("Loading Sensors..." = NULL)
     ),
+
+    tags$hr(), 
     
-    dateRangeInput(
-      inputId = ns("date_range"), 
-      label = tags$h4("Date Range"), 
-      start = (today(tzone = TZ) - days(7)), 
-      end = today(tzone = TZ), 
-      min = ymd(20171001), 
-      max = today(tzone = TZ)
+    tags$h4("Date Range"),
+    
+    uiOutput(
+      outputId = ns("date_range_label")
     ), 
+
+    fluidRow(
+      column(
+        width = 6, 
+        dateInput(
+          inputId = ns("date_select"),
+          label = tags$small("Select Date"), 
+          min = ymd(20171001),
+          max = today(tzone = TZ), 
+          format = "M d, yyyy" 
+        )
+      ),
+      column(
+        width = 6, 
+        selectizeInput(
+          inputId = ns("past_select"), 
+          label = tags$small("Past"), 
+          selected = list("Past 7 Days" = 7),
+          choices = list(
+            "Past Day" = 1, 
+            "Past 2 Days" = 2, 
+            "Past 3 Days" = 3, 
+            "Past 7 Days" = 7, 
+            "Past 14 Days" = 14, 
+            "Past Month" = 31
+          )
+        )
+      )
+    ),
     
     # Hacky way to get the client timezone stored in the client object
     shinyjs::hidden(textInput(
@@ -115,7 +143,14 @@ mod_main_panel_ui <- function(id) {
           };
           ", 
         functions = c("communityFilter")
-      )
+      ), 
+      
+      # Add radius to date picker and match height of selectize inputs 
+      tags$style(
+      ".form-control {
+          border-radius: 4px; 
+          height: 33px;
+      }")
       
     )
   )
@@ -216,64 +251,32 @@ mod_main_panel_server <- function(input, output, session, usr) {
   )
   
   # debounce the date input to avoid too many clicks & infinite loops
-  debouncedDateRange <- debounce(reactive(input$date_range), 250)
+  #debouncedDateRange <- debounce(reactive(input$date_range), 250)
   observeEvent(
     priority = 100,
     ignoreNULL = TRUE,
     eventExpr = {
-      debouncedDateRange()
+     # debouncedDateRange()
+      input$past_select
+      input$date_select
     }, 
     handlerExpr = {
       
-      sd <- input$date_range[1]
-      ed <- input$date_range[2]
+      # Calculate the dates based on user selection
+      sd <- lubridate::ymd(input$date_select) - lubridate::days(input$past_select)
+      ed <- lubridate::ymd(input$date_select)
       
       # Plot down to avoid weird bugs 
       plotDown()
-      
-      # Check dates before updating client object
-      # NOTE: if the enddate is less than or equal to the startdate, then push 
-      # NOTE: the startdate to the enddate-2d
-      if ( ymd(ed) <= ymd(sd) ) {
-        
-        sd <- strftime(ymd(sd) - days(1), "%Y-%m-%d")
-        updateDateRangeInput(
-          session,
-          "date_range",
-          start = ymd(ed) - days(3)
-        )
-        # Validate that dates are valid before continuing
-        validate(
-          need(ymd(sd) <= ymd(ed), "improper dates")
-        )
-        
-      }
-      
-      # NOTE: if the difference between the enddate and startdate is greater 
-      # NOTE: than or equal to 21 days, set the startdate to be the endate-21d, 
-      # NOTE: and notity the user that their selection was too great.
-      if ( ymd(ed) - ymd(sd) >= 21 ) {
-        
-        sd <- strftime(ymd(sd) - days(21), "%Y-%m-%d")
-        updateDateRangeInput(
-          session,
-          "date_range",
-          start = ymd(ed) - days(21)
-        )
-        showNotification("Dates range too long!", "Max date range is 21 days.", type = "warn", id = "date-range")
-        
-      }
       
       # update the client object date selections
       usr$selected$sd <- sd
       usr$selected$ed <- ed
       
       usr$updateSensors(sd, ed)
-      
       usr$updatePas(ed)
       
       # TODO: only update on year changes
-      
       usr$updateAnnual(ed)
       
     }
@@ -389,6 +392,23 @@ mod_main_panel_server <- function(input, output, session, usr) {
     }
   )
   
+  output$date_range_label <- renderUI({
+    
+    # sd <- lubridate::ymd(input$date_select) - lubridate::days(input$past_select)
+    # ed <- lubridate::ymd(input$date_select)
+    # 
+    # 
+    # usr$selected$sd <- sd 
+    # usr$selected$ed <- ed
+   
+   tags$h5(tags$div(HTML(paste0('<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-calendar-event" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+  <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
+</svg> ', strftime(usr$selected$sd, "%B %d, %Y"), "  -  ", strftime(usr$selected$ed, "%B %d, %Y")))))
+   
+   
+  })
+
 } # End Server
 
 ## To be copied in the UI
