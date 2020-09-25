@@ -17,7 +17,7 @@ get_pat_annual <- function(pas, label, date) {
 }
 Get Latest PurpleAir Timeseries Data}
 \usage{
-get_pat_latest(pas, label, tz = "UTC")
+get_pat_latest(pas, label, tz = "America/Los_Angeles")
 }
 \arguments{
 \item{pas}{a pas obj}
