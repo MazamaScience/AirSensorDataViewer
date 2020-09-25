@@ -46,8 +46,8 @@ mod_overview_ui <- function(id){
         padding: 0 0 0 0;
         cursor: move;
         /* Fade out while not hovering */
-        opacity: 0.70;
-        zoom: 0.9;
+        opacity: 0.95;
+        zoom: 1;
         transition: opacity 200ms 400ms;
       }
       #plot_panel:hover {
