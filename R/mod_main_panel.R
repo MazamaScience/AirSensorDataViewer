@@ -40,30 +40,32 @@ mod_main_panel_ui <- function(id) {
     fluidRow(
       column(
         width = 6, 
+        selectizeInput(
+          inputId = ns("past_select"), 
+          label = tags$small("Past"), 
+          selected = list("1 Week" = 7),
+          choices = list(
+            "1 Day" = 1, 
+            "2 Days" = 2, 
+            "3 Days" = 3, 
+            "1 Week" = 7, 
+            "2 Weeks" = 14, 
+            "1 Month" = 31
+          )
+        )
+      ),
+      column(
+        width = 6, 
         dateInput(
           inputId = ns("date_select"),
           label = tags$small("Select Date"), 
           min = ymd(20171001),
           max = today(tzone = TZ), 
-          format = "M d, yyyy" 
+          format = "M d, yyyy", 
+          value =  today(TZ)
         )
       ),
-      column(
-        width = 6, 
-        selectizeInput(
-          inputId = ns("past_select"), 
-          label = tags$small("Past"), 
-          selected = list("Past 7 Days" = 7),
-          choices = list(
-            "Past Day" = 1, 
-            "Past 2 Days" = 2, 
-            "Past 3 Days" = 3, 
-            "Past 7 Days" = 7, 
-            "Past 14 Days" = 14, 
-            "Past Month" = 31
-          )
-        )
-      )
+
     ),
     
     # Hacky way to get the client timezone stored in the client object
