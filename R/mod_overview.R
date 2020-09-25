@@ -7,7 +7,7 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
-#' @importFrom tiotemp timeseriesMapOutput barChartOutput 
+#' @importFrom tiotemp timeseriesMapOutput timeseriesBarChartOutput 
 mod_overview_ui <- function(id){
   ns <- NS(id)
   tagList(
@@ -31,7 +31,7 @@ mod_overview_ui <- function(id){
       tags$div(
         id = 'dem',
         class = "collapse",
-        barChartOutput(
+        timeseriesBarChartOutput(
           outputId = ns("timeseriesBarChart"), 
           height = "20vh"
         ) %>% withLoader()
@@ -67,7 +67,7 @@ mod_overview_ui <- function(id){
 #'
 #' @noRd 
 #' @importFrom tiotemp renderTimeseriesMap timeseriesMap 
-#' @importFrom tiotemp renderBarChart barChart
+#' @importFrom tiotemp renderTimeseriesBarChart timeseriesBarChart
 #' @importFrom promises `%...>%` `%...!%`
 mod_overview_server <- function(input, output, session, usr) {
   ns <- session$ns
@@ -90,15 +90,15 @@ mod_overview_server <- function(input, output, session, usr) {
     
   })
   
-  output$timeseriesBarChart <- renderBarChart({
+  output$timeseriesBarChart <- renderTimeseriesBarChart({
     req(usr$sensors)
     
     usr$sensors %...>% (function(sensors) {
-      barChart(
+      timeseriesBarChart(
         data = sensors[['data']], 
         meta = sensors[['meta']],
         inputId = 'main_panel_ui_1-sensor_select',
-        ylab = "\u03bcg / m\u00b3"
+        ylab = "\u03bcg / m\u00b3", zoomFocus = "none"
       ) 
     }) %...!% (function(err) {
       notify("Failed to load sensor data. Try selecting a different date or a different sensor.")
