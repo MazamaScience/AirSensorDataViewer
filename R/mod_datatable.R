@@ -43,13 +43,13 @@ mod_datatable_server <- function(input, output, session, usr) {
     req(usr$pat)
     
     usr$pat %...>% (function(pat) {
-      data.frame( "Sensor" = pat$meta$label,
+      data.frame( "Sensor Name" = pat$meta$label,
                   "Community" = pat$meta$communityRegion,
-                  "Sensor Type" = pat$meta$sensorType,
+                  "Sensor Model" = "PA-II (PurpleAir)",#pat$meta$sensorType # replaced @ req issue #24 by SCAQMD
                   "Longitude" = pat$meta$longitude,
                   "Latitude" = pat$meta$latitude,
                   "State" = pat$meta$stateCode,
-                  "Country" = pat$meta$countryCode )  
+                  "Country" = pat$meta$countryCode, check.names = FALSE )  
     }) %...!% (function(err) {
       catchError(err)
     })
@@ -67,7 +67,19 @@ mod_datatable_server <- function(input, output, session, usr) {
                         "Temperature (F)",
                         "Relative Humidity (%)" )
       
-      datatable(data, selection = "none", options = list(pageLength = 25) ) %>%
+      datatable(
+        data, 
+        selection = "none", 
+        extensions = 'Scroller', 
+        options = list(
+          deferRender = TRUE, 
+          scrollY = 624, 
+          scroller = TRUE, 
+          dom = 't', 
+          pageLength = 25, 
+          columnDefs = list(list(className = 'dt-center', targets = "_all"))
+          )
+        ) %>%
         formatDate(1, method = 'toLocaleString', params = list('en-EN'))
     }) %...!% (function(err) {
       catchError(err)
