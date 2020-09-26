@@ -98,7 +98,7 @@ mod_overview_server <- function(input, output, session, usr) {
         data = sensors[['data']], 
         meta = sensors[['meta']],
         inputId = 'main_panel_ui_1-sensor_select',
-        ylab = "\u03bcg / m\u00b3", zoomFocus = "none"
+        ylab = "\u03bcg / m\u00b3"
       ) 
     }) %...!% (function(err) {
       notify("Failed to load sensor data. Try selecting a different date or a different sensor.")
