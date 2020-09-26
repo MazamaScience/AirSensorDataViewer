@@ -1,3 +1,8 @@
+# AiSensorDataViewer 0.9.9.1
+
+* Updated the date selector
+* Added visual tweaks
+
 # AirSensorDataViewer 0.9.9
 
 * Removed **worldmet** dependency.

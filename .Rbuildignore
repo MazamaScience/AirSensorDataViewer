@@ -10,3 +10,4 @@ $run_dev.*
 ^dockerfile$
 ^app\.R$
 ^rsconnect$
+^Dockerfile_new$
