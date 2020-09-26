@@ -198,7 +198,6 @@ mod_main_panel_server <- function(input, output, session, usr) {
       # set the client object timezone
       usr$setTz("America/Los_Angeles")
       
-      
       promise_all(sensors = usr$sensors, pas = usr$pas) %...>% 
         with({
           # Check diff bewteen sensors aobj in sensor obj and pas obj and only use
@@ -230,6 +229,8 @@ mod_main_panel_server <- function(input, output, session, usr) {
         }) %...!% (function(err) {
           catchError(err)
         })
+      
+      usr$updateAnnual("2020-01-01")
       
       # Close the waitress
       w$close()
@@ -268,6 +269,8 @@ mod_main_panel_server <- function(input, output, session, usr) {
       sd <- lubridate::ymd(input$date_select) - lubridate::days(input$past_select)
       ed <- lubridate::ymd(input$date_select)
       
+      yr <- lubridate::year(input$date_select)
+      
       # Plot down to avoid weird bugs 
       plotDown()
       
@@ -278,8 +281,12 @@ mod_main_panel_server <- function(input, output, session, usr) {
       usr$updateSensors(sd, ed)
       usr$updatePas(ed)
       
-      # TODO: only update on year changes
-      usr$updateAnnual(ed)
+      # Update annual sensors if year changes
+      if ( yr != usr$selected$year ) { 
+        usr$updateAnnual(ed)
+        usr$selected$year <- yr
+      }
+      
       
     }
   )

@@ -106,7 +106,8 @@ User <- R6::R6Class(
         sd = NULL, 
         ed = NULL, 
         page = NULL, 
-        tab = NULL
+        tab = NULL, 
+        year = 2020
       )
       
       # Create the reactive trigger got each loaded value
