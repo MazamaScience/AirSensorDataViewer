@@ -12,7 +12,7 @@ lmSensorMonitor(sensor, pwfsl)
 \item{pwfsl}{A ws_monitor object}
 }
 \value{
-
+a ggplot object
 }
 \description{
 Sensor Monitor Correlation Plot

@@ -9,9 +9,6 @@ notify(msg)
 \arguments{
 \item{msg}{A message to display}
 }
-\value{
-
-}
 \description{
 A Shiny notification wrapper
 }

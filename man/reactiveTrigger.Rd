@@ -6,9 +6,6 @@
 \usage{
 reactiveTrigger()
 }
-\value{
-
-}
 \description{
 R6 reactive trigger: https://gist.github.com/bborgesr/3350051727550cfa798cb4c9677adcd4
 }

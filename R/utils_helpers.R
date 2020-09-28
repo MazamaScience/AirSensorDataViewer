@@ -166,7 +166,6 @@ withLoader <- function(el) {
 #'
 #' @param msg A message to display
 #'
-#' @return
 #' @export
 notify <- function(msg) {
   shiny::showNotification(

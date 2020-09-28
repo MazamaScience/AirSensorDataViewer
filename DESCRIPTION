@@ -1,6 +1,6 @@
 Package: AirSensorDataViewer
 Title: AirSensorDataViewer
-Version: 0.9.9
+Version: 0.9.10
 Authors@R: person('Hans', 'Martin', email = 'hansmrtn@gmail.com', role = c('cre', 'aut'))
 Description: The AirSensor DataViewer.
 License: GPL-3

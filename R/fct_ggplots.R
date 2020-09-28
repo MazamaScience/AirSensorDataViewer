@@ -885,10 +885,9 @@ custom_pm25DiurnalScales <- function(
 #' @param sensor A airsensor object
 #' @param pwfsl A ws_monitor object
 #'
-#' @return
+#' @return a ggplot object
 #' @export
 #'
-#' @examples
 lmSensorMonitor <- function(sensor, pwfsl) {
   
   slab <- sensor$meta$label

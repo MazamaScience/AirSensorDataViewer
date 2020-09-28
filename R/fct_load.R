@@ -4,7 +4,7 @@
 #' 
 #' @return a pa_synoptic object
 #' @export
-get_pas <- function(datestamp = NULL) { 
+get_pas <- function(datestamp = NULL) {
   # logger.trace("loading pas obj...")
   tryCatch(
     pas_load(datestamp, archival = TRUE), 
@@ -102,7 +102,7 @@ get_sensor <- function(sensors, ...) {
 #'
 #' @return an airsensor object
 #' @export
-#' @import lubridate
+#' @importFrom lubridate ymd_hms
 get_sensors <- function(sd, ed, sensors = NULL) {
   
   tryCatch(
@@ -118,8 +118,8 @@ get_sensors <- function(sd, ed, sensors = NULL) {
           enddate = strftime(ed, "%Y%m%d")
         ) 
       } else {
-        data_sd <- ymd_hms(min(sensors$data$datetime))
-        data_ed <- ymd_hms(max(sensors$data$datetime))
+        data_sd <- lubridate::ymd_hms(min(sensors$data$datetime))
+        data_ed <- lubridate::ymd_hms(max(sensors$data$datetime))
         
         if ( sd %within% (data_sd %--% data_ed) ) {
           # logger.trace(paste("filter date to", sd, "--", ed))
@@ -165,7 +165,7 @@ get_sensors <- function(sd, ed, sensors = NULL) {
 #' @param label a sensor label
 #' @param tz a timezone 
 #'
-#' @return
+#' @return a 'pat' object
 #' @export
 get_pat_latest <- function(pas, label, tz = "America/Los_Angeles") {
   # logger.trace(paste(label, "loading latest pat obj..."))
@@ -233,7 +233,7 @@ get_noaa <- function(sensor, sd, ed) {
         lapply(
           dxts, 
           function(x) { 
-            period.apply(x, ep, function(x) { mean(x, na.rm=TRUE) }) 
+            period.apply(x, ep, function(x) { mean(x, na.rm = TRUE) }) 
           }
         )
       ))

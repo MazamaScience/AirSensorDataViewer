@@ -1,7 +1,10 @@
-# AiSensorDataViewer 0.9.9.1
+# AiSensorDataViewer 0.9.10
 
 * Updated the date selector
 * Added visual tweaks
+* Makefile tweaks
+* Separated out base docker image
+* Various cleanup to reduce R CMD check errors
 
 # AirSensorDataViewer 0.9.9
 
@@ -24,7 +27,7 @@
 * New latest data look
 * Updated help html
 * Updated airdatepicker to be inline to avoid weird overlapping UI
-* Resolved timezones*
+* Resolved timezones
 
 # AirSensor DataViewer 0.7
 

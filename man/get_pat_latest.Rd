@@ -27,7 +27,7 @@ get_pat_latest(pas, label, tz = "America/Los_Angeles")
 \item{tz}{a timezone}
 }
 \value{
-
+a 'pat' object
 }
 \description{
 #' Get Annual 

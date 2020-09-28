@@ -4,6 +4,7 @@
 #'
 #' @export
 #' @import MazamaCoreUtils
+#' @importFrom utils capture.output sessionInfo
 setupSessionLogs <- function(session) {
   
   # ----- Set up logging ---------------------------------------------------------

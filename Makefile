@@ -43,9 +43,11 @@ SERVICE_PATH=airsensor-dataviewer/v1
 SERVICE_PATH_TEST=airsensor-dataviewer/test
 
 # Assign version from golem_config.yml configuration
-###VERSION := $(shell grep -P -o '(\d+\.)+\d+' inst/golem-config.yml)
-VERSION := $(shell grep golem_version inst/golem-config.yml | cut -d':' -f2 | sed 's/ //g')
+VERSION=`grep golem_version inst/golem-config.yml | cut -d':' -f2 | sed 's/ //g'`
 
+show_version:
+	echo $(VERSION)
+	
 # App configuration
 clean:
 	if [ -d logs ]; then sudo rm -Rf logs; mkdir logs; fi

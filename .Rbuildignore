@@ -1,13 +1,31 @@
+# Ignore RStudio files
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^data-raw$
+
+# Ignore various yaml files associated with package building packages
+^\.lintr$
+
+# Ignore LICENSE file which is included for display on Github
+^LICENSE$
+
+# Ignore all directories beginning with "local"
+^local*
+
+# Ignore pkgdown input and output files
+^docs$
+^_pkgdown.yml
+^pkgdown/
+^logo\.png$
+
+# Ignore other directories
+^docker$
+
+# Ignore configuration files for other tools
+^\.travis\.yml$
+
+# Ignore DataViewer specific items
+^app\.R$
 dev_history.R
 ^dev$
-$run_dev.*
-^LICENSE\.md$
-^Dockerfile$
-^docker$
-^dockerfile$
-^app\.R$
-^rsconnect$
-^Dockerfile_new$
+^Makefile$
+^shiny-server.conf$

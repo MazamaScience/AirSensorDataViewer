@@ -287,7 +287,6 @@ User <- R6::R6Class(
 
 #' R6 reactive trigger: https://gist.github.com/bborgesr/3350051727550cfa798cb4c9677adcd4
 #'
-#' @return
 #' @export
 #'
 #' @examples
