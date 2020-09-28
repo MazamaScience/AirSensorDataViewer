@@ -66,6 +66,13 @@ clean:
 #	sed -i '' 's%FROM .*%FROM mazamascience/airsensordataviewer:$(VERSION)%' docker/Dockerfile
 #	sed -i '' 's%location /.*/ {%location /$(SERVICE_PATH_TEST)/ {%' shiny-server.conf
 
+# NOTE:  You need to manually edit these version numbers and that in docker/Dockerfile to match
+base_build:
+	cd docker; docker build --no-cache -t mazamascience/airsensor-dataviewer-base:1.0.0 -f Dockerfile-base .
+
+base_publish:
+	cd docker; docker login && docker push mazamascience/airsensor-dataviewer-base:1.0.0
+
 # AirSensorShiny DESKTOP version -----------------------------------------------
 
 # NOTE:  make the appropriate configure_app target first
