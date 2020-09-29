@@ -15,7 +15,7 @@ comparisonLeaflet <- function(sensor, pwfsl) {
   
   slab <- d$meta$label
   mdist <- signif(d$meta$pwfsl_closestDistance/1000, 2)
-  mlab <- d$meta$pwfsl_closestMonitorID
+  mlab <- h$meta$siteName
   sensor <- PWFSLSmoke::monitor_toTidy(d)
   dates <- range(d$data$datetime)
   monitor <- PWFSLSmoke::monitor_toTidy(h)
