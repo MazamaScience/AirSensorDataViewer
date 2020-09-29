@@ -209,10 +209,19 @@ app_ui <- function(request) {
           text-align: -webkit-center;
       }"
     ), 
+  
     tags$style(
       type="text/css", 
       ".shiny-notification-content-text {
         font-size: 1.2em;
+      }"
+    ), 
+    
+    tags$style(
+      type="text/css", 
+      "#calendar_ui_1-yearLabel {
+        padding-left: 20px;
+        font-size: 1.25em; 
       }"
     )
   

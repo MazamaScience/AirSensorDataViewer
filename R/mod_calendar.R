@@ -12,6 +12,7 @@ mod_calendar_ui <- function(id){
   ns <- NS(id)
   tagList(
     wellPanel(
+      uiOutput(ns("yearLabel"), container = tags$text),
       timeseriesCalendarOutput(
         outputId = ns("calendarPlot"), width = 800, height = 800
       ) %>% withLoader()
@@ -27,7 +28,7 @@ mod_calendar_ui <- function(id){
 #' @importFrom promises `%...>%` `%...!%`
 mod_calendar_server <- function(input, output, session, usr) {
   ns <- session$ns
-  
+
   output$calendarPlot <- renderTimeseriesCalendar({
     req(usr$annual)
     
@@ -44,6 +45,12 @@ mod_calendar_server <- function(input, output, session, usr) {
     })
     
   })
+  
+  output$yearLabel <- renderUI({
+    yr <- usr$selected$year
+    HTML(yr)
+  })
+  
 }
 
 ## To be copied in the UI
