@@ -1,3 +1,7 @@
+# AirSensorDataViewer 1.0.0
+
+* Release Candidate 1.0.0!
+
 # AiSensorDataViewer 0.9.10
 
 * Updated the date selector
