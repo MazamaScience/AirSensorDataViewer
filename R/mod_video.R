@@ -12,12 +12,11 @@ mod_video_ui <- function(id){
   tagList(
     column(
       width = 12,
-      tags$h4("6-Day Sensor Timelapse"),
-      wellPanel(
+      tags$h4("7-Day Sensor Timelapse"),
+      tags$hr(),
         uiOutput(
           outputId = ns("video")
         )
-      )
     )
   )
 }

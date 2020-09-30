@@ -12,43 +12,34 @@
 mod_compare_ui <- function(id) {
   ns <- NS(id)
   tagList(
-      column(
-        width = 12,
-        wellPanel(
-          leafletOutput(
-            outputId = ns("comparisonLeaflet")
-          ) %>% withLoader()
-        )
+    fluidRow(
+      leafletOutput(
+        outputId = ns("comparisonLeaflet")
+      ) %>% withLoader()
     ),
+    tags$hr(), 
+    fluidRow(
+      plotOutput(
+        height = "30vh",
+        outputId = ns("sensorMonitorComp")
+      ) %>% withLoader()
+    ),
+    tags$hr(), 
     fluidRow(
       column(
         width = 4,
-        #tags$h4("Sensor Status"),
-        wellPanel(
-          plotOutput(
-            outputId = ns("sensorMonitorCorr")
-          ) %>% withLoader()
-        ),
-        #tags$h4("Sensor-Monitor Correlation"),
-        wellPanel(
-          gt_output(
-            outputId = ns("statusTable")
-          ) %>% withLoader()
-        )
+        gt_output(
+          outputId = ns("statusTable")
+        ) %>% withLoader()
       ),
       column(
         width = 8,
-        #tags$h4("Sensor-Monitor Comparison"),
-        wellPanel(
-          plotOutput(
-            height = "30vh",
-            outputId = ns("sensorMonitorComp")
-          ) %>% withLoader()
-        )
+        plotOutput(
+          outputId = ns("sensorMonitorCorr")
+        ) %>% withLoader()
       )
     )
   )
-  
 }
 
 #' compare Server Function
@@ -102,9 +93,8 @@ mod_compare_server <- function(input, output, session, usr) {
   })
   
   output$statusTable <- render_gt({
-    
+    req(usr$pat)
     usr$pat %...>% (function(pat) {
-      
       table <- pat$data %>% 
         summarise(
           "Number of Measurments" = length(pm25_A),
@@ -112,12 +102,13 @@ mod_compare_server <- function(input, output, session, usr) {
           ) %>%
         pivot_longer(everything())
         
-      
       gt(table) %>% 
         fmt_number(2, decimals = 0) %>% 
         cols_label(name = "", value = "") %>% 
         tab_header(pat$meta$label)
       
+    }) %...!% (function(err) {
+      catchError(err)
     })
 
   })

@@ -11,12 +11,13 @@
 mod_calendar_ui <- function(id){
   ns <- NS(id)
   tagList(
-    wellPanel(
+    #wellPanel(
       uiOutput(ns("yearLabel"), container = tags$text),
+      tags$hr(),
       timeseriesCalendarOutput(
         outputId = ns("calendarPlot"), width = 800, height = 800
       ) %>% withLoader()
-    )
+    #)
   )
 }
 
@@ -48,7 +49,7 @@ mod_calendar_server <- function(input, output, session, usr) {
   
   output$yearLabel <- renderUI({
     yr <- usr$selected$year
-    HTML(yr)
+    HTML(paste(usr$selected$sensor,": ", yr, sep = " "))
   })
   
 }

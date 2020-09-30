@@ -14,28 +14,23 @@ mod_latest_ui <- function(id){
     column(
       width = 12,
       height = "800",
-      wellPanel(
         plotlyOutput(
           outputId = ns("pm_latest")
         ) %>% withLoader()
-      )
     ),
     fluidRow(
+      tags$hr(),
       column(
         width = 6,
-        wellPanel(
           plotlyOutput(
             outputId = ns("humidity_latest")
           ) %>% withLoader()
-        )
       ),
       column(
         width = 6,
-        wellPanel(
           plotlyOutput(
             outputId = ns("temperature_latest")
           ) %>% withLoader()
-        )
       )
     )
   )
