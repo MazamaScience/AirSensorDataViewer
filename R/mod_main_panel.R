@@ -59,9 +59,9 @@ mod_main_panel_ui <- function(id) {
         dateInput(
           inputId = ns("date_select"),
           label = tags$small("Select Date"), 
-          min = ymd(20171001),
+          min = "2017-10-01",
           max = today(tzone = TZ), 
-          format = "M d, yyyy", 
+          format = "mm/d/yyyy", 
           value =  today(TZ)
         )
       ),
@@ -186,7 +186,7 @@ mod_main_panel_server <- function(input, output, session, usr) {
   w$notify(html = tags$h3("Loading Data..."), position = "bl")
   w$set(20)
   
-  # initialize on every new token i.e. new client session object
+  # Startup: initialize on every new token i.e. new client session object
   observeEvent(
     once = TRUE, 
     ignoreNULL = TRUE,
@@ -256,12 +256,10 @@ mod_main_panel_server <- function(input, output, session, usr) {
   )
   
   # debounce the date input to avoid too many clicks & infinite loops
-  #debouncedDateRange <- debounce(reactive(input$date_range), 250)
   observeEvent(
     priority = 100,
     ignoreNULL = TRUE,
     eventExpr = {
-     # debouncedDateRange()
       input$past_select
       input$date_select
     }, 
@@ -288,7 +286,6 @@ mod_main_panel_server <- function(input, output, session, usr) {
         usr$updateAnnual(ed)
         usr$selected$year <- yr
       }
-      
       
     }
   )
@@ -323,7 +320,6 @@ mod_main_panel_server <- function(input, output, session, usr) {
         # Run the javascript to update the community selection on the map
         point_html_labels <- paste0("circle#",na.omit(choices$label))
         shinyjs::js$communityFilter(point_html_labels)
-
         
         # update the client community selection input
         usr$selected$community <- input$community_select
