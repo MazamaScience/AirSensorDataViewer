@@ -46,7 +46,6 @@ app_server <- function( input, output, session ) {
       "main_panel_ui_1-sensor_select", 
       "main_panel_ui_1-community_select", 
       "tab", 
-      "navbar",
       "page",
       "main_panel_ui_1-date_select", 
       "main_panel_ui_1-past_select"

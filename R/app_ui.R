@@ -35,7 +35,7 @@ app_ui <- function(request) {
     
     navbarPage(
       # ------ Nav Bar ---------------------------------------------------------
-      title = tags$b("AirSensor DataViewer (Beta)"),
+      title = tags$b("AirSensor DataViewer"),
       theme = shinytheme("yeti"),
       inverse = TRUE,
       id = "navbar",
@@ -250,7 +250,7 @@ golem_add_external_resources <- function(){
     favicon(),
     bundle_resources(
       path = app_sys('app/www'),
-      app_title = 'AirSensorDataViewer'
+      app_title = 'AirSensor DataViewer'
     ),
     # Add here other external resources
     # profvis::profvis_ui("profiler"), # Dev Only
