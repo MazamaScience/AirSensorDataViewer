@@ -46,9 +46,9 @@ app_server <- function( input, output, session ) {
       "main_panel_ui_1-sensor_select", 
       "main_panel_ui_1-community_select", 
       "tab", 
-      "navbar",
       "page",
-      "main_panel_ui_1-date_range"
+      "main_panel_ui_1-date_select", 
+      "main_panel_ui_1-past_select"
     )
     nonBookmarkable <- names(input)[!names(input) %in% bookmarkable]
     setBookmarkExclude(nonBookmarkable)
@@ -64,9 +64,10 @@ app_server <- function( input, output, session ) {
       
       tab <- state$input$tab
       page <- state$input$page
-      sded <- state$input$`main_panel_ui_1-date_range`
+      sded <- state$input$`main_panel_ui_1-date_select`
       label <-   state$input$`main_panel_ui_1-sensor_select`
       community <-  state$input$`main_panel_ui_1-community_select`
+      past <- state$input$`main_panel_ui_1-past_select`
       
       # TODO: Add page and tab?
       
@@ -88,9 +89,9 @@ app_server <- function( input, output, session ) {
       
       shinyjs::runjs(
         paste0(
-          '$("select#`main_panel_ui_1-date_range`")[0]
+          '$("select#`main_panel_ui_1-past_select`")[0]
                 .selectize
-                .setValue("', sded,'", false)'
+                .setValue("', past,'", false)'
         )
       )
       

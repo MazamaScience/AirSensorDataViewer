@@ -7,7 +7,7 @@
 get_pas <- function(datestamp = NULL) {
   # logger.trace("loading pas obj...")
   tryCatch(
-    pas_load(datestamp, archival = TRUE), 
+    pas_load(datestamp), 
     error = function(err) catchError(err)
   )
 }

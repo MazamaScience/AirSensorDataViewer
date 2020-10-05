@@ -59,9 +59,9 @@ mod_main_panel_ui <- function(id) {
         dateInput(
           inputId = ns("date_select"),
           label = tags$small("Select Date"), 
-          min = ymd(20171001),
+          min = "2017-10-01",
           max = today(tzone = TZ), 
-          format = "M d, yyyy", 
+          format = "mm/d/yyyy", 
           value =  today(TZ)
         )
       ),
@@ -79,13 +79,15 @@ mod_main_panel_ui <- function(id) {
     
     fluidRow(
       column(
-        downloadLink(
+        bs_embed_tooltip(
+          title = "Download .csv",
+          downloadLink(
           outputId = ns("download_button"), 
           label = tags$div(HTML('<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-cloud-download" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
   <path fill-rule="evenodd" d="M4.406 1.342A5.53 5.53 0 0 1 8 0c2.69 0 4.923 2 5.166 4.579C14.758 4.804 16 6.137 16 7.773 16 9.569 14.502 11 12.687 11H10a.5.5 0 0 1 0-1h2.688C13.979 10 15 8.988 15 7.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 2.825 10.328 1 8 1a4.53 4.53 0 0 0-2.941 1.1c-.757.652-1.153 1.438-1.153 2.055v.448l-.445.049C2.064 4.805 1 5.952 1 7.318 1 8.785 2.23 10 3.781 10H6a.5.5 0 0 1 0 1H3.781C1.708 11 0 9.366 0 7.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383z"/>
   <path fill-rule="evenodd" d="M7.646 15.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 14.293V5.5a.5.5 0 0 0-1 0v8.793l-2.146-2.147a.5.5 0 0 0-.708.708l3 3z"/>
 </svg> Download...'))
-        ), 
+        )), 
         tags$style("#main_panel_ui_1-download_button { text-align:center; }"),
         width = 7
       ),
@@ -184,7 +186,7 @@ mod_main_panel_server <- function(input, output, session, usr) {
   w$notify(html = tags$h3("Loading Data..."), position = "bl")
   w$set(20)
   
-  # initialize on every new token i.e. new client session object
+  # Startup: initialize on every new token i.e. new client session object
   observeEvent(
     once = TRUE, 
     ignoreNULL = TRUE,
@@ -254,12 +256,10 @@ mod_main_panel_server <- function(input, output, session, usr) {
   )
   
   # debounce the date input to avoid too many clicks & infinite loops
-  #debouncedDateRange <- debounce(reactive(input$date_range), 250)
   observeEvent(
     priority = 100,
     ignoreNULL = TRUE,
     eventExpr = {
-     # debouncedDateRange()
       input$past_select
       input$date_select
     }, 
@@ -286,7 +286,6 @@ mod_main_panel_server <- function(input, output, session, usr) {
         usr$updateAnnual(ed)
         usr$selected$year <- yr
       }
-      
       
     }
   )
@@ -319,9 +318,8 @@ mod_main_panel_server <- function(input, output, session, usr) {
         )
         
         # Run the javascript to update the community selection on the map
-        html_labels <- paste0("circle#",na.omit(choices$label))
-        shinyjs::js$communityFilter(html_labels)
-
+        point_html_labels <- paste0("circle#",na.omit(choices$label))
+        shinyjs::js$communityFilter(point_html_labels)
         
         # update the client community selection input
         usr$selected$community <- input$community_select
@@ -360,20 +358,45 @@ mod_main_panel_server <- function(input, output, session, usr) {
     ignoreNULL = TRUE,
     ignoreInit = TRUE,
     eventExpr = {
-      usr$selected$page
       usr$selected$tab
     }, 
     handlerExpr = {
+      
+      
+      shinyjs::runjs('$("#main_panel_ui_1-past_select")[0].selectize.enable()')
+      shinyjs::runjs('$("#main_panel_ui_1-sensor_select")[0].selectize.enable()')
+      show("date_range_label", anim = TRUE)
+      
+      
+      if( usr$selected$tab == 'calendar' ) {
+        shinyjs::runjs('$("#main_panel_ui_1-past_select")[0].selectize.disable()')
+        hide("date_range_label", anim = TRUE)
+      }
+      
+      if( usr$selected$tab == 'video' ) {
+        shinyjs::runjs('$("#main_panel_ui_1-past_select")[0].selectize.disable()')
+        shinyjs::runjs('$("#main_panel_ui_1-sensor_select")[0].selectize.disable()')
+        hide("date_range_label", anim = TRUE)
+      } 
+      
+    }
+  )
+  observeEvent(
+    ignoreNULL = TRUE,
+    ignoreInit = TRUE,
+    eventExpr = {
+      usr$selected$page
+    }, 
+    handlerExpr = {
+      
       if (usr$selected$page == 'latest') {
-        hide("date_range", anim = TRUE)
+        shinyjs::runjs('$("#main_panel_ui_1-past_select")[0].selectize.disable()')
+        hide("date_range_label", anim = TRUE)
       } else {
-        show("date_range", anim = TRUE)
+        shinyjs::runjs('$("#main_panel_ui_1-past_select")[0].selectize.enable()')
+        show("date_range_label", anim = TRUE)
       }
-      if ( usr$selected$tab == 'video' ) {
-        hide("sensor_select", anim = TRUE)
-      } else {
-        show("sensor_select", anim = TRUE)
-      }
+
     }
   )
   

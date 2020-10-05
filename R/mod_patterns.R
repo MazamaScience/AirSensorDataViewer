@@ -12,29 +12,24 @@
 mod_patterns_ui <- function(id){
   ns <- NS(id)
   tagList(
-    wellPanel(
+    fluidRow(
       plotOutput(
         outputId = ns("patternPlot")
-      ) %>% withLoader() 
-    ),
+      ) %>% withLoader()
+    ), 
+    tags$hr(),
     fluidRow(
       column(
-        width = 5,
-        # tags$h4("Additional NOAA Weather Data"),
-        wellPanel(
-          gt_output(
-            outputId = ns("noaaTable")
-          ) %>% withLoader()
-        )
+        width = 8, 
+        plotOutput(
+          outputId = ns("windPlot")
+        ) %>% withLoader()
       ),
       column(
-        width = 7,
-        tags$h4("Wind Rose Plot"),
-        wellPanel(
-          plotOutput(
-            outputId = ns("windPlot")
-          ) %>% withLoader()
-        )
+        width = 4, 
+        gt_output(
+          outputId = ns("noaaTable")
+        ) %>% withLoader()
       )
     )
   )

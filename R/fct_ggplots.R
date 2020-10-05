@@ -891,10 +891,11 @@ custom_pm25DiurnalScales <- function(
 lmSensorMonitor <- function(sensor, pwfsl) {
   
   slab <- sensor$meta$label
-  mlab <- sensor$meta$pwfsl_closestMonitorID
+  #mlab <- sensor$meta$pwfsl_closestMonitorID
   sensor <- PWFSLSmoke::monitor_toTidy(sensor)
   dates <- range(sensor$datetime)
   monitor <- PWFSLSmoke::monitor_toTidy(pwfsl)
+  mlab <- pwfsl$meta$siteName[1]
   
   df <- dplyr::left_join(sensor, monitor, by = 'datetime', suffix = c('.pwfsl', '.pa'))
   
@@ -929,6 +930,7 @@ lmSensorMonitor <- function(sensor, pwfsl) {
     ylim(xylim) +
     xlab(slab) +
     ylab(mlab) +
+    ggtitle(paste0(slab, " - ", mlab, " Regression")) + 
     theme_light() +
     coord_fixed() +
     equationLabel
