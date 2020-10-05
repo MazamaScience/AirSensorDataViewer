@@ -62,10 +62,12 @@ RUN Rscript -e 'remotes::install_version("shinythemes",upgrade="never", version 
 RUN Rscript -e 'remotes::install_version("shinyWidgets",upgrade="never", version = "0.5.3")'
 RUN Rscript -e 'remotes::install_version("shinyFeedback",upgrade="never", version = "0.2.0")'
 RUN Rscript -e 'remotes::install_version("future",upgrade="never", version = "1.18.0")'
+RUN Rscript -e 'remotes::install_version("worldmet",upgrade="never", version = "0.9.2")'
+
+# Add latest development versions of these packages
 RUN Rscript -e 'remotes::install_github("mazamascience/MazamaSpatialUtils@f5359d1ddd5652b869631ce82409a0c8f90a0fc5")'
-RUN Rscript -e 'remotes::install_github("MazamaScience/AirSensor@b0c6e3c1d7e0c47e3caacbcb937e3d5c21c05980")'
-RUN Rscript -e 'remotes::install_github("MazamaScience/tiotemp@15f26460f2f8ba1beca5fd037dfaec0ea840e6dd")'
-RUN Rscript -e 'remotes::install_github("davidcarslaw/worldmet@0d440de4fffbb64c0c2a263c55dc4a5a16a259a3")'
+RUN Rscript -e 'remotes::install_github("MazamaScience/AirSensor@a8932a467ec3b55c84f3d4c10e048653699f1887")'
+RUN Rscript -e 'remotes::install_github("MazamaScience/tiotemp@a25ed3eeb0d54788b4921d84617685ec684a2993")'
 RUN Rscript -e 'remotes::install_github("MazamaScience/PWFSLSmoke@92f7ad31b5408a7542bae2c1a1db84e0131d0f03")'
 RUN Rscript -e 'remotes::install_github("ThinkR-open/golem@bf9d0411e337d80d878ed62168360f920668acc2")'
 

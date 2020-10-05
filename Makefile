@@ -52,28 +52,12 @@ show_version:
 clean:
 	if [ -d logs ]; then sudo rm -Rf logs; mkdir logs; fi
 
-# Update the app version inline (-i) with Makefile version
-# configure_app:
-	#cat inst/golem-config.yml | grep -Po "(\d+\.)+\d+"
-#	sed -i 's%VERSION <<- ".*"%VERSION <<- "$(VERSION)"%' inst/app/global.R # Shiny App Version
-#	sed -i 's%LABEL version=".*"%LABEL version="$(VERSION)"%' docker/Dockerfile-airsensordataviewer # Docker Image Version
-#	sed -i 's%FROM .*%FROM mazamascience/airsensordataviewer:$(VERSION)%' docker/Dockerfile # Docker V1 Build Image Version
-#	sed -i 's%location /.*/ {%location /$(SERVICE_PATH_TEST)/ {%' shiny-server.conf
-
-# OSX -- Ugh!
-# https://unix.stackexchange.com/questions/13711/differences-between-sed-on-mac-osx-and-other-standard-sed
-#configure_app_osx:
-#	sed -i '' 's%VERSION <- ".*"%VERSION <- "$(VERSION)"%' inst/app/global.R
-#	sed -i '' 's%LABEL version=".*"%LABEL version="$(VERSION)"%' docker/Dockerfile-airsensordataviewer
-#	sed -i '' 's%FROM .*%FROM mazamascience/airsensordataviewer:$(VERSION)%' docker/Dockerfile
-#	sed -i '' 's%location /.*/ {%location /$(SERVICE_PATH_TEST)/ {%' shiny-server.conf
-
 # NOTE:  You need to manually edit these version numbers and that in docker/Dockerfile to match
 base_build:
-	cd docker; docker build --no-cache -t mazamascience/airsensor-dataviewer-base:1.0.0 -f Dockerfile-base .
+	cd docker; docker build --no-cache -t mazamascience/airsensor-dataviewer-base:1.0.1 -f Dockerfile-base .
 
 base_publish:
-	cd docker; docker login && docker push mazamascience/airsensor-dataviewer-base:1.0.0
+	cd docker; docker login && docker push mazamascience/airsensor-dataviewer-base:1.0.1
 
 # AirSensorShiny DESKTOP version -----------------------------------------------
 
