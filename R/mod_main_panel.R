@@ -181,10 +181,8 @@ mod_main_panel_ui <- function(id) {
 mod_main_panel_server <- function(input, output, session, usr) {
   ns <- session$ns
   
-  w <- Waitress$new(min = 0, max = 100)
-  
-  w$notify(html = tags$h3("Loading Data..."), position = "bl")
-  w$set(20)
+  usr$waiter$notify(html = tags$h3("Loading Data..."), position = "bl")
+  usr$waiter$set(20)
   
   # Startup: initialize on every new token i.e. new client session object
   observeEvent(
@@ -232,10 +230,10 @@ mod_main_panel_server <- function(input, output, session, usr) {
           catchError(err)
         })
       
-      usr$updateAnnual("2020-01-01")
+      usr$updateAnnual(today())
       
       # Close the waitress
-      w$close()
+      usr$waiter$close()
       
     }
   )
@@ -248,10 +246,8 @@ mod_main_panel_server <- function(input, output, session, usr) {
       debouncedSelectSensor()
     }, 
     handlerExpr = {
-    
       # Update the client object sensor selection 
       usr$selected$sensor <- input$sensor_select
-      
     }
   )
   
