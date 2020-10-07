@@ -231,14 +231,15 @@ User <- R6::R6Class(
     updateAnnual = function(date) {
       logger.trace(paste("Updating annual ===>"), date)
       private$rx_annual$trigger()
-      sd <- strftime(date, "%Y-01-01")
-      ed <- strftime(date, "%Y-12-31") # TODO:  next year 01-01?
+      # TODO:  Sort out precise datetimes to get a single year
+      sd <- strftime(date, "%Y-01-02")
+      ed <- strftime(date, "%Y-12-31")
       private$annual_promise <- future({
         sensor_load(
           collection = "scaqmd",
           startdate = sd, 
           enddate = ed,
-          timezone = tz)
+          timezone = getOption("asdv.timezone"))
       }, lazy = TRUE)
     },
     

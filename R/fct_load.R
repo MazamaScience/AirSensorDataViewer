@@ -8,7 +8,7 @@ get_pas <- function(datestamp = NULL) {
   # logger.trace("loading pas obj...")
   tryCatch(
     pas_load(datestamp), 
-    error = function(err) catchError(err)
+    error = function(err) { catchError(err) }
   )
 }
 
@@ -91,7 +91,7 @@ get_pat <- function(pas, label, sd, ed, pat = NULL) {
 #' @return a univariate airsensor object
 #' @export
 get_sensor <- function(sensors, ...) {
-  # logger.trace("loading sensor obj...")
+  logger.trace("    get_sensor(...)")
   tryCatch(
     sensor_filterMeta(sensors, ...),
     error = function(err) { catchError(err) }
@@ -109,6 +109,7 @@ get_sensor <- function(sensors, ...) {
 #' @importFrom lubridate ymd_hms
 get_sensors <- function(sd, ed, sensors = NULL) {
   
+  logger.trace("    get_sensors(sd, ed, sensors)")
   tryCatch(
     
     expr = {
