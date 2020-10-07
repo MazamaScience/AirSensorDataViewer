@@ -12,7 +12,6 @@ app_ui <- function(request) {
   fluidPage(
     golem_add_external_resources(),
     waiter_show_on_load(html = spin_three_bounce(), color = "#006687"),
-    # waiter::waiter_on_busy(html =  waiter::spin_throbber(),, color = waiter::transparent(.7)), 
     
     # ------ Panel Module -Column ----------------------------------------------
     column(
@@ -53,7 +52,7 @@ app_ui <- function(request) {
             width = 8,
             # ----- Tabs -----
             tabsetPanel(
-              type = "pills",
+              #type = "pills",
               id = "tab",
               # ---- Overview Tab ----
               tabPanel(
