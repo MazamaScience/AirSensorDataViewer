@@ -34,13 +34,15 @@ to create reactive-values.
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{User$new(session)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{User$new(session, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{session}}{A Shiny session object.}
+
+\item{\code{...}}{Additional options}
 }
 \if{html}{\out{</div>}}
 }
