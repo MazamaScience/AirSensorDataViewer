@@ -90,11 +90,15 @@ User <- R6::R6Class(
     
     tz = NULL, 
     token = NULL,
+    waiter = NULL,
     
     #' @details 
     #' Create a user. 
     #' @param session A Shiny session object.
-    initialize = function(session) {
+    #' @param ... Additional options
+    initialize = function(session, ...) {
+      
+      self$waiter <- waiter::Waitress$new(min = 0, max = 100)
       
       logger.trace(paste("User started on session token:", session$token)) 
       self$token <- session$token
