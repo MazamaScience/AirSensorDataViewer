@@ -100,7 +100,7 @@ User <- R6::R6Class(
       
       self$waiter <- waiter::Waitress$new(min = 0, max = 100)
       
-      logger.trace(paste("User started on session token:", session$token)) 
+      logger.debug(paste("User started on session token:", session$token)) 
       self$token <- session$token
       
       # Create reactive values of the inputs
@@ -235,10 +235,15 @@ User <- R6::R6Class(
     updateAnnual = function(date) {
       logger.trace(paste("Updating annual ===>"), date)
       private$rx_annual$trigger()
+      # TODO:  Sort out precise datetimes to get a single year
       sd <- strftime(date, "%Y-01-02")
       ed <- strftime(date, "%Y-12-31")
       private$annual_promise <- future({
-        sensor_load(startdate = sd, enddate = ed)
+        sensor_load(
+          collection = "scaqmd",
+          startdate = sd, 
+          enddate = ed,
+          timezone = getOption("asdv.timezone"))
       }, lazy = TRUE)
     },
     

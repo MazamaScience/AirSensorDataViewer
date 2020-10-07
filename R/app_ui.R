@@ -14,6 +14,7 @@ app_ui <- function(request) {
     waiter_show_on_load(html = spin_three_bounce(), color = "#006687"),
     
     # ------ Panel Module -Column ----------------------------------------------
+    
     column(
       width = 2,
       wellPanel(
@@ -175,11 +176,11 @@ app_ui <- function(request) {
     
     # Other Random CSS
     tags$style(
-      type="text/css", 
+      type = "text/css", 
       "body {padding-top: 70px;}"
     ),
     tags$style(
-      type="text/css", 
+      type = "text/css", 
       "footer {
         color: #808080; 
         font-size: 0.7em;  
@@ -187,16 +188,16 @@ app_ui <- function(request) {
       }"
     ),
     tags$style(
-      type="text/css", 
+      type = "text/css", 
       ".well {background-color: #fff}"
     ),
     tags$style(
-      type="text/css", 
+      type = "text/css", 
       ".col-sm-2 {min-width:288px;}"
     ), 
     
     tags$style(
-      type="text/css",
+      type = "text/css",
       "#shiny-notification-panel {
           position: fixed;
           left: 30%;
@@ -210,14 +211,14 @@ app_ui <- function(request) {
     ), 
   
     tags$style(
-      type="text/css", 
+      type = "text/css", 
       ".shiny-notification-content-text {
         font-size: 1.2em;
       }"
     ), 
     
     tags$style(
-      type="text/css", 
+      type = "text/css", 
       "#calendar_ui_1-yearLabel {
         padding-left: 20px;
         font-size: 1.25em; 

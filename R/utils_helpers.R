@@ -168,6 +168,7 @@ withLoader <- function(el) {
 #'
 #' @export
 notify <- function(msg) {
+  logger.trace(msg)
   shiny::showNotification(
     HTML(paste0(
       "<b>Oops. Something has gone wrong!</b>

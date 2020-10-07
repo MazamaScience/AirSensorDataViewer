@@ -46,6 +46,16 @@ By default, the `desktop_*` version will be available at `localhost:8080/asdv/te
 To shut the close and exit the docker image:
 `make desktop_down`
 
+You can check the logs on the running docker container with:
+
+```
+docker exec -ti airsensor-dataviewer-desktop /bin/bash
+...
+cd /var/log/shiny-server/
+ls
+```
+
+
 ## Notes 
 
 AirSensor DataViewer is built with Shiny utilizing {golem} framework.  The 

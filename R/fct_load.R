@@ -8,7 +8,7 @@ get_pas <- function(datestamp = NULL) {
   # logger.trace("loading pas obj...")
   tryCatch(
     pas_load(datestamp), 
-    error = function(err) catchError(err)
+    error = function(err) { catchError(err) }
   )
 }
 
@@ -24,59 +24,63 @@ get_pas <- function(datestamp = NULL) {
 #' @export
 get_pat <- function(pas, label, sd, ed, pat = NULL) {
   
-  # logger.trace(paste(label, sd, ed, "loading pat obj..."))
+  timezone <- getOption("asdv.timezone")
   
-  sd <- ymd(sd)
-  ed <- ymd(ed)
+  sd <- MazamaCoreUtils::parseDatetime(sd, timezone = timezone)
+  ed <- MazamaCoreUtils::parseDatetime(ed, timezone = timezone)
+  
+  logger.trace(
+    "    get_pat(pas, %s, %s, %s, pat)",
+    label,
+    strftime(sd, "%Y-%m-%d %H:00", tz = timezone, usetz = TRUE),
+    strftime(ed, "%Y-%m-%d %H:00", tz = timezone, usetz = TRUE)
+  )
   
   tryCatch( 
     expr = {
       
-      if ( is.null(pat) ) {
+      # NOTE:  If the passed in pat already exists and covers the requeste date
+      # NOTE:  range, use it.  Otherwise. Download a new pat.
+      
+      if ( !is.null(pat) &&
+           ed <= max(pat$data$datetime, na.rm = TRUE) && 
+           sd >= min(pat$data$datetime, na.rm = TRUE) ) {
+        
+        pat <- pat_filterDatetime(
+          pat = pat,
+          startdate = sd,
+          enddate = ed,
+          timezone = timezone
+        )
+        
+      } else {
+        
         pat <- pat_load(
           pas = pas, 
           label = label, 
-          startdate = strftime(sd, "%Y%m%d"), 
-          enddate = strftime(ed, "%Y%m%d")
+          startdate = sd, 
+          enddate = ed
         ) 
-      } else {
         
-        domain <- ymd_hms(pat$data$datetime)
-        
-        # Add label check
-        data_sd <- range(domain)[1]
-        data_ed <- range(domain)[2]
-        
-        if ( (sd %--% ed) %within% (data_sd %--% data_ed) ) {
-          # logger.trace(paste("pat filter date to", sd, "--", ed))
-          pat <- pat_filterDate(
-            pat = pat,
-            startdate = strftime(sd, "%Y%m%d"),
-            enddate = strftime(ed, "%Y%m%d")
-          )
-        } else {
-          # logger.trace("reloading pat obj...")
-          pat <- pat_load(
-            pas = pas, 
-            label = label, 
-            startdate = strftime(sd, "%Y%m%d"), 
-            enddate = strftime(ed, "%Y%m%d")
-          ) 
-        }
       }
+      
+      # }
       return(pat)
       
     }, 
-    # Fallback: If the above throws an error attempt loading with the default parameters. 
+    
     error = function(err) {
       catchError(err)
+      # Fallback: Attempt loading with the default parameters. 
       pat <- tryCatch(
         pat_load(pas = pas, label = label), 
-        error = function(err) catchError(err)
+        error = function(err) { catchError(err) }
       )
       return(pat)
     }
-  )
+    
+  ) # END tryCatch
+  
 }
 
 #' Get A Sensor from Sensors 
@@ -87,10 +91,10 @@ get_pat <- function(pas, label, sd, ed, pat = NULL) {
 #' @return a univariate airsensor object
 #' @export
 get_sensor <- function(sensors, ...) {
-  # logger.trace("loading sensor obj...")
+  logger.trace("    get_sensor(...)")
   tryCatch(
     sensor_filterMeta(sensors, ...),
-    error = function(err) catchError(err)
+    error = function(err) { catchError(err) }
   )
 }
 
@@ -105,7 +109,9 @@ get_sensor <- function(sensors, ...) {
 #' @importFrom lubridate ymd_hms
 get_sensors <- function(sd, ed, sensors = NULL) {
   
+  logger.trace("    get_sensors(sd, ed, sensors)")
   tryCatch(
+    
     expr = {
       
       ed <- ymd(ed)
@@ -138,10 +144,13 @@ get_sensors <- function(sd, ed, sensors = NULL) {
       }
       return(sensors)
     }, 
+    
     error = function(err) {
       catchError(err)
     }
-  )
+    
+  ) # END tryCatch
+  
 }
 
 #' #' Get Annual 
@@ -174,7 +183,8 @@ get_pat_latest <- function(pas, label, tz = "America/Los_Angeles") {
       pas = pas, 
       label = label, 
       timezone = tz 
-    ) %>% pat_filterDate(lubridate::today(tzone = tz) - lubridate::days(2)),
+    ) %>% 
+      pat_filterDate(lubridate::today(tzone = tz) - lubridate::days(2)),
     error = function(err) catchError(err)
   )
 }
@@ -260,6 +270,6 @@ get_noaa <- function(sensor, sd, ed) {
 get_pwfsl <- function(sd, ed, id) {
   tryCatch(
     PWFSLSmoke::monitor_load(sd, ed, id), 
-    error = function(err) catchError(err)
+    error = function(err) { catchError(err) }
   )
 }

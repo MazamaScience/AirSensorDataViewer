@@ -15,7 +15,6 @@ channelPlotly <- function(pat, channel = "ab") {
 }
 
 #' @method channelPlotly a
-#' @S3method channelPlotly a
 channelPlotly.a <- function(pat, ...) {
   pat$data$datetime <- with_tz(pat$data$datetime, tzone = 'UTC')
   plot_ly(
@@ -24,7 +23,7 @@ channelPlotly.a <- function(pat, ...) {
     y = ~pm25_A,
     type = "scatter",
     mode = "lines",
-    line = list(color ="red"),#"#ba2e00"),
+    line = list(color = "red"),#"#ba2e00"),
     name = "Channel A",
     opacity = 0.65 
   ) %>%
@@ -39,7 +38,6 @@ channelPlotly.a <- function(pat, ...) {
 }
 
 #' @method channelPlotly b
-#' @S3method channelPlotly b
 channelPlotly.b <- function(pat, ...) {
   pat$data$datetime <- with_tz(pat$data$datetime, tzone = 'UTC')
   plot_ly(
@@ -48,7 +46,7 @@ channelPlotly.b <- function(pat, ...) {
     y = ~pm25_A,
     type = "scatter",
     mode = "lines",
-    line = list(color ="blue"),#"#ba2e00"),
+    line = list(color = "blue"),#"#ba2e00"),
     name = "Channel B",
     opacity = 0.65 
   ) %>%
@@ -63,7 +61,6 @@ channelPlotly.b <- function(pat, ...) {
 }
 
 #' @method channelPlotly ab
-#' @S3method channelPlotly ab
 channelPlotly.ab <- function(pat, ...) {
   pat$data$datetime <- with_tz(pat$data$datetime, tzone = 'UTC')
   plot_ly(
@@ -72,7 +69,7 @@ channelPlotly.ab <- function(pat, ...) {
     y = ~pm25_A,
     type = "scatter",
     mode = "lines",
-    line = list(color ="red"),#"#ba2e00"),
+    line = list(color = "red"),#"#ba2e00"),
     name = "Channel A",
     opacity = 0.65 
   ) %>%
@@ -108,7 +105,7 @@ humidityPlotly <- function(pat) {
     y = ~humidity,
     type = "scatter",
     mode = "lines",
-    line = list(color ="black"),
+    line = list(color = "black"),
     opacity = 0.65 
   ) %>%
     config(displayModeBar = FALSE) %>%
@@ -136,7 +133,7 @@ temperaturePlotly <- function(pat) {
     y = ~temperature,
     type = "scatter",
     mode = "lines",
-    line = list(color ="black"),
+    line = list(color = "black"),
     opacity = 0.65 
   ) %>%
     config(displayModeBar = FALSE) %>%

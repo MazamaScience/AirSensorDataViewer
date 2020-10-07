@@ -5,5 +5,7 @@ services:
       image: airsensor-dataviewer-test
       ports:
           - "6709:3838"
+      volumes:
+          - /var/www/tools.mazamascience.com/html/logs/airsensor-dataviewer/test:/var/log/shiny-server
       restart: unless-stopped
 
