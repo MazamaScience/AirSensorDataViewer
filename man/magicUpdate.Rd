@@ -10,6 +10,6 @@ magicUpdate(usr)
 \item{usr}{The user object.}
 }
 \description{
-A tool  intended to minimize local computational cost that handles the current 
+A tool intended to minimize local computational cost that handles the current 
 client object state to best determine what to update.
 }

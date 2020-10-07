@@ -96,7 +96,7 @@ User <- R6::R6Class(
     #' @param session A Shiny session object.
     initialize = function(session) {
       
-      logger.trace(paste("User started on session token:", session$token)) 
+      logger.debug(paste("User started on session token:", session$token)) 
       self$token <- session$token
       
       # Create reactive values of the inputs
@@ -231,10 +231,14 @@ User <- R6::R6Class(
     updateAnnual = function(date) {
       logger.trace(paste("Updating annual ===>"), date)
       private$rx_annual$trigger()
-      sd <- strftime(date, "%Y-01-02")
-      ed <- strftime(date, "%Y-12-31")
+      sd <- strftime(date, "%Y-01-01")
+      ed <- strftime(date, "%Y-12-31") # TODO:  next year 01-01?
       private$annual_promise <- future({
-        sensor_load(startdate = sd, enddate = ed)
+        sensor_load(
+          collection = "scaqmd",
+          startdate = sd, 
+          enddate = ed,
+          timezone = tz)
       }, lazy = TRUE)
     },
     

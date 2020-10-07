@@ -1,3 +1,7 @@
+# AirSensorDataViewer 1.0.1
+
+* Additional logging.
+
 # AirSensorDataViewer 1.0.0
 
 * Release Candidate 1.0.0!

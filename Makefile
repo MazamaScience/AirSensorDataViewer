@@ -68,6 +68,9 @@ desktop_build:
 	docker build -t airsensor-dataviewer-desktop:$(VERSION) \
 		-t airsensor-dataviewer-desktop:latest -f docker/Dockerfile .
 
+desktop_jon:
+	docker-compose -f docker/docker-compose-jon.yml \
+		-p airsensordataviewerdesktop up -d
 desktop_up:
 	docker-compose -f docker/docker-compose-desktop.yml \
 		-p airsensordataviewerdesktop up -d

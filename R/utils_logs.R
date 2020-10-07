@@ -9,19 +9,13 @@ setupSessionLogs <- function(session) {
   
   # ----- Set up logging ---------------------------------------------------------
   
-  if ( !dir.exists(paste0(golem::get_golem_wd(),"/logs")) ) {
-    dir.create(paste0(golem::get_golem_wd(), "/logs"))
+  if ( interactive() ) { # Running from RStudio
+    LOG_DIR <- paste0(golem::get_golem_wd(), "/logs/logs_", session$token)
+  } else { # Docker 
+    LOG_DIR <- paste0("/var/log/shiny-server/logs_", session$token)
   }
   
-  if ( interactive() ) { # Running from RStudio
-    session_log_dir <- paste0(golem::get_golem_wd(), "/logs/logs_", session$token)
-    dir.create(session_log_dir)
-    LOG_DIR <- session_log_dir
-  } else { # Docker 
-    session_log_dir <- paste0("/var/log/shiny-server/logs_", session$token)
-    dir.create(session_log_dir)
-    LOG_DIR <- session_log_dir 
-  }
+  dir.create(LOG_DIR, recursive = TRUE, showWarnings = FALSE)
   
   initializeLogging(LOG_DIR)
   
@@ -32,9 +26,6 @@ setupSessionLogs <- function(session) {
   # Log session info
   logger.debug(capture.output(sessionInfo()))
   
-  # logger.debug("VERSION = %s", VERSION)
-  # logger.debug("TZ = %s", TZ)
-  logger.debug("LOG_DIR = %s", LOG_DIR)
-  
   return(NULL)
+  
 }

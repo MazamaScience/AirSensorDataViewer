@@ -9,8 +9,15 @@
 #' @noRd
 app_server <- function( input, output, session ) {
   
-  # go rogue
+  # ----- Setup ----------------------------------------------------------------
+  
+  # Ignore all warnings
   options(warn = -1)
+  
+  # Set app-specific global options
+  options(
+    asdv.timezone = "America/Los_Angeles"
+  )
   
   # set up logs per session 
   setupSessionLogs(session)
@@ -39,7 +46,8 @@ app_server <- function( input, output, session ) {
   # Hide the waiter startup once the modules have been loaded 
   waiter_hide()
 
-  #Bookmarking
+  # ----- Bookmarking ----------------------------------------------------------
+  
   observe({
     inputs <- reactiveValuesToList(input)
     bookmarkable <- c(
@@ -101,11 +109,15 @@ app_server <- function( input, output, session ) {
     
   })
   
-  # Watch tabs and page
+  # ----- Set up observers -----------------------------------------------------
+  
+  # Navbar at the top
   observeEvent(input$navbar, {
     logger.trace(paste("navbar:", input$navbar))
     usr$selected$page <- input$navbar
   })
+  
+  # Tabs underneath "Historical Data" (where most of the action happens)
   observeEvent(input$tab, {
     logger.trace(paste("tab:", input$tab))
     usr$selected$tab <- input$tab

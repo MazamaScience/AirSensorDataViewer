@@ -44,7 +44,7 @@ mod_stateman_server <- function(input, output, session, usr){
   
   onStop(
     fun = function() { 
-      logger.trace(paste("User session ended:",  session$token)) 
+      logger.debug(paste("User session ended:",  session$token)) 
     }, 
     session = session
   )
@@ -57,7 +57,7 @@ mod_stateman_server <- function(input, output, session, usr){
 
 #' A "Magic" Auto Updater
 #' 
-#' A tool  intended to minimize local computational cost that handles the current 
+#' A tool intended to minimize local computational cost that handles the current 
 #' client object state to best determine what to update. 
 #'
 #' @param usr The user object.
