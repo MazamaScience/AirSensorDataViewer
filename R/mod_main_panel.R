@@ -192,11 +192,6 @@ mod_main_panel_server <- function(input, output, session, usr) {
       usr$token
     },
     handlerExpr = {
-      # get the client timezone
-      shinyjs::runjs("let tz = Intl.DateTimeFormat().resolvedOptions().timeZone; 
-                      Shiny.setInputValue('main_panel_ui_1-client_tz', tz)")
-      # set the client object timezone
-      usr$setTz("America/Los_Angeles")
       
       promise_all(sensors = usr$sensors, pas = usr$pas) %...>% 
         with({
