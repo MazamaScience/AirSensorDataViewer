@@ -15,34 +15,25 @@ mod_raw_ui <- function(id){
       fluidRow(
         column(
           width = 6,
-          # tags$h4("Channel Overlay"),
-          #wellPanel(
             plotOutput(
               outputId = ns("comparePlot")
             ) %>% withLoader() 
-          #)
         ),
         column(
           width = 6,
-          # tags$h4("Channel Correlation"),
-          #wellPanel(
             plotOutput(
               outputId = ns("lmPlot")
             ) %>% withLoader() 
-          #)
         )
       ), 
       tags$hr(),
       column(
         width = 12,
         height = "800",
-        # tags$h4("Raw Data"),
-        #wellPanel(
           plotOutput(
             outputId = ns("multiPlot"),
             height = "800"
           ) %>% withLoader() 
-        #)
       )
     )
   )

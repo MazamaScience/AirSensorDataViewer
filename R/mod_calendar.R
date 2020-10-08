@@ -11,13 +11,11 @@
 mod_calendar_ui <- function(id){
   ns <- NS(id)
   tagList(
-    #wellPanel(
       uiOutput(ns("yearLabel"), container = tags$text),
       tags$hr(),
       timeseriesCalendarOutput(
         outputId = ns("calendarPlot"), width = 800, height = 800
       ) %>% withLoader()
-    #)
   )
 }
 
