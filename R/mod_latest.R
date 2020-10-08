@@ -46,12 +46,6 @@ mod_latest_ui <- function(id){
 mod_latest_server <- function(input, output, session, usr){
   ns <- session$ns
   
-  w <- Waiter$new(
-    c(("pm_latest")),# ns("humidity_latest"), ns("temperature_latest")), 
-    spin_throbber(), 
-    color = "#fff"
-  )
-  
   output$pm_latest <- renderPlotly({
     req(usr$latest)
 
