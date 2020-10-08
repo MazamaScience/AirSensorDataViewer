@@ -88,8 +88,12 @@ User <- R6::R6Class(
     #' \code{User$url}: Access the current page URL for bookmarking state.
     url = NULL, 
     
-    tz = NULL, 
+    #' @details 
+    #' \code{User$token}: Access the current session token ID. 
     token = NULL,
+    
+    #' @details 
+    #' \code{User$url}: Access the {waiter} object for controling visual loading state.
     waiter = NULL,
     
     #' @details 
@@ -220,7 +224,7 @@ User <- R6::R6Class(
     #' Update the users latest pa_timeseries object.
     #' @param label a label of the sensor.
     #' @param tz a specified timezone. (default: UTC)
-    updateLatest = function(label, tz = 'UTC') {
+    updateLatest = function(label, tz = getOption("asdv.timezone")) {
       logger.trace(paste("Updating latest ===>", label))
       private$rx_latest$trigger()
       pas <- value(private$pas_promise)
@@ -258,14 +262,6 @@ User <- R6::R6Class(
       private$noaa_promise <- future({
         get_noaa(sensor, sd, ed)
       }, lazy = TRUE)
-    },
-    
-    #' @details 
-    #' Set the users Timezone.
-    #' @param timezone a valid timezone string.
-    setTz = function(timezone) {
-      logger.trace(paste("setting timezone ===>", timezone))
-      self$tz <- timezone
     }
     
   ), 
