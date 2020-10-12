@@ -76,6 +76,12 @@ to create reactive-values.
 \code{User$url}: Access the current page URL for bookmarking state.
 
 
+\code{User$token}: Access the current session token ID.
+
+
+\code{User$url}: Access the {waiter} object for controling visual loading state.
+
+
 Create a user.
 }
 
