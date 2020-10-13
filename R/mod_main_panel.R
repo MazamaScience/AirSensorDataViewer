@@ -332,7 +332,9 @@ mod_main_panel_server <- function(input, output, session, usr) {
         expr = {
           # Why does this break shiny? 
           # A: see allow_non_interactive in docs
-          write_clip(url, allow_non_interactive = TRUE)
+          #write_clip(url, allow_non_interactive = TRUE)
+          shinyjs::runjs('
+                         ')
         }, 
         error = function(err) {
           logger.error(err)
