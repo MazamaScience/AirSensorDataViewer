@@ -64,7 +64,6 @@ get_pat <- function(pas, label, sd, ed, pat = NULL) {
         
       }
       
-      # }
       return(pat)
       
     }, 
@@ -204,13 +203,14 @@ get_pat_latest <- function(pas, label, tz = "America/Los_Angeles") {
 #' @importFrom data.table fread data.table tstrsplit `%between%` setcolorder as.xts.data.table as.data.table
 #' @importFrom geodist geodist
 #' @importFrom xts period.apply endpoints
+#' @importFrom worldmet getMeta importNOAA
 get_noaa <- function(sensor, sd, ed) {
   # logger.trace("loading NOAA...")
   tryCatch(
     expr = {
       
-      meta <- worldmet::getMeta(lat = sensor$meta$latitude, lon = sensor$meta$longitude, plot = FALSE, n = 1)
-      data <- worldmet::importNOAA(code = meta$code, year = 2020, quiet = TRUE)
+      meta <- getMeta(lat = sensor$meta$latitude, lon = sensor$meta$longitude, plot = FALSE, n = 1)
+      data <- importNOAA(code = meta$code, year = strftime(sd, "%Y"), quiet = TRUE)
       
       # Find wind data readings from the closest NOAA site
       # yr <- year(ed)
