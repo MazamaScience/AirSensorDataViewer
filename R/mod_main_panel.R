@@ -192,11 +192,6 @@ mod_main_panel_server <- function(input, output, session, usr) {
       usr$token
     },
     handlerExpr = {
-      # get the client timezone
-      shinyjs::runjs("let tz = Intl.DateTimeFormat().resolvedOptions().timeZone; 
-                      Shiny.setInputValue('main_panel_ui_1-client_tz', tz)")
-      # set the client object timezone
-      usr$setTz("America/Los_Angeles")
       
       promise_all(sensors = usr$sensors, pas = usr$pas) %...>% 
         with({
@@ -337,7 +332,9 @@ mod_main_panel_server <- function(input, output, session, usr) {
         expr = {
           # Why does this break shiny? 
           # A: see allow_non_interactive in docs
-          write_clip(url, allow_non_interactive = TRUE)
+          #write_clip(url, allow_non_interactive = TRUE)
+          shinyjs::runjs('
+                         ')
         }, 
         error = function(err) {
           logger.error(err)

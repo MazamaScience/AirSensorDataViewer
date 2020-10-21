@@ -1,4 +1,4 @@
-#' stateman Server Function
+#' State Manager Server Function
 #'
 #' @noRd 
 mod_stateman_server <- function(input, output, session, usr){
@@ -19,28 +19,6 @@ mod_stateman_server <- function(input, output, session, usr){
       magicUpdate(usr)
     }
   )
- 
-  # Moved to debounced date range in mod_main_panel 
-  # observeEvent(
-  #   ignoreNULL = TRUE,
-  #   ignoreInit = TRUE,
-  #   eventExpr = {
-  #     usr$selected$sd
-  #     usr$selected$ed
-  #   },
-  #   handlerExpr = {
-  #     sd <- usr$selected$sd
-  #     ed <- usr$selected$ed
-  #     
-  #     usr$updateSensors(sd, ed)
-  #     
-  #     usr$updatePas(ed)
-  #     
-  #     # TODO: only update on year changes
-  #     
-  #     usr$updateAnnual(ed)
-  #   }
-  # )
   
   onStop(
     fun = function() { 

@@ -38,12 +38,12 @@ mod_video_server <- function(input, output, session, usr) {
       expr = {
         if ( community != "All.." ) {
           ed <- ed
-          baseUrl <- "http://smoke.mazamascience.com/data/PurpleAir/videos/"
+          baseUrl <- "http://data.mazamascience.com/PurpleAir/v1/videos"
           year    <- strftime(ed, "%Y")
           mm      <- strftime(ed, "%m")
           dd      <- strftime(ed, "%d")
           id    <- com2id(community)
-          url <- paste0(baseUrl, year, "/", id, "_", year, mm, dd, ".mp4" )
+          url <- paste(baseUrl, year, mm, paste0(id, "_", year, mm, dd, ".mp4"), sep = "/")
           tags$video(
             id = "video",
             type = "video/mp4",

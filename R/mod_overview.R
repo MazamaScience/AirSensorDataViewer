@@ -14,53 +14,13 @@ mod_overview_ui <- function(id){
     timeseriesMapOutput(
       outputId = ns("timeseriesMap"),
       width = "inherit", 
-      height = "80vh"
+      height = "60vh"
     ) %>% withLoader(),
-    absolutePanel(
-      id = "plot_panel",
-      fixed = FALSE,
-      left = "auto",
-      right = "auto",
-      bottom = 0,
-      width = "inherit",
-      height = "inherit",
-      # Show/Hide barplot panel button
-      HTML('<a id = "collapse_btn" class = "collapsed" data-toggle="collapse" data-target="#dem" style="margin-left:50%;">
-           <span class="glyphicon glyphicon-chevron-up"></span> Select a Sensor</a>'),
-      # Put barplot in "dem" html
-      tags$div(
-        id = 'dem',
-        class = "collapse",
-        timeseriesBarChartOutput(
-          outputId = ns("timeseriesBarChart"), 
-          height = "20vh"
-        ) %>% withLoader()
-      )
-    ),
-    # Barplot panel opacity CSS and leaflet padding fix
-    tags$style(
-      type = "text/css",
-      '#plot_panel{
-        /* Appearance */
-        background-color: white;
-        padding: 0 0 0 0;
-        cursor: move;
-        /* Fade out while not hovering */
-        opacity: 0.95;
-        zoom: 1;
-        transition: opacity 200ms 400ms;
-      }
-      #plot_panel:hover {
-        /* Fade in while hovering */
-        opacity: 1;
-        transition-delay: 0;
-      }
-      .col-sm-12{
-        padding: 0 0 0 0;
-      }'
-    )
+    timeseriesBarChartOutput(
+      outputId = ns("timeseriesBarChart"), 
+      height = "20vh"
+    ) %>% withLoader()
   )
-
 }
 
 #' overview Server Function

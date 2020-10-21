@@ -170,9 +170,10 @@ app_ui <- function(request) {
         )
       )
     ),
-  
+    
+    # TODO: Remove all animated plot references
     # Load the extra JS script
-    extendShinyjs("inst/app/www/plotAnimate.js"),
+    # extendShinyjs("inst/app/www/plotAnimate.js"),
     
     # Other Random CSS
     tags$style(

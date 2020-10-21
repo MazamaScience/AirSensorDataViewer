@@ -52,12 +52,6 @@ mod_compare_ui <- function(id) {
 #' @importFrom promises `%...>%` `%...!%` promise_all 
 mod_compare_server <- function(input, output, session, usr) {
   ns <- session$ns
-  
-  # w <- Waiter$new(
-  #   c(ns("statusTable"), ns("sensorMonitorCorr"), ns("sensorMonitorComp")), 
-  #   spin_throbber(), 
-  #   color = "#fff"
-  # )
 
   output$comparisonLeaflet <- renderLeaflet({
     req(usr$sensor, usr$pwfsl)

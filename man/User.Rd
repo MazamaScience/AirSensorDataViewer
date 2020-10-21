@@ -25,7 +25,6 @@ to create reactive-values.
 \item \href{#method-updateLatest}{\code{User$updateLatest()}}
 \item \href{#method-updateAnnual}{\code{User$updateAnnual()}}
 \item \href{#method-updateNoaa}{\code{User$updateNoaa()}}
-\item \href{#method-setTz}{\code{User$setTz()}}
 \item \href{#method-clone}{\code{User$clone()}}
 }
 }
@@ -75,6 +74,12 @@ to create reactive-values.
 
 
 \code{User$url}: Access the current page URL for bookmarking state.
+
+
+\code{User$token}: Access the current session token ID.
+
+
+\code{User$url}: Access the {waiter} object for controling visual loading state.
 
 
 Create a user.
@@ -197,7 +202,7 @@ Update the users ws_monitor object.
 \if{latex}{\out{\hypertarget{method-updateLatest}{}}}
 \subsection{Method \code{updateLatest()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{User$updateLatest(label, tz = "UTC")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{User$updateLatest(label, tz = getOption("asdv.timezone"))}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -253,26 +258,6 @@ Update the users annual airsensor object.
 }
 \subsection{Details}{
 Update the users NOAA data.
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-setTz"></a>}}
-\if{latex}{\out{\hypertarget{method-setTz}{}}}
-\subsection{Method \code{setTz()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{User$setTz(timezone)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{timezone}}{a valid timezone string.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-Set the users Timezone.
 }
 
 }
