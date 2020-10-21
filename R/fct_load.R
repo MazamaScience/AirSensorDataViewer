@@ -73,7 +73,7 @@ get_pat <- function(pas, label, sd, ed, pat = NULL) {
       # Fallback: Attempt loading with the default parameters. 
       pat <- tryCatch(
         pat_load(pas = pas, label = label), 
-        error = function(err) { catchError(err) }
+        error = function(err) { stop(err) }
       )
       return(pat)
     }

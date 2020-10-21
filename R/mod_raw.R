@@ -47,16 +47,11 @@ mod_raw_ui <- function(id){
 #' @importFrom promises `%...>%` `%...!%`
 mod_raw_server <- function(input, output, session, usr) {
   ns <- session$ns
-  w <- Waiter$new(
-    id = "raw-tab-content",
-    spin_throbber(),
-    color = "#fff"
-  )
-  
+
   output$multiPlot <- renderPlot({
-    req(usr$pat, usr$tz)
+    req(usr$pat)
     usr$pat %...>% (function(pat) {
-      pat_multiPlot(pat, timezone = usr$tz, columns = 1) 
+      pat_multiPlot(pat, timezone = getOption("asdv.timezone"), columns = 1) 
     }) %...!% (function(err) {
       notify("Failed to load sensor data. Try selecting a different date or a different sensor.")
       catchError(err)
@@ -65,10 +60,10 @@ mod_raw_server <- function(input, output, session, usr) {
   })
   
   output$comparePlot <- renderPlot({
-    req(usr$pat, usr$tz)
+    req(usr$pat)
     
     usr$pat %...>% (function(pat) {
-      asdv_internalFit(pat, tz = usr$tz, whichPlot = 'ab') + theme_light()
+      asdv_internalFit(pat, tz = getOption("asdv.timezone"), whichPlot = 'ab') + theme_light()
     }) %...!% (function(err) {
       catchError(err)
     })
@@ -76,10 +71,10 @@ mod_raw_server <- function(input, output, session, usr) {
   })
   
   output$lmPlot <- renderPlot({
-    req(usr$pat, usr$tz)
+    req(usr$pat)
     
     usr$pat %...>% (function(pat) {
-      asdv_internalFit(pat, tz = usr$tz, whichPlot = 'lm') + theme_light()
+      asdv_internalFit(pat, tz = getOption("asdv.timezone"), whichPlot = 'lm') + theme_light()
     }) %...!% (function(err) {
       catchError(err)
     })
