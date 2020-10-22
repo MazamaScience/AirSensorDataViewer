@@ -54,7 +54,7 @@ clean:
 
 # NOTE:  You need to manually edit these version numbers and that in docker/Dockerfile to match
 base_build:
-	cd docker; docker build --no-cache -t mazamascience/airsensor-dataviewer-base:1.0.2-f Dockerfile-base .
+	cd docker; docker build --no-cache -t mazamascience/airsensor-dataviewer-base:1.0.2 -f Dockerfile-base .
 
 base_publish:
 	cd docker; docker login && docker push mazamascience/airsensor-dataviewer-base:1.0.2
