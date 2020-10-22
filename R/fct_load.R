@@ -5,7 +5,7 @@
 #' @return a pa_synoptic object
 #' @export
 get_pas <- function(datestamp = NULL) {
-  # logger.trace("loading pas obj...")
+  logger.trace("  get_pas(%s)", datestamp)
   tryCatch(
     pas_load(datestamp), 
     error = function(err) { catchError(err) }
@@ -30,7 +30,7 @@ get_pat <- function(pas, label, sd, ed, pat = NULL) {
   ed <- MazamaCoreUtils::parseDatetime(ed, timezone = timezone)
   
   logger.trace(
-    "    get_pat(pas, %s, %s, %s, pat)",
+    "  get_pat(pas, %s, %s, %s, pat)",
     label,
     strftime(sd, "%Y-%m-%d %H:00", tz = timezone, usetz = TRUE),
     strftime(ed, "%Y-%m-%d %H:00", tz = timezone, usetz = TRUE)
@@ -90,7 +90,7 @@ get_pat <- function(pas, label, sd, ed, pat = NULL) {
 #' @return a univariate airsensor object
 #' @export
 get_sensor <- function(sensors, ...) {
-  logger.trace("    get_sensor(...)")
+  logger.trace("  get_sensor(...)")
   tryCatch(
     sensor_filterMeta(sensors, ...),
     error = function(err) { catchError(err) }
@@ -108,7 +108,8 @@ get_sensor <- function(sensors, ...) {
 #' @importFrom lubridate ymd_hms
 get_sensors <- function(sd, ed, sensors = NULL) {
   
-  logger.trace("    get_sensors(sd, ed, sensors)")
+  logger.trace("  get_sensors(%s, %s, sensors)", sd, ed)
+  
   tryCatch(
     
     expr = {
@@ -176,7 +177,7 @@ get_sensors <- function(sd, ed, sensors = NULL) {
 #' @return a 'pat' object
 #' @export
 get_pat_latest <- function(pas, label, tz = "America/Los_Angeles") {
-  # logger.trace(paste(label, "loading latest pat obj..."))
+  logger.trace("  get_pat_latest(pas, %s, %s", label, tz)
   tryCatch(
     pat_createNew(
       pas = pas, 
@@ -205,12 +206,25 @@ get_pat_latest <- function(pas, label, tz = "America/Los_Angeles") {
 #' @importFrom xts period.apply endpoints
 #' @importFrom worldmet getMeta importNOAA
 get_noaa <- function(sensor, sd, ed) {
-  # logger.trace("loading NOAA...")
+  
+  timezone <- getOption("asdv.timezone")
+  
+  sd <- MazamaCoreUtils::parseDatetime(sd, timezone = timezone)
+  ed <- MazamaCoreUtils::parseDatetime(ed, timezone = timezone)
+  
+  logger.trace(
+    "  get_noaa(sensor, %s, %s)",
+    strftime(sd, "%Y-%m-%d %H:00", tz = timezone, usetz = TRUE),
+    strftime(ed, "%Y-%m-%d %H:00", tz = timezone, usetz = TRUE)
+  )
+  
+  year <- strftime(sd, "%Y", tz = timezone)
+  
   tryCatch(
     expr = {
       
-      meta <- getMeta(lat = sensor$meta$latitude, lon = sensor$meta$longitude, plot = FALSE, n = 1)
-      data <- importNOAA(code = meta$code, year = strftime(sd, "%Y"), quiet = TRUE)
+      meta <- worldmet::getMeta(lat = sensor$meta$latitude, lon = sensor$meta$longitude, plot = FALSE, n = 1)
+      data <- worldmet::importNOAA(code = meta$code, year = as.numeric(year), quiet = TRUE)
       
       # Find wind data readings from the closest NOAA site
       # yr <- year(ed)
@@ -271,6 +285,7 @@ get_noaa <- function(sensor, sd, ed) {
 #' @return a ws_monitor object
 #' @export
 get_pwfsl <- function(sd, ed, id) {
+  logger.trace("  get_pwfsl(%s, %s, %s)", sd, ed, id)
   tryCatch(
     PWFSLSmoke::monitor_load(sd, ed, id), 
     error = function(err) { catchError(err) }

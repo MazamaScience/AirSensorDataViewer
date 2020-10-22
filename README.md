@@ -15,6 +15,8 @@ server use, which can be created using [this guide](#docker).
 
 ### Installation
 
+To install and test from RStudio.
+
 ```
 install.packages(“remotes”)
 remotes::install_github(“MazamaScience/AirSensorDataViewer”)

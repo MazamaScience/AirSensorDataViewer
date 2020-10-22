@@ -1,4 +1,4 @@
-FROM mazamascience/airsensor-dataviewer-base:1.0.1
+FROM mazamascience/airsensor-dataviewer-base:1.0.2
 MAINTAINER Hans Martin <hans@mazamascience.com>
 
 # Create the build zone, copy the local directory over to the docker image, build and install R package.

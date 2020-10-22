@@ -145,8 +145,8 @@ asdv_externalFit <-
                             shape = lr_shape,
                             color = lr_color,
                             alpha = alpha) +
-        ggplot2::geom_smooth(method = "lm", size = 0, alpha = 0.45) +
-        ggplot2::stat_smooth(geom = "line", color = lr_lcolor, alpha = lr_lalpha,
+        ggplot2::geom_smooth(formula = y ~ x, method = "lm", size = 0, alpha = 0.45) +
+        ggplot2::stat_smooth(formula = y ~ x, geom = "line", color = lr_lcolor, alpha = lr_lalpha,
                              method = "lm", size = lr_lwd) +
         ggplot2::labs(title = "Correlation",
                       x = paste0("PurpleAir: \"", sensor$meta$monitorID, "\""),
@@ -293,8 +293,8 @@ asdv_internalFit <- function(
                           shape = lr_shape,
                           color = lr_color,
                           alpha = alpha) +
-      ggplot2::geom_smooth(method = "lm", size = 0, alpha = 0.45) +
-      ggplot2::stat_smooth(geom = "line", color = lr_lcolor, alpha = lr_lalpha,
+      ggplot2::geom_smooth(formula = y ~ x, method = "lm", size = 0, alpha = 0.45) +
+      ggplot2::stat_smooth(formula = y ~ x, geom = "line", color = lr_lcolor, alpha = lr_lalpha,
                            method = "lm", size = lr_lwd) +
       ggplot2::labs(title = "Channel Linear Regression",
                     x = "Channel B (\u03bcg / m\u00b3)",
@@ -924,7 +924,7 @@ lmSensorMonitor <- function(sensor, pwfsl) {
   
   ggplot(df, aes(x = .data$pm25.pa, y = .data$pm25.pwfsl)) +
     geom_point(color = 'black', shape = 15, alpha = 0.2, size = 1) +
-    geom_smooth(method = "lm", se = FALSE, color = 'red', alpha = 0.3) +
+    geom_smooth(formula = y ~ x, method = "lm", se = FALSE, color = 'red', alpha = 0.3) +
     
     xlim(xylim) +
     ylim(xylim) +
