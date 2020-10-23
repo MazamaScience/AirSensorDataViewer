@@ -444,7 +444,7 @@ asdv_pm25Diurnal <- function(
   # ----- Prepare data ---------------------------------------------------------
   
   # MazamaCoreUtils::dateRange() was built for this!
-  dateRange <- dateRange(startdate, enddate, timezone, ceilingEnd = TRUE)
+  dateRange <- dateRange(startdate, enddate, timezone = timezone, ceilingEnd = TRUE)
   startdate <- dateRange[1]
   enddate <- dateRange[2]
   

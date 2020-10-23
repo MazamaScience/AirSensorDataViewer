@@ -32,6 +32,8 @@ mod_overview_ui <- function(id){
 mod_overview_server <- function(input, output, session, usr) {
   ns <- session$ns
   
+  timezone <- getOption("asdv.timezone")
+  
   output$timeseriesMap <- renderTimeseriesMap({
     req(usr$sensors)
     selected <- isolate(usr$selected$sensor)
@@ -42,7 +44,8 @@ mod_overview_server <- function(input, output, session, usr) {
         data = sensors[['data']], 
         meta = sensors[['meta']], 
         inputId = 'main_panel_ui_1-sensor_select', 
-        selected = selected
+        selected = selected, 
+        tz = timezone
       )
     }) %...!% (function(err) {
       catchError(err)
@@ -58,7 +61,9 @@ mod_overview_server <- function(input, output, session, usr) {
         data = sensors[['data']], 
         meta = sensors[['meta']],
         inputId = 'main_panel_ui_1-sensor_select',
-        ylab = "\u03bcg / m\u00b3"
+        ylab = "PM\u2082.\u2085 (\u03bcg / m\u00b3)", 
+        xlab = "Date", 
+        tz = timezone
       ) 
     }) %...!% (function(err) {
       notify("Failed to load sensor data. Try selecting a different date or a different sensor.")
