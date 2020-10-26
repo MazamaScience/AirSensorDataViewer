@@ -104,6 +104,8 @@ User <- R6::R6Class(
       
       self$waiter <- waiter::Waitress$new(min = 0, max = 100)
       
+      tz <- getOption('asdv.timezone')
+      
       logger.debug(paste("User started on session token:", session$token)) 
       self$token <- session$token
       
@@ -135,7 +137,7 @@ User <- R6::R6Class(
       })
       private$sensors_promise <- future({
         setArchiveBaseUrl(self$baseUrl)
-        get_sensors(today() - days(7), today())
+        get_sensors(today(tzone=tz) - days(7), today(tzone=tz))
       })
     }, 
     
@@ -145,8 +147,8 @@ User <- R6::R6Class(
     updatePas = function(date = NULL) {
       logger.trace(paste("Updating pas ===>"))
       private$rx_pas$trigger()
-      if ( !lubridate::ymd(date) < lubridate::ymd(20190505) ) {
-        date <- strftime(date, "%Y%m%d") 
+      if ( !lubridate::ymd(date,tz=tz) < lubridate::ymd(20190505,tz=tz) ) {
+        date <- strftime(date, "%Y%m%d", tz = tz, usetz = TRUE) 
       } else {
         date <- 20190505
       }
@@ -240,8 +242,8 @@ User <- R6::R6Class(
       logger.trace(paste("Updating annual ===>"), date)
       private$rx_annual$trigger()
       # TODO:  Sort out precise datetimes to get a single year
-      sd <- strftime(date, "%Y-01-02")
-      ed <- strftime(date, "%Y-12-31")
+      sd <- strftime(date, "%Y-01-02", tz = tz, usetz = TRUE)
+      ed <- strftime(date, "%Y-12-31", tz = tz, usetz = TRUE)
       private$annual_promise <- future({
         sensor_load(
           collection = "scaqmd",
