@@ -220,7 +220,7 @@ get_noaa <- function(sensor, sd, ed) {
   # logger.trace("loading NOAA...")
   tryCatch(
     expr = {
-      timezone <- getOption("asdv.timezone")
+      tz <- getOption("asdv.timezone")
       # meta <- getMeta(lat = sensor$meta$latitude, lon = sensor$meta$longitude, plot = FALSE, n = 1)
       # data <- as.data.table(importNOAA(code = meta$code, year = strftime(sd, "%Y", tz = timezone, usetz = TRUE), quiet = TRUE))
       # return(data[date %between% c(sd,ed)])
@@ -232,7 +232,7 @@ get_noaa <- function(sensor, sd, ed) {
 
       metaUrl <- "ftp://ftp.ncdc.noaa.gov/pub/data/noaa/isd-history.csv"
       meta <- fread(metaUrl)[ STATE == "CA"
-      ][ (ymd(sd) %--% ymd(ed)) %within% (ymd(BEGIN) %--% ymd(END))
+      ][ (ymd(sd,tz=tz) %--% ymd(ed,tz=tz)) %within% (ymd(BEGIN,tz=tz) %--% ymd(END,tz=tz))
       ][, dist := geodist(cbind("Longitude" = LON, "Latitude" = LAT), cbind("Longitude" = lon, "Latitude" = lat), pad = TRUE)
       ][ order(dist)
       ][, code := paste0(USAF, WBAN) ][1,]
@@ -246,7 +246,7 @@ get_noaa <- function(sensor, sd, ed) {
       ][, air_temp := ifelse(as.numeric(air_temp) == 9999, NA, as.numeric(air_temp)/10)
       ][, c("dew_point", "flag_dew") := tstrsplit(DEW, ",")
       ][, dew_point := ifelse(as.numeric(dew_point) == 9999, NA, as.numeric(dew_point)/10)
-      ][, date := ymd_hms(DATE)
+      ][, date := ymd_hms(DATE,tz=tz)
       ][, RH :=  100 * ((112 - 0.1 * air_temp + dew_point) / (112 + 0.9 * air_temp))^8
       ][, c("date", "wd",  "ws", "air_temp", "RH") ]
       setcolorder(data, "date")
