@@ -13,6 +13,8 @@ mod_patterns_ui <- function(id){
   ns <- NS(id)
   tagList(
     fluidRow(
+      tags$h4("Daily-Hour Averages"), 
+      tags$h6("Of selected Date Range"), 
       plotOutput(
         outputId = ns("patternPlot")
       ) %>% withLoader()
@@ -20,6 +22,8 @@ mod_patterns_ui <- function(id){
     tags$hr(),
     fluidRow(
       column(
+        tags$h4("Pollution Rose"), 
+        tags$h6("Of selected Date Range"), 
         width = 8, 
         plotOutput(
           outputId = ns("windPlot")
@@ -61,7 +65,7 @@ mod_patterns_server <- function(input, output, session, usr){
     
     usr$noaa %...>% (function(noaa) {
       table <- noaa %>%
-        summarise(
+        dplyr::summarise(
           "Average Windspeed (m/s)" = mean(ws, na.rm = TRUE),
           "Minimum Windspeed (m/s)" = min(ws, na.rm = TRUE),
           "Maximum Windspeed (m/s)" = max(ws, na.rm = TRUE),
@@ -73,7 +77,7 @@ mod_patterns_server <- function(input, output, session, usr){
           "Minimum Relative Humidity (%)" = min(RH, na.rm = TRUE),
           "Maximum Relative Humidity (%)" = max(RH, na.rm = TRUE),
         ) %>% 
-        pivot_longer(everything())
+        tidyr::pivot_longer(everything())
       
       gt(table) %>%
         tab_header(

@@ -144,11 +144,11 @@ User <- R6::R6Class(
     #' @details 
     #' Update the users pa_synoptic data. 
     #' @param date YYYYmmdd.
-    updatePas = function(date = NULL) {
+    updatePas = function(date = NULL, tz = getOption("asdv.timezone")) {
       logger.trace(paste("Updating pas ===>"))
       private$rx_pas$trigger()
-      if ( !lubridate::ymd(date,tz=tz) < lubridate::ymd(20190505,tz=tz) ) {
-        date <- strftime(date, "%Y%m%d", tz = tz, usetz = TRUE) 
+      if ( !lubridate::ymd(date, tz = tz) < lubridate::ymd(20190505, tz = tz) ) {
+        date <- strftime(date, "%Y%m%d", tz = tz) 
       } else {
         date <- 20190505
       }
@@ -176,7 +176,7 @@ User <- R6::R6Class(
     #' Update the users pa_timeseries object.
     #' @param sd startdate YYYYmmdd.
     #' @param ed enddate YYYYmmdd.
-    updatePat = function(label, sd, ed) {
+    updatePat = function(label, sd, ed, tz = getOption("asdv.timezone")) {
       logger.trace(paste("Updating pat ===>", label, sd, ed))
       private$rx_pat$trigger()
       pas <- value(private$pas_promise)
@@ -212,7 +212,7 @@ User <- R6::R6Class(
     #' @param label ?
     #' @param sd startdate YYYYmmdd.
     #' @param ed enddate YYYYmmdd.
-    updatePwfsl = function(label, sd, ed) {
+    updatePwfsl = function(label, sd, ed, tz = getOption("asdv.timezone")) {
       logger.trace(paste("Updating pwfsl ===>", sd, ed))
       private$rx_pwfsl$trigger()
       sensor <- value(private$sensor_promise)
@@ -238,7 +238,7 @@ User <- R6::R6Class(
     #' @details 
     #' Update the users annual airsensor object.
     #' @param date a date to parse year from.
-    updateAnnual = function(date) {
+    updateAnnual = function(date, tz = getOption("asdv.timezone")) {
       logger.trace(paste("Updating annual ===>"), date)
       private$rx_annual$trigger()
       # TODO:  Sort out precise datetimes to get a single year

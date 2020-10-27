@@ -91,7 +91,7 @@ Create a user.
 \if{latex}{\out{\hypertarget{method-updatePas}{}}}
 \subsection{Method \code{updatePas()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{User$updatePas(date = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{User$updatePas(date = NULL, tz = getOption("asdv.timezone"))}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -135,7 +135,7 @@ Update the users airsensor object.
 \if{latex}{\out{\hypertarget{method-updatePat}{}}}
 \subsection{Method \code{updatePat()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{User$updatePat(label, sd, ed)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{User$updatePat(label, sd, ed, tz = getOption("asdv.timezone"))}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -178,7 +178,7 @@ Commonly used when a user selects a different sensor.
 \if{latex}{\out{\hypertarget{method-updatePwfsl}{}}}
 \subsection{Method \code{updatePwfsl()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{User$updatePwfsl(label, sd, ed)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{User$updatePwfsl(label, sd, ed, tz = getOption("asdv.timezone"))}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -224,7 +224,7 @@ Update the users latest pa_timeseries object.
 \if{latex}{\out{\hypertarget{method-updateAnnual}{}}}
 \subsection{Method \code{updateAnnual()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{User$updateAnnual(date)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{User$updateAnnual(date, tz = getOption("asdv.timezone"))}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
