@@ -2,6 +2,8 @@
 
 * Added units to headers in downloaded CSV file.
 * Explicit timezone used throughout.
+* Added `onHover` behavior to Compare tab.
+* Improved titles on Daily Patterns tab.
 
 # AirSensorDataViewer 1.0.2
 
