@@ -22,6 +22,7 @@ RUN apt-get install -y  make
 RUN apt-get install -y  pandoc pandoc-citeproc
 RUN apt-get install -y  protobuf-compiler libprotoc-dev
 RUN apt-get install -y  zlib1g-dev
+RUN apt-get install -y  xclip
 RUN rm -rf /var/lib/apt/lists/*
 
 # Install R packages
@@ -73,7 +74,7 @@ RUN Rscript -e 'remotes::install_github("mazamascience/MazamaSpatialUtils@f5359d
 # AirSensor
 RUN Rscript -e 'remotes::install_github("MazamaScience/AirSensor@2addbf1fb07181f6ae3685f66b4e9f563fee1835")'
 # tiotemp
-RUN Rscript -e 'remotes::install_github("MazamaScience/tiotemp@71ce141069815e3df332ededc28461b18afecca7")'
+RUN Rscript -e 'remotes::install_github("MazamaScience/tiotemp@2fa23f7226527f1088a9f26ead637478aa78985d")'
 # PWFSLSmoke
 RUN Rscript -e 'remotes::install_github("MazamaScience/PWFSLSmoke@92f7ad31b5408a7542bae2c1a1db84e0131d0f03")'
 # golem
