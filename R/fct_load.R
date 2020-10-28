@@ -6,8 +6,11 @@
 #' @export
 get_pas <- function(datestamp = NULL) {
   logger.trace("  get_pas(%s)", datestamp)
+  
+  timezone <- getOption("asdv.timezone")
+  
   tryCatch(
-    pas_load(datestamp), 
+    pas_load(datestamp, timezone = timezone), 
     error = function(err) { catchError(err) }
   )
 }
@@ -45,7 +48,7 @@ get_pat <- function(pas, label, sd, ed, pat = NULL) {
       if ( !is.null(pat) &&
            ed <= max(pat$data$datetime, na.rm = TRUE) && 
            sd >= min(pat$data$datetime, na.rm = TRUE) ) {
-        
+          
         pat <- pat_filterDatetime(
           pat = pat,
           startdate = sd,
@@ -59,7 +62,8 @@ get_pat <- function(pas, label, sd, ed, pat = NULL) {
           pas = pas, 
           label = label, 
           startdate = sd, 
-          enddate = ed
+          enddate = ed, 
+          timezone = timezone
         ) 
         
       }
@@ -72,8 +76,8 @@ get_pat <- function(pas, label, sd, ed, pat = NULL) {
       catchError(err)
       # Fallback: Attempt loading with the default parameters. 
       pat <- tryCatch(
-        pat_load(pas = pas, label = label), 
-        error = function(err) { stop(err) }
+        pat_load(pas = pas, label = label, timezone = timezone), 
+        error = function(err) { catchError(err) }
       )
       return(pat)
     }
@@ -108,37 +112,45 @@ get_sensor <- function(sensors, ...) {
 #' @importFrom lubridate ymd_hms
 get_sensors <- function(sd, ed, sensors = NULL) {
   
-  logger.trace("  get_sensors(%s, %s, sensors)", sd, ed)
-  
   tryCatch(
     
     expr = {
       
-      ed <- ymd(ed)
-      sd <- ymd(sd) 
+      timezone <- getOption("asdv.timezone")
+      
+      sd <- MazamaCoreUtils::parseDatetime(sd, timezone = timezone)
+      ed <- MazamaCoreUtils::parseDatetime(ed, timezone = timezone)
+      
+      logger.trace(
+        "  get_sensors(%s, %s)",
+        strftime(sd, "%Y%m%d%H", tz = timezone, usetz = TRUE),
+        strftime(ed, "%Y%m%d%H", tz = timezone, usetz = TRUE)
+      )
       
       if ( is.null(sensors) ) {
         # logger.trace(paste(sd, ed, "loading sensors obj..."))
         sensors <- sensor_load(
-          startdate = strftime(sd, "%Y%m%d"),
-          enddate = strftime(ed, "%Y%m%d")
+          startdate = strftime(sd, "%Y%m%d", tz = timezone, usetz = TRUE),
+          enddate = strftime(ed, "%Y%m%d", tz = timezone, usetz = TRUE), 
+          timezone = timezone
         ) 
       } else {
-        data_sd <- lubridate::ymd_hms(min(sensors$data$datetime))
-        data_ed <- lubridate::ymd_hms(max(sensors$data$datetime))
+        data_sd <- lubridate::ymd_hms(min(sensors$data$datetime), tz = timezone)
+        data_ed <- lubridate::ymd_hms(max(sensors$data$datetime), tz = timezone)
         
         if ( sd %within% (data_sd %--% data_ed) ) {
           # logger.trace(paste("filter date to", sd, "--", ed))
           sensors <- sensor_filterDate(
             sensor = sensors,
-            startdate = strftime(sd, "%Y%m%d"),
-            enddate = strftime(ed, "%Y%m%d")
+            startdate = strftime(sd, "%Y%m%d", tz = timezone, usetz = TRUE),
+            enddate = strftime(ed, "%Y%m%d", tz = timezone, usetz = TRUE)
           )
         } else {
           # logger.trace("reloading sensors obj...")
           sensors <- sensor_load(
-            startdate = strftime(sd, "%Y%m%d"),
-            enddate = strftime(ed, "%Y%m%d")
+            startdate = strftime(sd, "%Y%m%d", tz = timezone, usetz = TRUE),
+            enddate = strftime(ed, "%Y%m%d", tz = timezone, usetz = TRUE), 
+            timezone = timezone
           ) 
         }
       }
@@ -214,61 +226,23 @@ get_noaa <- function(sensor, sd, ed) {
   
   logger.trace(
     "  get_noaa(sensor, %s, %s)",
-    strftime(sd, "%Y-%m-%d %H:00", tz = timezone, usetz = TRUE),
-    strftime(ed, "%Y-%m-%d %H:00", tz = timezone, usetz = TRUE)
+    strftime(sd, "%Y%m%d%H", tz = timezone, usetz = TRUE),
+    strftime(ed, "%Y%m%d%H", tz = timezone, usetz = TRUE)
   )
   
   year <- strftime(sd, "%Y", tz = timezone)
   
   tryCatch(
     expr = {
-      
+      # TODO:  This is where we would like to have status messages sent to the
+      # TODO:  UI to alert the user that the delay is NOAA's fault, not ours.
+      logger.trace("  * worldmet::getMeta()")
       meta <- worldmet::getMeta(lat = sensor$meta$latitude, lon = sensor$meta$longitude, plot = FALSE, n = 1)
+      logger.trace("  * worldmet::importNoaa()")
       data <- worldmet::importNOAA(code = meta$code, year = as.numeric(year), quiet = TRUE)
-      
-      # Find wind data readings from the closest NOAA site
-      # yr <- year(ed)
-      # lon <- sensor$meta$longitude
-      # lat <- sensor$meta$latitude
-      # 
-      # metaUrl <- "ftp://ftp.ncdc.noaa.gov/pub/data/noaa/isd-history.csv"
-      # meta <- fread(metaUrl)[ STATE == "CA"
-      # ][ (ymd(sd) %--% ymd(ed)) %within% (ymd(BEGIN) %--% ymd(END))
-      # ][, dist := geodist(cbind("Longitude" = LON, "Latitude" = LAT), cbind("Longitude" = lon, "Latitude" = lat), pad = TRUE) 
-      # ][ order(dist)
-      # ][, code := paste0(USAF, WBAN) ][1,]
-      # 
-      # dataUrl <- paste0("https://www.ncei.noaa.gov/data/global-hourly/access/", yr, "/", meta$code, ".csv")
-      # # Install package bit64
-      # data <- fread(dataUrl)[, c("wd", "x", "y", "ws", "z") := tstrsplit(WND, ",")
-      # ][, wd := ifelse(as.numeric(wd) == 999, NA, as.numeric(wd))
-      # ][, ws := ifelse(as.numeric(ws) == 9999, NA, as.numeric(ws))/10 
-      # ][, c("air_temp", "flag_temp") := tstrsplit(TMP, ",")
-      # ][, air_temp := ifelse(as.numeric(air_temp) == 9999, NA, as.numeric(air_temp)/10)
-      # ][, c("dew_point", "flag_dew") := tstrsplit(DEW, ",")
-      # ][, dew_point := ifelse(as.numeric(dew_point) == 9999, NA, as.numeric(dew_point)/10)
-      # ][, date := ymd_hms(DATE) 
-      # ][, RH :=  100 * ((112 - 0.1 * air_temp + dew_point) / (112 + 0.9 * air_temp))^8 
-      # ][, c("date", "wd",  "ws", "air_temp", "RH") ]
-      # setcolorder(data, "date")
-      # 
-      # dxts <- as.xts.data.table(data)
-      # ep <- endpoints(dxts, "hour")
-      # 
-      # hourly <- as.data.table(do.call(
-      #   cbind, 
-      #   lapply(
-      #     dxts, 
-      #     function(x) { 
-      #       period.apply(x, ep, function(x) { mean(x, na.rm = TRUE) }) 
-      #     }
-      #   )
-      # ))
-      # 
-      # hourly[, date := round_date(index, "hour")
-      # ][, index := NULL 
-      # ][ date %between% c(sd, ed) ]
-      
+      logger.trace("  * worldmet::importNoaa() FINISHED")
+      dataSubset <- data %>% dplyr::filter(date >= sd & date <= ed)
+      return(dataSubset)
     }, 
     error = function(err) {
       catchError(err)

@@ -27,19 +27,19 @@ comparisonLeaflet <- function(sensor, pwfsl) {
       lng = ~unique(longitude.pwfsl), 
       lat = ~unique(latitude.pwfsl), 
       icon = makeAwesomeIcon(markerColor = "gray", icon = 'flag'), 
-      popup = mlab
+      label = mlab
     ) %>% 
     addAwesomeMarkers(
       lng = ~unique(longitude.pa), 
       lat = ~unique(latitude.pa), 
       icon = makeAwesomeIcon(markerColor = "purple", icon = 'flag'), 
-      popup = slab
+      label = slab
     ) %>% 
     addPolylines(
       lng = c(unique(df$longitude.pwfsl), unique(df$longitude.pa)), 
       lat = c(unique(df$latitude.pwfsl), unique(df$latitude.pa)),
       dashArray = "12", 
       color = 'red', 
-      popup = paste0(mdist, " km")
+      label = paste0(mdist, " km")
     )
 }

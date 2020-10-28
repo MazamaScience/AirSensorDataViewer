@@ -13,10 +13,10 @@ mod_calendar_ui <- function(id){
   tagList(
       uiOutput(ns("yearLabel"), container = tags$text),
       tags$hr(),
+      uiOutput(ns("calendarLegend")),
       timeseriesCalendarOutput(
         outputId = ns("calendarPlot"), width = 800, height = 800
-      ) %>% withLoader(), 
-      uiOutput(ns("calendarLegend"))
+      ) %>% withLoader()
   )
 }
 
@@ -28,6 +28,8 @@ mod_calendar_ui <- function(id){
 #' @importFrom promises `%...>%` `%...!%`
 mod_calendar_server <- function(input, output, session, usr) {
   ns <- session$ns
+   
+  timezone <- getOption("asdv.timzone")
 
   output$calendarPlot <- renderTimeseriesCalendar({
     req(usr$annual)
@@ -37,7 +39,8 @@ mod_calendar_server <- function(input, output, session, usr) {
         data = annual$data, 
         meta = annual$meta, 
         inputId = 'main_panel_ui_1-sensor_select', 
-        unitString = "  (\u00B5g/m\u00B3)"
+        unitString = "  (\u00B5g/m\u00B3)", 
+        tz = timezone
       )
     }) %...!% (function(err) {
       notify("Failed to load annual data. Try selecting a different date (of year) or a different sensor.")

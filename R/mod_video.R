@@ -31,17 +31,19 @@ mod_video_server <- function(input, output, session, usr) {
   output$video <- renderUI({
     req(usr$selected$community, usr$selected$ed)
     
+    timezone <- getOption("asdv.timezone")
+    
     community <- usr$selected$community
-    ed <- ymd(usr$selected$ed)
+    ed <- ymd(usr$selected$ed, tz = timezone)
     
     tryCatch(
       expr = {
         if ( community != "All.." ) {
           ed <- ed
           baseUrl <- "http://data.mazamascience.com/PurpleAir/v1/videos"
-          year    <- strftime(ed, "%Y")
-          mm      <- strftime(ed, "%m")
-          dd      <- strftime(ed, "%d")
+          year    <- strftime(ed, "%Y", tz = timezone, usetz = TRUE)
+          mm      <- strftime(ed, "%m", tz = timezone, usetz = TRUE)
+          dd      <- strftime(ed, "%d", tz = timezone, usetz = TRUE)
           id    <- com2id(community)
           url <- paste(baseUrl, year, mm, paste0(id, "_", year, mm, dd, ".mp4"), sep = "/")
           tags$video(

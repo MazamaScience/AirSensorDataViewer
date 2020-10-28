@@ -104,7 +104,9 @@ User <- R6::R6Class(
       
       self$waiter <- waiter::Waitress$new(min = 0, max = 100)
       
-      logger.debug(paste("User started on session token:", session$token)) 
+      tz <- getOption('asdv.timezone')
+      
+      logger.debug(paste("START with session token:", session$token)) 
       self$token <- session$token
       
       # Create reactive values of the inputs
@@ -135,18 +137,18 @@ User <- R6::R6Class(
       })
       private$sensors_promise <- future({
         setArchiveBaseUrl(self$baseUrl)
-        get_sensors(today() - days(7), today())
+        get_sensors(today(tzone=tz) - days(7), today(tzone=tz))
       })
     }, 
     
     #' @details 
     #' Update the users pa_synoptic data. 
     #' @param date YYYYmmdd.
-    updatePas = function(date = NULL) {
+    updatePas = function(date = NULL, tz = getOption("asdv.timezone")) {
       logger.debug("  ----- User::updatePas() -----")
       private$rx_pas$trigger()
-      if ( !lubridate::ymd(date) < lubridate::ymd(20190505) ) {
-        date <- strftime(date, "%Y%m%d") 
+      if ( !lubridate::ymd(date, tz = tz) < lubridate::ymd(20190505, tz = tz) ) {
+        date <- strftime(date, "%Y%m%d", tz = tz) 
       } else {
         date <- 20190505
       }
@@ -175,7 +177,7 @@ User <- R6::R6Class(
     #' Update the users pa_timeseries object.
     #' @param sd startdate YYYYmmdd.
     #' @param ed enddate YYYYmmdd.
-    updatePat = function(label, sd, ed) {
+    updatePat = function(label, sd, ed, tz = getOption("asdv.timezone")) {
       logger.debug("  ----- User::updatePat() -----")
       private$rx_pat$trigger()
       pas <- value(private$pas_promise)
@@ -212,7 +214,7 @@ User <- R6::R6Class(
     #' @param label ?
     #' @param sd startdate YYYYmmdd.
     #' @param ed enddate YYYYmmdd.
-    updatePwfsl = function(label, sd, ed) {
+    updatePwfsl = function(label, sd, ed, tz = getOption("asdv.timezone")) {
       logger.debug("  ----- User::updatePwfsl() -----")
       private$rx_pwfsl$trigger()
       sensor <- value(private$sensor_promise)
@@ -239,13 +241,12 @@ User <- R6::R6Class(
     #' @details 
     #' Update the users annual airsensor object.
     #' @param date a date to parse year from.
-    updateAnnual = function(date) {
+    updateAnnual = function(date, tz = getOption("asdv.timezone")) {
       logger.debug("  ----- User::updateAnnual() -----")
       private$rx_annual$trigger()
       # TODO:  Sort out precise datetimes to get a single year
-      sd <- strftime(date, "%Y-01-02")
-      ed <- strftime(date, "%Y-12-31")
-      logger.trace("  sd = %s, ed = %s", sd, ed)
+      sd <- strftime(date, "%Y-01-02", tz = tz, usetz = TRUE)
+      ed <- strftime(date, "%Y-12-31", tz = tz, usetz = TRUE)
       private$annual_promise <- future({
         sensor_load(
           collection = "scaqmd",
@@ -297,8 +298,6 @@ User <- R6::R6Class(
 #' R6 reactive trigger: https://gist.github.com/bborgesr/3350051727550cfa798cb4c9677adcd4
 #'
 #' @export
-#'
-#' @examples
 reactiveTrigger <- function() {
   counter <- reactiveVal(0)
   list(

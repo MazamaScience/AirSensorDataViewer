@@ -12,7 +12,7 @@
 #' @importFrom bsplus bs_embed_tooltip
 mod_main_panel_ui <- function(id) {
   ns <- NS(id)
-  TZ <- 'UTC'
+  TZ <- "America/Los_Angeles" #getOption("asdv.timezone")
   tagList(
     
     selectizeInput(
@@ -62,18 +62,18 @@ mod_main_panel_ui <- function(id) {
           min = "2017-10-01",
           max = today(tzone = TZ), 
           format = "mm/d/yyyy", 
-          value =  today(TZ)
+          value =  today(tzone = TZ)
         )
       ),
 
     ),
     
     # Hacky way to get the client timezone stored in the client object
-    shinyjs::hidden(textInput(
-      inputId = ns("client_tz"),
-      "client time",
-      value = ""
-    )),
+    # shinyjs::hidden(textInput(
+    #   inputId = ns("client_tz"),
+    #   "client time",
+    #   value = ""
+    # )),
     
     tags$hr(), 
     
@@ -184,6 +184,8 @@ mod_main_panel_server <- function(input, output, session, usr) {
   usr$waiter$notify(html = tags$h3("Loading Data..."), position = "bl")
   usr$waiter$set(20)
   
+  timezone <- getOption("asdv.timezone")
+  
   # Startup: initialize on every new token i.e. new client session object
   observeEvent(
     once = TRUE, 
@@ -225,7 +227,7 @@ mod_main_panel_server <- function(input, output, session, usr) {
           catchError(err)
         })
       
-      usr$updateAnnual(today())
+      usr$updateAnnual(today(tzone = timezone))
       
       # Close the waitress
       usr$waiter$close()
@@ -257,8 +259,8 @@ mod_main_panel_server <- function(input, output, session, usr) {
     handlerExpr = {
       
       # Calculate the dates based on user selection
-      sd <- lubridate::ymd(input$date_select) - lubridate::days(input$past_select)
-      ed <- lubridate::ymd(input$date_select)
+      sd <- lubridate::ymd(input$date_select, tz = timezone) - lubridate::days(input$past_select)
+      ed <- lubridate::ymd(input$date_select, tz = timezone)
       
       yr <- lubridate::year(input$date_select)
       
@@ -409,7 +411,14 @@ mod_main_panel_server <- function(input, output, session, usr) {
       # Make sure pat is up to date in usr object
       usr$updatePat(label, sd, ed)
       usr$pat %...>% (function(pat) {
-        d <- pat$data[c("datetime", "pm25_A", "pm25_B", "temperature", "humidity")]
+        d <- pat$data[,c("datetime", "pm25_A", "pm25_B", "temperature", "humidity")]
+        names(d) <- c(
+          "datetime (local)", 
+          "pm25_A (ug/m3)",
+          "pm25_B (ug/m3)",
+          "temperature (deg F)",
+          "humidity (%)"
+        )
         write.csv(d, file, row.names = FALSE)
       }) %...!% (function(err) {
         catchError(err)
@@ -428,9 +437,9 @@ mod_main_panel_server <- function(input, output, session, usr) {
   <path fill-rule="evenodd" d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
   <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm-3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm-5 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
 </svg>', 
-            strftime(usr$selected$sd, "%B %d, %Y"), 
+            strftime(usr$selected$sd, "%B %d, %Y", tz = timezone, usetz = TRUE), 
             "  -  ", 
-            strftime(usr$selected$ed, "%B %d, %Y")
+            strftime(usr$selected$ed, "%B %d, %Y", tz = timezone, usetz = TRUE)
           )
         )
       )

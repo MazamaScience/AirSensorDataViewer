@@ -1,3 +1,8 @@
+# AirSensorDataViewer 1.0.3
+
+* Added units to headers in downloaded CSV file.
+* Explicit timezone used throughout.
+
 # AirSensorDataViewer 1.0.2
 
 * Additional logging.

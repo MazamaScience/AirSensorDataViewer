@@ -2,4 +2,6 @@
 
 Select a sensor using the drop down menus in the panel on the left.
 
+Use ‘Select Date’ to choose a date within the year you wish to plot.
+
 The calendar shows the average daily PM2.5 mass concentrations. The greater the PM2.5 concentration, the darker daily cell shade. If the daily cell is white, a value was not recorded for the day. Hover over each day to view the average daily PM2.5 mass concentration.
