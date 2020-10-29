@@ -130,8 +130,8 @@ get_sensors <- function(sd, ed, sensors = NULL) {
       if ( is.null(sensors) ) {
         # logger.trace(paste(sd, ed, "loading sensors obj..."))
         sensors <- sensor_load(
-          startdate = strftime(sd, "%Y%m%d", tz = timezone, usetz = TRUE),
-          enddate = strftime(ed, "%Y%m%d", tz = timezone, usetz = TRUE), 
+          startdate = strftime(sd, "%Y%m%d", tz = timezone),
+          enddate = strftime(ed, "%Y%m%d", tz = timezone), 
           timezone = timezone
         ) 
       } else {
@@ -142,14 +142,14 @@ get_sensors <- function(sd, ed, sensors = NULL) {
           # logger.trace(paste("filter date to", sd, "--", ed))
           sensors <- sensor_filterDate(
             sensor = sensors,
-            startdate = strftime(sd, "%Y%m%d", tz = timezone, usetz = TRUE),
-            enddate = strftime(ed, "%Y%m%d", tz = timezone, usetz = TRUE)
+            startdate = strftime(sd, "%Y%m%d", tz = timezone),
+            enddate = strftime(ed, "%Y%m%d", tz = timezone)
           )
         } else {
           # logger.trace("reloading sensors obj...")
           sensors <- sensor_load(
-            startdate = strftime(sd, "%Y%m%d", tz = timezone, usetz = TRUE),
-            enddate = strftime(ed, "%Y%m%d", tz = timezone, usetz = TRUE), 
+            startdate = strftime(sd, "%Y%m%d", tz = timezone),
+            enddate = strftime(ed, "%Y%m%d", tz = timezone), 
             timezone = timezone
           ) 
         }
@@ -190,13 +190,15 @@ get_sensors <- function(sd, ed, sensors = NULL) {
 #' @export
 get_pat_latest <- function(pas, label, tz = "America/Los_Angeles") {
   logger.trace("  get_pat_latest(pas, %s, %s", label, tz)
+  ed <- lubridate::now()
+  sd <- ed - lubridate::days(2)
   tryCatch(
     pat_createNew(
       pas = pas, 
       label = label, 
-      timezone = tz 
-    ) %>% 
-      pat_filterDate(lubridate::today(tzone = tz) - lubridate::days(2)),
+      startdate = sd,
+      enddate = ed
+    ),
     error = function(err) catchError(err)
   )
 }

@@ -16,7 +16,7 @@ channelPlotly <- function(pat, channel = "ab") {
 
 #' @method channelPlotly a
 channelPlotly.a <- function(pat, ...) {
-  pat$data$datetime <- with_tz(pat$data$datetime, tzone = 'UTC')
+  pat$data$datetime <- with_tz(pat$data$datetime, tzone = getOption("asdv.timezone"))
   plot_ly(
     pat$data,
     x = ~datetime,
@@ -31,7 +31,7 @@ channelPlotly.a <- function(pat, ...) {
     plotly::layout( 
       title = list(text = paste0(pat$meta$label, " Latest Data")),
       legend = list(orientation = 'h'),
-      xaxis = list(title = "Date", titlefont = list(size = 14.5)),
+      xaxis = list(title = "Local Time", titlefont = list(size = 14.5)),
       yaxis = list(title = "PM<sub>2.5</sub> (\u03bcg / m\u00b3)", 
                    titlefont = list(size = 14.5)) 
     )
@@ -39,7 +39,7 @@ channelPlotly.a <- function(pat, ...) {
 
 #' @method channelPlotly b
 channelPlotly.b <- function(pat, ...) {
-  pat$data$datetime <- with_tz(pat$data$datetime, tzone = 'UTC')
+  pat$data$datetime <- with_tz(pat$data$datetime, tzone = getOption("asdv.timezone"))
   plot_ly(
     pat$data,
     x = ~datetime,
@@ -54,7 +54,7 @@ channelPlotly.b <- function(pat, ...) {
     plotly::layout( 
       title = list(text = paste0(pat$meta$label, " Latest Data")),
       legend = list(orientation = 'h'),
-      xaxis = list(title = "Date", titlefont = list(size = 14.5)),
+      xaxis = list(title = "Local Time", titlefont = list(size = 14.5)),
       yaxis = list(title = "PM<sub>2.5</sub> (\u03bcg / m\u00b3)", 
                    titlefont = list(size = 14.5)) 
     )
@@ -62,7 +62,7 @@ channelPlotly.b <- function(pat, ...) {
 
 #' @method channelPlotly ab
 channelPlotly.ab <- function(pat, ...) {
-  pat$data$datetime <- with_tz(pat$data$datetime, tzone = 'UTC')
+  pat$data$datetime <- with_tz(pat$data$datetime, tzone = getOption("asdv.timezone"))
   plot_ly(
     pat$data,
     x = ~datetime,
@@ -82,7 +82,7 @@ channelPlotly.ab <- function(pat, ...) {
     plotly::layout( 
       title = list(text = paste0(pat$meta$label, " Latest Data")),
       legend = list(orientation = 'h'),
-      xaxis = list(title = "Date", titlefont = list(size = 14.5)),
+      xaxis = list(title = "Local Time", titlefont = list(size = 14.5)),
       yaxis = list(title = "PM<sub>2.5</sub> (\u03bcg / m\u00b3)", 
                    titlefont = list(size = 14.5)) 
     )
@@ -98,7 +98,7 @@ channelPlotly.ab <- function(pat, ...) {
 #' @importFrom plotly plot_ly add_trace config
 #' @importFrom lubridate with_tz
 humidityPlotly <- function(pat) {
-  pat$data$datetime <- with_tz(pat$data$datetime, tzone = 'UTC')
+  pat$data$datetime <- with_tz(pat$data$datetime, tzone = getOption("asdv.timezone"))
   plot_ly( 
     pat$data,
     x = ~datetime,
@@ -111,7 +111,7 @@ humidityPlotly <- function(pat) {
     config(displayModeBar = FALSE) %>%
     plotly::layout( 
       title = list(text = "Humidity"),
-      xaxis = list(title = "Date", titlefont = list(size = 14.5)),
+      xaxis = list(title = "Local Time", titlefont = list(size = 14.5)),
       yaxis = list(title = "RH (%)", titlefont = list(size = 14.5)) 
     )
 }
@@ -126,7 +126,7 @@ humidityPlotly <- function(pat) {
 #' @importFrom plotly plot_ly add_trace config
 #' @importFrom lubridate with_tz
 temperaturePlotly <- function(pat) {
-  pat$data$datetime <- with_tz(pat$data$datetime, tzone = 'UTC')
+  pat$data$datetime <- with_tz(pat$data$datetime, tzone = getOption("asdv.timezone"))
   plot_ly( 
     pat$data,
     x = ~datetime,
@@ -139,7 +139,7 @@ temperaturePlotly <- function(pat) {
     config(displayModeBar = FALSE) %>%
     plotly::layout( 
       title = list(text = "Temperature"),
-      xaxis = list(title = "Date", titlefont = list(size = 14.5)),
+      xaxis = list(title = "Local Time", titlefont = list(size = 14.5)),
       yaxis = list(title = "Temperature (F)", titlefont = list(size = 14.5)) 
     )
 }

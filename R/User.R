@@ -245,8 +245,8 @@ User <- R6::R6Class(
       logger.debug("  ----- User::updateAnnual() -----")
       private$rx_annual$trigger()
       # TODO:  Sort out precise datetimes to get a single year
-      sd <- strftime(date, "%Y-01-02", tz = tz, usetz = TRUE)
-      ed <- strftime(date, "%Y-12-31", tz = tz, usetz = TRUE)
+      sd <- strftime(date, "%Y-01-02", tz = tz)
+      ed <- strftime(date, "%Y-12-31", tz = tz)
       private$annual_promise <- future({
         sensor_load(
           collection = "scaqmd",

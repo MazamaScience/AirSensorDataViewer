@@ -41,9 +41,9 @@ mod_video_server <- function(input, output, session, usr) {
         if ( community != "All.." ) {
           ed <- ed
           baseUrl <- "http://data.mazamascience.com/PurpleAir/v1/videos"
-          year    <- strftime(ed, "%Y", tz = timezone, usetz = TRUE)
-          mm      <- strftime(ed, "%m", tz = timezone, usetz = TRUE)
-          dd      <- strftime(ed, "%d", tz = timezone, usetz = TRUE)
+          year    <- strftime(ed, "%Y", tz = timezone)
+          mm      <- strftime(ed, "%m", tz = timezone)
+          dd      <- strftime(ed, "%d", tz = timezone)
           id    <- com2id(community)
           url <- paste(baseUrl, year, mm, paste0(id, "_", year, mm, dd, ".mp4"), sep = "/")
           tags$video(
