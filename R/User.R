@@ -106,7 +106,7 @@ User <- R6::R6Class(
       
       tz <- getOption('asdv.timezone')
       
-      logger.debug(paste("User started on session token:", session$token)) 
+      logger.debug(paste("START with session token:", session$token)) 
       self$token <- session$token
       
       # Create reactive values of the inputs
@@ -145,13 +145,14 @@ User <- R6::R6Class(
     #' Update the users pa_synoptic data. 
     #' @param date YYYYmmdd.
     updatePas = function(date = NULL, tz = getOption("asdv.timezone")) {
-      logger.trace(paste("Updating pas ===>"))
+      logger.debug("  ----- User::updatePas() -----")
       private$rx_pas$trigger()
       if ( !lubridate::ymd(date, tz = tz) < lubridate::ymd(20190505, tz = tz) ) {
         date <- strftime(date, "%Y%m%d", tz = tz) 
       } else {
         date <- 20190505
       }
+      logger.trace("  date = %s", date)
       private$pas_promise <- future({
         setArchiveBaseUrl(self$baseUrl)
         get_pas(date)
@@ -164,7 +165,7 @@ User <- R6::R6Class(
     #' @param ed enddate YYYYmmdd.
     #' @param ... additional params.
     updateSensors = function(sd, ed, ...) {
-      logger.trace(paste("Updating sensors ===>", sd, ed))
+      logger.debug("  ----- User::updateSensors() -----")
       private$rx_sensors$trigger()
       private$sensors_promise <- future({
         setArchiveBaseUrl(self$baseUrl)
@@ -177,7 +178,7 @@ User <- R6::R6Class(
     #' @param sd startdate YYYYmmdd.
     #' @param ed enddate YYYYmmdd.
     updatePat = function(label, sd, ed, tz = getOption("asdv.timezone")) {
-      logger.trace(paste("Updating pat ===>", label, sd, ed))
+      logger.debug("  ----- User::updatePat() -----")
       private$rx_pat$trigger()
       pas <- value(private$pas_promise)
       private$pat_promise <- future({
@@ -196,7 +197,8 @@ User <- R6::R6Class(
     #' Commonly used when a user selects a different sensor. 
     #' @param label the sensor label to filter the airsensor object by.
     updateSensor = function(label) {
-      logger.trace(paste("updating sensor ===>", label))
+      logger.debug("  ----- User::updateSensor() -----")
+      logger.trace("  label = %s", label)
       private$rx_sensor$trigger()
       # Not really sure why, but this redef is absolutely necessary. 
       lab <- label
@@ -213,7 +215,7 @@ User <- R6::R6Class(
     #' @param sd startdate YYYYmmdd.
     #' @param ed enddate YYYYmmdd.
     updatePwfsl = function(label, sd, ed, tz = getOption("asdv.timezone")) {
-      logger.trace(paste("Updating pwfsl ===>", sd, ed))
+      logger.debug("  ----- User::updatePwfsl() -----")
       private$rx_pwfsl$trigger()
       sensor <- value(private$sensor_promise)
       id <- sensor$meta$pwfsl_closestMonitorID
@@ -227,7 +229,8 @@ User <- R6::R6Class(
     #' @param label a label of the sensor.
     #' @param tz a specified timezone. (default: UTC)
     updateLatest = function(label, tz = getOption("asdv.timezone")) {
-      logger.trace(paste("Updating latest ===>", label))
+      logger.debug("  ----- User::updateLatest() -----")
+      logger.trace("  tz = %s", tz)
       private$rx_latest$trigger()
       pas <- value(private$pas_promise)
       private$latest_promise <- future({
@@ -239,11 +242,11 @@ User <- R6::R6Class(
     #' Update the users annual airsensor object.
     #' @param date a date to parse year from.
     updateAnnual = function(date, tz = getOption("asdv.timezone")) {
-      logger.trace(paste("Updating annual ===>"), date)
+      logger.debug("  ----- User::updateAnnual() -----")
       private$rx_annual$trigger()
       # TODO:  Sort out precise datetimes to get a single year
-      sd <- strftime(date, "%Y-01-02", tz = tz, usetz = TRUE)
-      ed <- strftime(date, "%Y-12-31", tz = tz, usetz = TRUE)
+      sd <- strftime(date, "%Y-01-02", tz = tz)
+      ed <- strftime(date, "%Y-12-31", tz = tz)
       private$annual_promise <- future({
         sensor_load(
           collection = "scaqmd",
@@ -258,7 +261,7 @@ User <- R6::R6Class(
     #' @param sd startdate YYYYmmdd.
     #' @param ed enddate YYYYmmdd.
     updateNoaa =  function(sd, ed) {
-      logger.trace(paste("Updating noaa ===>"))
+      logger.debug("  ----- User::updateNoaa() -----")
       private$rx_noaa$trigger()
       sensor <- value(private$sensor_promise)
       private$noaa_promise <- future({

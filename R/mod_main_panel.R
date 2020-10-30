@@ -409,7 +409,14 @@ mod_main_panel_server <- function(input, output, session, usr) {
       # Make sure pat is up to date in usr object
       usr$updatePat(label, sd, ed)
       usr$pat %...>% (function(pat) {
-        d <- pat$data[c("datetime", "pm25_A", "pm25_B", "temperature", "humidity")]
+        d <- pat$data[,c("datetime", "pm25_A", "pm25_B", "temperature", "humidity")]
+        names(d) <- c(
+          "datetime (local)", 
+          "pm25_A (ug/m3)",
+          "pm25_B (ug/m3)",
+          "temperature (deg F)",
+          "humidity (%)"
+        )
         write.csv(d, file, row.names = FALSE)
       }) %...!% (function(err) {
         catchError(err)

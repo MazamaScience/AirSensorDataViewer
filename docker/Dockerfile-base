@@ -66,6 +66,7 @@ RUN Rscript -e 'remotes::install_version("plotly",upgrade="never", version = "4.
 RUN Rscript -e 'remotes::install_version("gt",upgrade="never", version = "0.2.2")'
 RUN Rscript -e 'remotes::install_version("future",upgrade="never", version = "1.18.0")'
 RUN Rscript -e 'remotes::install_version("bsplus",upgrade="never", version = "0.1.2")'
+RUN Rscript -e 'remotes::install_version("worldmet",upgrade="never", version = "0.9.2")'
 
 
 # Add latest development versions of these packages 

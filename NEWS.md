@@ -1,3 +1,22 @@
+# AirSensorDataViewer 1.0.3
+
+* Added units to headers in downloaded CSV file.
+* Explicit timezone used throughout.
+* Added `onHover` behavior to Compare tab.
+* Improved titles on Daily Patterns tab.
+
+# AirSensorDataViewer 1.0.2
+
+* Additional logging.
+* Raw plot timezone now set to local time.
+* Various package version updates.
+* Removed barchart show/hide.
+* Return to use of **worldmet** package for wind data.
+* Video URLs now point to http://data.mazamascienc.com/PurpleAir/v1/videos
+* Added calendar legend.
+* Default timezone now set in `app_server.R`.
+* Reduced usage of waiter spinner.
+
 # AirSensorDataViewer 1.0.1
 
 * Additional logging.

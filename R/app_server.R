@@ -113,13 +113,13 @@ app_server <- function( input, output, session ) {
   
   # Navbar at the top
   observeEvent(input$navbar, {
-    logger.trace(paste("navbar:", input$navbar))
+    logger.trace("NAVBAR: %s", input$navbar)
     usr$selected$page <- input$navbar
   })
   
   # Tabs underneath "Historical Data" (where most of the action happens)
   observeEvent(input$tab, {
-    logger.trace(paste("tab:", input$tab))
+    logger.trace("TAB: %s", input$tab)
     usr$selected$tab <- input$tab
   })
   

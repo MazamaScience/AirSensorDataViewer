@@ -8,6 +8,8 @@
 #' @importFrom utils head tail
 sensorMonitorCompTable <- function(pat) {
   
+  logger.debug('----- sensorMonitorCompTable() -----')
+  
   # ----- Validate parameters --------------------------------------------------
   
   if ( !AirSensor::pat_isPat(pat) )
@@ -23,8 +25,8 @@ sensorMonitorCompTable <- function(pat) {
     tidyr::complete(
       data = df,
       datetime = seq(
-        from = head(df$datetime, n=1),
-        to = tail(df$datetime, n=1),
+        from = head(df$datetime, n = 1),
+        to = tail(df$datetime, n = 1),
         by = "1 min"
       )
     )
@@ -51,39 +53,64 @@ sensorMonitorCompTable <- function(pat) {
 #' @return a data.frame
 #' @export
 noaaTable <- function(noaa) {
+
+  logger.debug('----- noaaTable() -----')
+
+  suppressWarningMessages({
+
+    noaaTable <-
+      data.frame(
+        
+        mean_ws = mean(noaa$ws, na.rm = TRUE),
+        min_ws = min(noaa$ws, na.rm = TRUE),
+        max_ws = max(noaa$ws, na.rm = TRUE),
+        
+        mean_wd = mean(noaa$wd, na.rm = TRUE),
+        
+        mean_air_temp = mean(noaa$air_temp, na.rm = TRUE),
+        min_air_temp = min(noaa$air_temp, na.rm = TRUE),
+        max_air_temp = max(noaa$air_temp, na.rm = TRUE),
+        
+        mean_RH = mean(noaa$RH, na.rm = TRUE),
+        min_RH = min(noaa$RH, na.rm = TRUE),
+        max_RH = max(noaa$RH, na.rm = TRUE)
+      )
+      
+  })  
   
-  noaaTable <-
-    data.frame(
-      
-      mean(noaa$ws, na.rm = TRUE),
-      min(noaa$ws, na.rm = TRUE),
-      max(noaa$ws, na.rm = TRUE),
-      
-      mean(noaa$wd, na.rm = TRUE),
-      
-      mean(noaa$air_temp, na.rm = TRUE),
-      min(noaa$air_temp, na.rm = TRUE),
-      max(noaa$air_temp, na.rm = TRUE),
-      
-      mean(noaa$RH, na.rm = TRUE),
-      min(noaa$RH, na.rm = TRUE),
-      max(noaa$RH, na.rm = TRUE)
-    )
+  # Handle +/-Inf and NaN values that occur when a vector is all NAs
   
-  names(noaaTable) <-
-    c( "Average Wind Speed (m/s)",
-       "Minimum Wind Speed (m/s)",
-       "Maximum Wind Speed (m/s)",
-       
-       "Average Wind Direction (deg)",
-       
-       "Average Temperature (C)",
-       "Minimum Temperature (C)",
-       "Maximum Temperature (C)",
-       
-       "Average Humidity (%)",
-       "Minimum Humidity (%)",
-       "Maximum Humidity (%)" )
+  # TODO:  Figure out how to get something like this to work
+  # noaaTable$mean_ws <- ifelse(is.nan(noaaTable$mean_ws), NA, noaaTable$mean_ws)
+  # noaaTable$min_ws <- ifelse(is.infinite(noaaTable$min_ws), NA, noaaTable$min_ws)
+  # noaaTable$max_ws <- ifelse(is.infinite(noaaTable$max_ws), NA, noaaTable$max_ws)
+  # 
+  # noaaTable$mean_wd <- ifelse(nan(noaaTable$mean_wd), NA, noaaTable$mean_wd)
+  # 
+  # noaaTable$mean_air_temp <- ifelse(is.nan(noaaTable$mean_air_temp), NA, noaaTable$mean_air_temp)
+  # noaaTable$min_air_temp <- ifelse(is.infinite(noaaTable$min_air_temp), NA, noaaTable$min_air_temp)
+  # noaaTable$max_air_temp <- ifelse(is.infinite(noaaTable$max_air_temp), NA, noaaTable$max_air_temp)
+  # 
+  # noaaTable$mean_RH <- ifelse(is.nan(noaaTable$mean_RH), NA, noaaTable$mean_RH)
+  # noaaTable$min_RH <- ifelse(is.infinite(noaaTable$min_RH), NA, noaaTable$min_RH)
+  # noaaTable$max_RH <- ifelse(is.infinite(noaaTable$max_RH), NA, noaaTable$max_RH)
+  
+  
+  names(noaaTable) <- c( 
+    "Average Wind Speed (m/s)",
+    "Minimum Wind Speed (m/s)",
+    "Maximum Wind Speed (m/s)",
+    
+    "Average Wind Direction (deg)",
+    
+    "Average Temperature (C)",
+    "Minimum Temperature (C)",
+    "Maximum Temperature (C)",
+    
+    "Average Humidity (%)",
+    "Minimum Humidity (%)",
+    "Maximum Humidity (%)" 
+  )
   
   return(t(noaaTable))
   

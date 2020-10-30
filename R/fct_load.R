@@ -5,7 +5,7 @@
 #' @return a pa_synoptic object
 #' @export
 get_pas <- function(datestamp = NULL) {
-  # logger.trace("loading pas obj...")
+  logger.trace("  get_pas(%s)", datestamp)
   
   timezone <- getOption("asdv.timezone")
   
@@ -33,7 +33,7 @@ get_pat <- function(pas, label, sd, ed, pat = NULL) {
   ed <- MazamaCoreUtils::parseDatetime(ed, timezone = timezone)
   
   logger.trace(
-    "    get_pat(pas, %s, %s, %s, pat)",
+    "  get_pat(pas, %s, %s, %s, pat)",
     label,
     strftime(sd, "%Y-%m-%d %H:00", tz = timezone, usetz = TRUE),
     strftime(ed, "%Y-%m-%d %H:00", tz = timezone, usetz = TRUE)
@@ -94,7 +94,7 @@ get_pat <- function(pas, label, sd, ed, pat = NULL) {
 #' @return a univariate airsensor object
 #' @export
 get_sensor <- function(sensors, ...) {
-  logger.trace("    get_sensor(...)")
+  logger.trace("  get_sensor(...)")
   tryCatch(
     sensor_filterMeta(sensors, ...),
     error = function(err) { catchError(err) }
@@ -111,6 +111,7 @@ get_sensor <- function(sensors, ...) {
 #' @export
 #' @importFrom lubridate ymd_hms
 get_sensors <- function(sd, ed, sensors = NULL) {
+  
   tryCatch(
     
     expr = {
@@ -121,16 +122,16 @@ get_sensors <- function(sd, ed, sensors = NULL) {
       ed <- MazamaCoreUtils::parseDatetime(ed, timezone = timezone)
       
       logger.trace(
-        "    get_sensors(%s, %s)",
-        strftime(sd, "%Y-%m-%d %H:00", tz = timezone, usetz = TRUE),
-        strftime(ed, "%Y-%m-%d %H:00", tz = timezone, usetz = TRUE)
+        "  get_sensors(%s, %s)",
+        strftime(sd, "%Y%m%d%H", tz = timezone, usetz = TRUE),
+        strftime(ed, "%Y%m%d%H", tz = timezone, usetz = TRUE)
       )
       
       if ( is.null(sensors) ) {
         # logger.trace(paste(sd, ed, "loading sensors obj..."))
         sensors <- sensor_load(
-          startdate = strftime(sd, "%Y%m%d", tz = timezone, usetz = TRUE),
-          enddate = strftime(ed, "%Y%m%d", tz = timezone, usetz = TRUE), 
+          startdate = strftime(sd, "%Y%m%d", tz = timezone),
+          enddate = strftime(ed, "%Y%m%d", tz = timezone), 
           timezone = timezone
         ) 
       } else {
@@ -141,14 +142,14 @@ get_sensors <- function(sd, ed, sensors = NULL) {
           # logger.trace(paste("filter date to", sd, "--", ed))
           sensors <- sensor_filterDate(
             sensor = sensors,
-            startdate = strftime(sd, "%Y%m%d", tz = timezone, usetz = TRUE),
-            enddate = strftime(ed, "%Y%m%d", tz = timezone, usetz = TRUE)
+            startdate = strftime(sd, "%Y%m%d", tz = timezone),
+            enddate = strftime(ed, "%Y%m%d", tz = timezone)
           )
         } else {
           # logger.trace("reloading sensors obj...")
           sensors <- sensor_load(
-            startdate = strftime(sd, "%Y%m%d", tz = timezone, usetz = TRUE),
-            enddate = strftime(ed, "%Y%m%d", tz = timezone, usetz = TRUE), 
+            startdate = strftime(sd, "%Y%m%d", tz = timezone),
+            enddate = strftime(ed, "%Y%m%d", tz = timezone), 
             timezone = timezone
           ) 
         }
@@ -188,14 +189,16 @@ get_sensors <- function(sd, ed, sensors = NULL) {
 #' @return a 'pat' object
 #' @export
 get_pat_latest <- function(pas, label, tz = "America/Los_Angeles") {
-  # logger.trace(paste(label, "loading latest pat obj..."))
+  logger.trace("  get_pat_latest(pas, %s, %s", label, tz)
+  ed <- lubridate::now()
+  sd <- ed - lubridate::days(2)
   tryCatch(
     pat_createNew(
       pas = pas, 
       label = label, 
-      timezone = tz 
-    ) %>% 
-      pat_filterDate(lubridate::today(tzone = tz) - lubridate::days(2)),
+      startdate = sd,
+      enddate = ed
+    ),
     error = function(err) catchError(err)
   )
 }
@@ -217,57 +220,31 @@ get_pat_latest <- function(pas, label, tz = "America/Los_Angeles") {
 #' @importFrom xts period.apply endpoints
 #' @importFrom worldmet getMeta importNOAA
 get_noaa <- function(sensor, sd, ed) {
-  # logger.trace("loading NOAA...")
+  
+  timezone <- getOption("asdv.timezone")
+  
+  sd <- MazamaCoreUtils::parseDatetime(sd, timezone = timezone)
+  ed <- MazamaCoreUtils::parseDatetime(ed, timezone = timezone)
+  
+  logger.trace(
+    "  get_noaa(sensor, %s, %s)",
+    strftime(sd, "%Y%m%d%H", tz = timezone, usetz = TRUE),
+    strftime(ed, "%Y%m%d%H", tz = timezone, usetz = TRUE)
+  )
+  
+  year <- strftime(sd, "%Y", tz = timezone)
+  
   tryCatch(
     expr = {
-      tz <- getOption("asdv.timezone")
-      # meta <- getMeta(lat = sensor$meta$latitude, lon = sensor$meta$longitude, plot = FALSE, n = 1)
-      # data <- as.data.table(importNOAA(code = meta$code, year = strftime(sd, "%Y", tz = timezone, usetz = TRUE), quiet = TRUE))
-      # return(data[date %between% c(sd,ed)])
-      
-      # Find wind data readings from the closest NOAA site
-      yr <- year(ed)
-      lon <- sensor$meta$longitude
-      lat <- sensor$meta$latitude
-
-      metaUrl <- "ftp://ftp.ncdc.noaa.gov/pub/data/noaa/isd-history.csv"
-      meta <- fread(metaUrl)[ STATE == "CA"
-      ][ (ymd(sd,tz=tz) %--% ymd(ed,tz=tz)) %within% (ymd(BEGIN,tz=tz) %--% ymd(END,tz=tz))
-      ][, dist := geodist(cbind("Longitude" = LON, "Latitude" = LAT), cbind("Longitude" = lon, "Latitude" = lat), pad = TRUE)
-      ][ order(dist)
-      ][, code := paste0(USAF, WBAN) ][1,]
-
-      dataUrl <- paste0("https://www.ncei.noaa.gov/data/global-hourly/access/", yr, "/", meta$code, ".csv")
-      # Install package bit64
-      data <- fread(dataUrl)[, c("wd", "x", "y", "ws", "z") := tstrsplit(WND, ",")
-      ][, wd := ifelse(as.numeric(wd) == 999, NA, as.numeric(wd))
-      ][, ws := ifelse(as.numeric(ws) == 9999, NA, as.numeric(ws))/10
-      ][, c("air_temp", "flag_temp") := tstrsplit(TMP, ",")
-      ][, air_temp := ifelse(as.numeric(air_temp) == 9999, NA, as.numeric(air_temp)/10)
-      ][, c("dew_point", "flag_dew") := tstrsplit(DEW, ",")
-      ][, dew_point := ifelse(as.numeric(dew_point) == 9999, NA, as.numeric(dew_point)/10)
-      ][, date := ymd_hms(DATE,tz=tz)
-      ][, RH :=  100 * ((112 - 0.1 * air_temp + dew_point) / (112 + 0.9 * air_temp))^8
-      ][, c("date", "wd",  "ws", "air_temp", "RH") ]
-      setcolorder(data, "date")
-
-      dxts <- as.xts.data.table(data)
-      ep <- endpoints(dxts, "hour")
-
-      hourly <- as.data.table(do.call(
-        cbind,
-        lapply(
-          dxts,
-          function(x) {
-            period.apply(x, ep, function(x) { mean(x, na.rm = TRUE) })
-          }
-        )
-      ))
-
-      hourly[, date := round_date(index, "hour")
-      ][, index := NULL
-      ][ date %between% c(sd, ed) ]
-      
+      # TODO:  This is where we would like to have status messages sent to the
+      # TODO:  UI to alert the user that the delay is NOAA's fault, not ours.
+      logger.trace("  * worldmet::getMeta()")
+      meta <- worldmet::getMeta(lat = sensor$meta$latitude, lon = sensor$meta$longitude, plot = FALSE, n = 1)
+      logger.trace("  * worldmet::importNoaa()")
+      data <- worldmet::importNOAA(code = meta$code, year = as.numeric(year), quiet = TRUE)
+      logger.trace("  * worldmet::importNoaa() FINISHED")
+      dataSubset <- data %>% dplyr::filter(date >= sd & date <= ed)
+      return(dataSubset)
     }, 
     error = function(err) {
       catchError(err)
@@ -284,6 +261,7 @@ get_noaa <- function(sensor, sd, ed) {
 #' @return a ws_monitor object
 #' @export
 get_pwfsl <- function(sd, ed, id) {
+  logger.trace("  get_pwfsl(%s, %s, %s)", sd, ed, id)
   tryCatch(
     PWFSLSmoke::monitor_load(sd, ed, id), 
     error = function(err) { catchError(err) }
