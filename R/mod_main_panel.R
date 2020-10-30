@@ -26,7 +26,7 @@ mod_main_panel_ui <- function(id) {
       inputId = ns("sensor_select"),
       label = tags$h4("Sensor"), 
       selected = NULL,
-      choices = list("Loading Sensors..." = NULL)
+      choices = list("Loading Sensors..." = NULL), 
     ),
 
     tags$hr(), 
@@ -332,11 +332,9 @@ mod_main_panel_server <- function(input, output, session, usr) {
       
       tryCatch(
         expr = {
-          # Why does this break shiny? 
-          # A: see allow_non_interactive in docs
-          #write_clip(url, allow_non_interactive = TRUE)
-          shinyjs::runjs('
-                         ')
+          # Note that on Linux, you will need to install the system requirement, either xclip or xsel. 
+          # This can be done using for example apt-get install xclip.
+          write_clip(url, allow_non_interactive = TRUE)
         }, 
         error = function(err) {
           logger.error(err)
