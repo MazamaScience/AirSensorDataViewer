@@ -1,3 +1,7 @@
+# AirSensorDataViewer 1.0.4
+
+* Added bookmark modal
+
 # AirSensorDataViewer 1.0.3
 
 * Added units to headers in downloaded CSV file.
