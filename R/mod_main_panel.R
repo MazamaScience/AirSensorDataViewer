@@ -68,13 +68,6 @@ mod_main_panel_ui <- function(id) {
 
     ),
     
-    # Hacky way to get the client timezone stored in the client object
-    # shinyjs::hidden(textInput(
-    #   inputId = ns("client_tz"),
-    #   "client time",
-    #   value = ""
-    # )),
-    
     tags$hr(), 
     
     fluidRow(
@@ -92,8 +85,6 @@ mod_main_panel_ui <- function(id) {
         width = 7
       ),
       column(
-        bs_embed_tooltip(
-          title = "Copy URL",
           actionLink(
             inputId = ns("share_button"), 
             label = tags$div(HTML('<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-link-45deg" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -102,24 +93,10 @@ mod_main_panel_ui <- function(id) {
   <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 0 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 0 0-4.243-4.243L6.586 4.672z"/>
   <path d="M10 9.5a2.99 2.99 0 0 0 .288-1.46l-.167.167a1.99 1.99 0 0 1-.896.518 1.99 1.99 0 0 1-.518.896l-.167.167A3.004 3.004 0 0 0 10 9.501z"/>
 </svg> Share...'))
-          )
-        ),
-        
-        # Add neat interactivity to the copy tooltip onclick:copied!
+          ) %>% bs_embed_tooltip(
+            title = "Get URL"
+          ),
         tags$style("#main_panel_ui_1-share_button { text-align:center; }"),
-        tags$script(
-          HTML(
-            '$("#main_panel_ui_1-share_button").on("click", () => {
-            $("#main_panel_ui_1-share_button")
-              .attr("data-original-title", "Copied!")
-              .tooltip("fixTitle").tooltip("show");
-            });
-            $("#main_panel_ui_1-share_button").on("hidden.bs.tooltip", () => {
-              $("#main_panel_ui_1-share_button")
-                .attr("data-original-title", "Copy URL")
-                .tooltip("fixTitle");
-            });')
-        ),
         width =  5
       ), 
       
@@ -199,7 +176,7 @@ mod_main_panel_server <- function(input, output, session, usr) {
         with({
           # Check diff bewteen sensors aobj in sensor obj and pas obj and only use
           # the sensors with mutual existence
-          pas_communities <- na.omit(unique(id2com(pas[['communityRegion']])))
+          pas_communities <- na.omit(unique(id2com(pas$communityRegion)))
           pas_labels <- na.omit(unique(pas[['label']]))
           
           sensors_communities <- na.omit(unique(id2com(sensors[["meta"]][['communityRegion']])))
@@ -265,7 +242,7 @@ mod_main_panel_server <- function(input, output, session, usr) {
       yr <- lubridate::year(input$date_select)
       
       # Plot down to avoid weird bugs 
-      plotDown()
+      # plotDown()
       
       # update the client object date selections
       usr$selected$sd <- sd
@@ -324,17 +301,16 @@ mod_main_panel_server <- function(input, output, session, usr) {
   
   # Write the url to the user clipboard on share click
   observeEvent(
-    ignoreNULL = TRUE, 
-    ignoreInit = TRUE, 
+    # ignoreNULL = TRUE, 
+    # ignoreInit = TRUE, 
     eventExpr = { input$share_button }, 
     handlerExpr = {
       url <- usr$url
       
       tryCatch(
         expr = {
-          # Note that on Linux, you will need to install the system requirement, either xclip or xsel. 
-          # This can be done using for example apt-get install xclip.
-          write_clip(url, allow_non_interactive = TRUE)
+          # Just show a modal with the URL - copy and pasting is actually complicated..
+          showBookmarkUrlModal(usr$selected$url)
         }, 
         error = function(err) {
           logger.error(err)
@@ -343,6 +319,7 @@ mod_main_panel_server <- function(input, output, session, usr) {
       )
     }
   )
+  
   
   # Watch the current page and tab. 
   # if on the latest page, hide the date range input 
