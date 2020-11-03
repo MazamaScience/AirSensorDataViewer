@@ -177,10 +177,10 @@ mod_main_panel_server <- function(input, output, session, usr) {
           # Check diff bewteen sensors aobj in sensor obj and pas obj and only use
           # the sensors with mutual existence
           pas_communities <- na.omit(unique(id2com(pas$communityRegion)))
-          pas_labels <- na.omit(unique(pas[['label']]))
+          pas_labels <- na.omit(unique(pas$label))
           
-          sensors_communities <- na.omit(unique(id2com(sensors[["meta"]][['communityRegion']])))
-          sensors_labels <- na.omit(unique(sensors[["meta"]][['label']]))
+          sensors_communities <- na.omit(unique(id2com(sensors$meta$communityRegion)))
+          sensors_labels <- na.omit(unique(sensors$meta$label))
           
           community_choices <- sensors_communities[sensors_communities %in% pas_communities]
           sensor_choices <- sensors_labels[sensors_labels %in% pas_labels]
