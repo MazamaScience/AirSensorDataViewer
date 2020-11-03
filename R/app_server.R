@@ -63,8 +63,8 @@ app_server <- function( input, output, session ) {
     session$doBookmark()
   })
   onBookmarked(function(url) {
+    usr$selected$url <- url
     updateQueryString(url)
-    usr$url <- url
   })
   onRestored(function(state) {
     logger.trace("Restoring from url")
@@ -103,7 +103,7 @@ app_server <- function( input, output, session ) {
         )
       )
       
-      plotUp()
+      #plotUp()
       
     })
     
