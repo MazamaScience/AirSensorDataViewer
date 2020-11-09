@@ -63,7 +63,8 @@ mod_patterns_server <- function(input, output, session, usr){
   output$noaaTable <- render_gt({
     req(usr$noaa)
     
-    usr$noaa %...>% (function(noaa) {
+    promise_all(noaa = usr$noaa, sensor = usr$sensor) %...>% with({
+      
       table <- noaa %>%
         dplyr::summarise(
           "Average Windspeed (m/s)" = mean(ws, na.rm = TRUE),
@@ -75,14 +76,33 @@ mod_patterns_server <- function(input, output, session, usr){
           "Maximum Air Temperature (C)" = max(air_temp, na.rm = TRUE),
           "Average Relative Humidity (%)" = mean(RH, na.rm = TRUE),
           "Minimum Relative Humidity (%)" = min(RH, na.rm = TRUE),
-          "Maximum Relative Humidity (%)" = max(RH, na.rm = TRUE),
+          "Maximum Relative Humidity (%)" = max(RH, na.rm = TRUE)
         ) %>% 
-        tidyr::pivot_longer(everything())
+        tidyr::pivot_longer(everything()) 
+      
+      metDist <- tryCatch(
+        expr = { 
+          signif(
+            unique(
+              na.omit(
+                geodist::geodist(
+                  cbind(noaa$longitude, noaa$latitude), 
+                  cbind(sensor$meta$longitude, sensor$meta$latitude)
+                )
+              )
+            )[1], 
+            digits = 2
+          ) / 1000
+        }, 
+        error = function(err) {
+          NA
+        }
+      )
       
       gt(table) %>%
         tab_header(
           title = "Addtional NOAA Weather Data",
-          subtitle = ""
+          subtitle = paste("Distance to Station:", metDist, "km")
         ) %>%
         tab_source_note(
           source_note = "Source: Integrated Surface Database (ISD) https://www.ncdc.noaa.gov/isd"
