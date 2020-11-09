@@ -79,7 +79,7 @@ mod_compare_server <- function(input, output, session, usr) {
     req(usr$pat)
     
     usr$pat %...>% (function(pat) {
-      pat_monitorComparison(pat)
+      pat_monitorComparison(pat, distanceCutoff = 30)
     }) %...!% (function(err) {
       catchError(err)
     })
