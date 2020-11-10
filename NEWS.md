@@ -1,6 +1,9 @@
 # AirSensorDataViewer 1.0.4
 
 * Added bookmark modal
+* Fixed tooltips
+* Improved notifications
+* Bugfixes
 
 # AirSensorDataViewer 1.0.3
 
