@@ -1,3 +1,7 @@
+# AirSensorDataViewer 1.0.5 
+
+* Clean deprecated code
+
 # AirSensorDataViewer 1.0.4
 
 * Added bookmark modal
