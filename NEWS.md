@@ -4,6 +4,7 @@
 * Fixed tooltips
 * Improved notifications
 * Bugfixes
+* Updated Help Modal
 
 # AirSensorDataViewer 1.0.3
 
