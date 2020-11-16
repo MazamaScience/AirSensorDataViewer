@@ -35,9 +35,6 @@ mod_datatable_ui <- function(id) {
 #' @importFrom DT renderDT datatable formatDate
 #' @importFrom promises `%...>%` `%...!%`
 mod_datatable_server <- function(input, output, session, usr) {
-  ns <- session$ns
-  
-  w <- Waiter$new(ns("datatable"))
   
   output$metatable <- renderTable({
     req(usr$pat)

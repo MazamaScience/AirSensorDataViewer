@@ -97,11 +97,6 @@ magicUpdate <- function(usr) {
     } else { # tab == 'video'
       # Do nothing
     }
-  
-  # Moved to tabset panel     
-  # } else if ( page == 'table' ) {
-  #   
-  #   usr$updatePat(label, sd, ed)
     
   } else if ( page == 'latest' ) {
     

@@ -101,8 +101,8 @@ mod_compare_server <- function(input, output, session, usr) {
     usr$pat %...>% (function(pat) {
       table <- pat$data %>% 
         summarise(
-          "Number of Measurments" = length(pm25_A),
-          "Recovered (%)" = mean(sum(!is.na(pm25_A))/length(pm25_A), sum(!is.na(pm25_B))/length(pm25_B))*100
+          "Number of Measurments" = length(.data$pm25_A),
+          "Recovered (%)" = mean(sum(!is.na(.data$pm25_A))/length(.data$pm25_A), sum(!is.na(.data$pm25_B))/length(.data$pm25_B))*100
         ) %>%
         pivot_longer(everything())
       

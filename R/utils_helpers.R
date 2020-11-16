@@ -54,46 +54,6 @@ com2id <- function(X) {
   unlist(lapply(X, function(x) {i<-which(com_id == x); ifelse(length(i)!=0, names(com_id[i]), x)}))
 }
 
-#' Waiter wrapper function
-#'
-#' @param id an element ID to append to.
-#'
-#' @export
-#' 
-#' @importFrom waiter Waiter spin_throbber transparent
-waiter <- function(id = NULL) { 
-  Waiter$new(
-    id = id,  
-    html = spin_throbber(), 
-    color = transparent(.5)
-  )
-}
-
-#' Waitress wrapper function
-#' 
-#' @export
-#' 
-#' @importFrom waiter Waitress
-waitress <- function() {
-  Waitress$new(min = 0, max = 100)
-}
-
-#' A Waitress notification wrapper
-#'
-#' @param expr an expression to make loading notification for
-#' @param msg a message to show the user.
-#'
-#' @export
-#' 
-#' @importFrom stats runif
-makeWaitress <- function(expr, msg) {
-  w <- waitress()
-  w$notify(msg, position = "bl")
-  w$set(runif(1, min = 10, max = 33))
-  expr
-  w$close()
-}
-
 #' Error handling function 
 #'
 #' @param err an error string, try-error, etc.
@@ -103,53 +63,6 @@ makeWaitress <- function(expr, msg) {
 catchError <- function(err) {
   logger.error(err)
   NULL
-}
-
-#' Animate Plot up
-#' 
-#' @export
-plotUp <- function() {
-  shinyjs::runjs("
-    if(!$('#dem').hasClass('in')) {
-      $('#collapse_btn').click();
-    };
-  ")
-}
-
-#' Animate plot down
-#'
-#' @export
-plotDown <- function() {
-  shinyjs::runjs("
-    if($('#dem').hasClass('in')) {
-      $('#collapse_btn').click();
-    };
-  ")
-}
-
-#' Animate the tiotemp map slider up
-#'
-#' @export
-sliderUp <- function() {
-  shinyjs::runjs("
-    d3.select('#overview_ui_1-timeseriesMap')
-        .select('.leaflet-bottom .leaflet-control')
-        .transition()
-        .duration(75)
-        .style('margin-bottom', '20vh');
-  ")
-}
-
-#' Create a hash-cache key for caching
-#'
-#' @param ... an object, expression, anything to be used to create unique key. 
-#'
-#' @return a hash
-#' @export
-#' @importFrom digest digest
-cacheKey <- function(...) {
-  x <- list(...)
-  digest(x)
 }
 
 #' A CSS loader feedback wrapper function

@@ -241,9 +241,6 @@ mod_main_panel_server <- function(input, output, session, usr) {
       
       yr <- lubridate::year(input$date_select)
       
-      # Plot down to avoid weird bugs 
-      # plotDown()
-      
       # update the client object date selections
       usr$selected$sd <- sd
       usr$selected$ed <- ed
@@ -301,8 +298,6 @@ mod_main_panel_server <- function(input, output, session, usr) {
   
   # Write the url to the user clipboard on share click
   observeEvent(
-    # ignoreNULL = TRUE, 
-    # ignoreInit = TRUE, 
     eventExpr = { input$share_button }, 
     handlerExpr = {
       url <- usr$url

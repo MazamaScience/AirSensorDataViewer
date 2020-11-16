@@ -53,7 +53,6 @@ mod_help_server <- function(input, output, session, usr){
       help_path <- "inst/app/www/latest_help.md"
     }
 
-    
     bs_modal(
       id = ns("help_modal"), 
       title = tags$h2("Help"),
