@@ -6,6 +6,7 @@
 #'
 #' @noRd 
 #'
+#' @importFrom rlang .data
 #' @importFrom shiny NS tagList 
 #' @importFrom DT DTOutput
 #' @importFrom gt gt_output render_gt
@@ -67,16 +68,16 @@ mod_patterns_server <- function(input, output, session, usr){
       
       table <- noaa %>%
         dplyr::summarise(
-          "Average Windspeed (m/s)" = mean(ws, na.rm = TRUE),
-          "Minimum Windspeed (m/s)" = min(ws, na.rm = TRUE),
-          "Maximum Windspeed (m/s)" = max(ws, na.rm = TRUE),
-          "Average Wind Direction (deg)" = mean(wd, na.rm = TRUE),
-          "Average Air Temperature (C)" = mean(air_temp, na.rm = TRUE),
-          "Minimum Air Temperature (C)"= min(air_temp, na.rm = TRUE),
-          "Maximum Air Temperature (C)" = max(air_temp, na.rm = TRUE),
-          "Average Relative Humidity (%)" = mean(RH, na.rm = TRUE),
-          "Minimum Relative Humidity (%)" = min(RH, na.rm = TRUE),
-          "Maximum Relative Humidity (%)" = max(RH, na.rm = TRUE)
+          "Average Windspeed (m/s)" = mean(.data$ws, na.rm = TRUE),
+          "Minimum Windspeed (m/s)" = min(.data$ws, na.rm = TRUE),
+          "Maximum Windspeed (m/s)" = max(.data$ws, na.rm = TRUE),
+          "Average Wind Direction (deg)" = mean(.data$wd, na.rm = TRUE),
+          "Average Air Temperature (C)" = mean(.data$air_temp, na.rm = TRUE),
+          "Minimum Air Temperature (C)"= min(.data$air_temp, na.rm = TRUE),
+          "Maximum Air Temperature (C)" = max(.data$air_temp, na.rm = TRUE),
+          "Average Relative Humidity (%)" = mean(.data$RH, na.rm = TRUE),
+          "Minimum Relative Humidity (%)" = min(.data$RH, na.rm = TRUE),
+          "Maximum Relative Humidity (%)" = max(.data$RH, na.rm = TRUE)
         ) %>% 
         tidyr::pivot_longer(everything()) 
       
