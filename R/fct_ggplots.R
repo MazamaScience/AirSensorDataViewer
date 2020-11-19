@@ -197,11 +197,6 @@ asdv_externalFit <- function(
 #'
 #' @return A linear model, fitting the `pat` B channel readings to A channel
 #' readings.
-#'
-#' @examples
-#' \donttest{
-#' asdv_internalFit(pat = example_pat)
-#' }
 
 asdv_internalFit <- function(
   pat = NULL,

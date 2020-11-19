@@ -56,7 +56,8 @@ noaaTable <- function(noaa) {
 
   logger.debug('----- noaaTable() -----')
 
-  suppressWarnings({
+
+  base::suppressWarnings({
 
     noaaTable <-
       data.frame(

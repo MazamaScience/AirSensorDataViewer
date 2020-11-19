@@ -6,6 +6,7 @@
 #'
 #' @noRd 
 #'
+#' @importFrom rlang .data
 #' @importFrom shiny NS tagList 
 #' @importFrom DT DTOutput
 #' @importFrom gt gt_output render_gt

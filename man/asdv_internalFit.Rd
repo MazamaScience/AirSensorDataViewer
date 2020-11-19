@@ -64,8 +64,3 @@ channel A.
 
 A diagnostic plot is produced if `showPlot = TRUE`.
 }
-\examples{
-\donttest{
-asdv_internalFit(pat = example_pat)
-}
-}

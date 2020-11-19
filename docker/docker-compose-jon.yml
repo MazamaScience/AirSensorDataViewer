@@ -6,5 +6,5 @@ services:
       ports:
           - "8080:3838"
       volumes:
-          - /Users/jonathan/Projects/SCAQMD/AirSensorDataViewer/logs:/var/log/shiny-server
+          - /Users/jonathancallahan/Projects/SCAQMD/AirSensorDataViewer/logs:/var/log/shiny-server
       restart: unless-stopped
