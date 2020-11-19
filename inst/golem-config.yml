@@ -1,6 +1,6 @@
 default:
   golem_name: AirSensor DataViewer
-  golem_version: 1.0.5beta
+  golem_version: 1.0.5
   app_prod: no
 production:
   app_prod: yes
