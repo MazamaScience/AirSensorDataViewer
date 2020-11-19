@@ -51,33 +51,59 @@ magicUpdate <- function(usr) {
   if ( page == 'explore' ) {
     
     if ( tab == 'overview' ) {
-      # Do nothing 
-      shinyjs::delay(100, plotUp())
+      
+      #shinyjs::delay(100, plotUp())
+      
+      shinyjs::show('.tooltip-map')
+      shinyjs::hide('.tooltip-calendar')
+      
     } else if ( tab == 'calendar' ) {
-      # Do nothing
+      
+      shinyjs::hide('.tooltip-map')
+      shinyjs::show('.tooltip-calendar')
+      
+      
     } else if ( tab == 'raw' ) {
+      
       usr$updatePat(label, sd, ed)
+      
+      shinyjs::hide('.tooltip-map')
+      shinyjs::hide('.tooltip-calendar')
+      
     } else if ( tab == 'patterns' ) {
+      
       usr$updateSensor(label)
       usr$updateNoaa(sd, ed)
+      
+      shinyjs::hide('.tooltip-map')
+      shinyjs::hide('.tooltip-calendar')
+      
     } else if ( tab == 'compare' ) {
+      
       usr$updatePat(label, sd, ed)
       usr$updateSensor(label)
       usr$updatePwfsl(label, sd, ed)
+      
+      shinyjs::hide('.tooltip-map')
+      shinyjs::hide('.tooltip-calendar')
+      
     } else if ( tab == 'table' ) {
+      
       usr$updatePat(label, sd, ed)
+      
+      shinyjs::hide('.tooltip-map')
+      shinyjs::hide('.tooltip-calendar')
+      
     } else { # tab == 'video'
       # Do nothing
     }
-  
-  # Moved to tabset panel     
-  # } else if ( page == 'table' ) {
-  #   
-  #   usr$updatePat(label, sd, ed)
     
   } else if ( page == 'latest' ) {
     
     usr$updateLatest(label)
+    
+    shinyjs::hide('.tooltip-map')
+    shinyjs::hide('.tooltip-calendar')
     
   } else {
     # Do nothing

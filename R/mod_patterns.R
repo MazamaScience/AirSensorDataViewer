@@ -6,6 +6,7 @@
 #'
 #' @noRd 
 #'
+#' @importFrom rlang .data
 #' @importFrom shiny NS tagList 
 #' @importFrom DT DTOutput
 #' @importFrom gt gt_output render_gt
@@ -63,26 +64,46 @@ mod_patterns_server <- function(input, output, session, usr){
   output$noaaTable <- render_gt({
     req(usr$noaa)
     
-    usr$noaa %...>% (function(noaa) {
+    promise_all(noaa = usr$noaa, sensor = usr$sensor) %...>% with({
+      
       table <- noaa %>%
         dplyr::summarise(
-          "Average Windspeed (m/s)" = mean(ws, na.rm = TRUE),
-          "Minimum Windspeed (m/s)" = min(ws, na.rm = TRUE),
-          "Maximum Windspeed (m/s)" = max(ws, na.rm = TRUE),
-          "Average Wind Direction (deg)" = mean(wd, na.rm = TRUE),
-          "Average Air Temperature (C)" = mean(air_temp, na.rm = TRUE),
-          "Minimum Air Temperature (C)"= min(air_temp, na.rm = TRUE),
-          "Maximum Air Temperature (C)" = max(air_temp, na.rm = TRUE),
-          "Average Relative Humidity (%)" = mean(RH, na.rm = TRUE),
-          "Minimum Relative Humidity (%)" = min(RH, na.rm = TRUE),
-          "Maximum Relative Humidity (%)" = max(RH, na.rm = TRUE),
+          "Average Windspeed (m/s)" = mean(.data$ws, na.rm = TRUE),
+          "Minimum Windspeed (m/s)" = min(.data$ws, na.rm = TRUE),
+          "Maximum Windspeed (m/s)" = max(.data$ws, na.rm = TRUE),
+          "Average Wind Direction (deg)" = mean(.data$wd, na.rm = TRUE),
+          "Average Air Temperature (C)" = mean(.data$air_temp, na.rm = TRUE),
+          "Minimum Air Temperature (C)"= min(.data$air_temp, na.rm = TRUE),
+          "Maximum Air Temperature (C)" = max(.data$air_temp, na.rm = TRUE),
+          "Average Relative Humidity (%)" = mean(.data$RH, na.rm = TRUE),
+          "Minimum Relative Humidity (%)" = min(.data$RH, na.rm = TRUE),
+          "Maximum Relative Humidity (%)" = max(.data$RH, na.rm = TRUE)
         ) %>% 
-        tidyr::pivot_longer(everything())
+        tidyr::pivot_longer(everything()) 
+      
+      metDist <- tryCatch(
+        expr = { 
+          signif(
+            unique(
+              na.omit(
+                geodist::geodist(
+                  cbind(noaa$longitude, noaa$latitude), 
+                  cbind(sensor$meta$longitude, sensor$meta$latitude)
+                )
+              )
+            )[1], 
+            digits = 2
+          ) / 1000
+        }, 
+        error = function(err) {
+          NA
+        }
+      )
       
       gt(table) %>%
         tab_header(
           title = "Addtional NOAA Weather Data",
-          subtitle = ""
+          subtitle = paste("Distance to Station:", metDist, "km")
         ) %>%
         tab_source_note(
           source_note = "Source: Integrated Surface Database (ISD) https://www.ncdc.noaa.gov/isd"

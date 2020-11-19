@@ -30,7 +30,6 @@ app_server <- function( input, output, session ) {
   usr <- User$new(session)
   
   # List the first level callModules here
-  # callModule(profvis::profvis_server, "profiler") # Dev Only
   callModule(mod_stateman_server, "stateman_1", usr)
   callModule(mod_main_panel_server, "main_panel_ui_1", usr)
   callModule(mod_overview_server, "overview_ui_1", usr)
@@ -43,12 +42,15 @@ app_server <- function( input, output, session ) {
   callModule(mod_datatable_server, "datatable_ui_1", usr)
   callModule(mod_help_server, "help_ui_1", usr)
   
+  # Development Profile Visualizer - DEV ONLY 
+  # callModule(profvis::profvis_server, "profiler")
+  
   # Hide the waiter startup once the modules have been loaded 
   waiter_hide()
 
   # ----- Bookmarking ----------------------------------------------------------
-  
   observe({
+    
     inputs <- reactiveValuesToList(input)
     bookmarkable <- c(
       "main_panel_ui_1-sensor_select", 
@@ -63,8 +65,8 @@ app_server <- function( input, output, session ) {
     session$doBookmark()
   })
   onBookmarked(function(url) {
+    usr$selected$url <- url
     updateQueryString(url)
-    usr$url <- url
   })
   onRestored(function(state) {
     logger.trace("Restoring from url")
@@ -102,8 +104,6 @@ app_server <- function( input, output, session ) {
                 .setValue("', past,'", false)'
         )
       )
-      
-      plotUp()
       
     })
     

@@ -1,3 +1,15 @@
+# AirSensorDataViewer 1.0.5 
+
+* Clean deprecated code
+
+# AirSensorDataViewer 1.0.4
+
+* Added bookmark modal
+* Fixed tooltips
+* Improved notifications
+* Bugfixes
+* Updated Help Modal
+
 # AirSensorDataViewer 1.0.3
 
 * Added units to headers in downloaded CSV file.

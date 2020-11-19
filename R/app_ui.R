@@ -14,7 +14,6 @@ app_ui <- function(request) {
     waiter_show_on_load(html = spin_three_bounce(), color = "#006687"),
     
     # ------ Panel Module -Column ----------------------------------------------
-    
     column(
       width = 2,
       wellPanel(
@@ -53,7 +52,6 @@ app_ui <- function(request) {
             width = 8,
             # ----- Tabs -----
             tabsetPanel(
-              #type = "pills",
               id = "tab",
               # ---- Overview Tab ----
               tabPanel(
@@ -127,26 +125,13 @@ app_ui <- function(request) {
               )
             )
           ),
-          # HELP
+          # Giving some space on RHS
           column(
-            width = 1,
-            #mod_help_ui("help_ui_1")
+            width = 1
           )
         )
       ),
-      
-      # #----- View Data Page ----------------------------------------------------
-      # tabPanel(
-      #   title = tags$b("View Data"),
-      #   value = "table",
-      #   fluidRow(
-      #     column(
-      #       width = 8,
-      #       mod_datatable_ui("datatable_ui_1")
-      #     )
-      #   )
-      # ),
-      
+    
       # ----- Latest Data page -------------------------------------------------
       tabPanel(
         title = tags$b("Latest 48-Hr Data"),
@@ -170,10 +155,6 @@ app_ui <- function(request) {
         )
       )
     ),
-    
-    # TODO: Remove all animated plot references
-    # Load the extra JS script
-    # extendShinyjs("inst/app/www/plotAnimate.js"),
     
     # Other Random CSS
     tags$style(

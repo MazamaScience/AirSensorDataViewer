@@ -6,6 +6,7 @@
 #'
 #' @noRd 
 #'
+#' @importFrom rlang .data
 #' @importFrom shiny NS tagList 
 #' @importFrom leaflet leafletOutput
 #' @importFrom gt gt_output
@@ -52,15 +53,25 @@ mod_compare_ui <- function(id) {
 #' @importFrom promises `%...>%` `%...!%` promise_all 
 mod_compare_server <- function(input, output, session, usr) {
   ns <- session$ns
-
+  
   output$comparisonLeaflet <- renderLeaflet({
     req(usr$sensor, usr$pwfsl)
-
+    
     promise_all(sensor = usr$sensor, pwfsl = usr$pwfsl) %...>% with({
-        comparisonLeaflet(sensor, pwfsl)
-      }) %...!% (function(err) {
-        catchError(err)
-      })
+      
+      # Notify the user if distance is large (>15km)
+      if ( sensor$meta$pwfsl_closestDistance > 15000 ) {
+        showNotification(
+          ui = paste("The distance between", sensor$meta$label, "and", pwfsl$meta$siteName, "is >15 km."), 
+          duration = 10
+        )
+      }
+        
+      comparisonLeaflet(sensor, pwfsl)
+      
+    }) %...!% (function(err) {
+      catchError(err)
+    })
     
   })
   
@@ -72,18 +83,18 @@ mod_compare_server <- function(input, output, session, usr) {
     }) %...!% (function(err) {
       catchError(err)
     })
-
+    
   })
   
   output$sensorMonitorComp <- renderPlot({
     req(usr$pat)
     
     usr$pat %...>% (function(pat) {
-      pat_monitorComparison(pat)
+      pat_monitorComparison(pat, distanceCutoff = 30)
     }) %...!% (function(err) {
       catchError(err)
     })
-
+    
   })
   
   output$statusTable <- render_gt({
@@ -91,11 +102,11 @@ mod_compare_server <- function(input, output, session, usr) {
     usr$pat %...>% (function(pat) {
       table <- pat$data %>% 
         summarise(
-          "Number of Measurments" = length(pm25_A),
-          "Recovered (%)" = mean(sum(!is.na(pm25_A))/length(pm25_A), sum(!is.na(pm25_B))/length(pm25_B))*100
-          ) %>%
+          "Number of Measurments" = length(.data$pm25_A),
+          "Recovered (%)" = mean(sum(!is.na(.data$pm25_A))/length(.data$pm25_A), sum(!is.na(.data$pm25_B))/length(.data$pm25_B))*100
+        ) %>%
         pivot_longer(everything())
-        
+      
       gt(table) %>% 
         fmt_number(2, decimals = 0) %>% 
         cols_label(name = "", value = "") %>% 
@@ -104,7 +115,7 @@ mod_compare_server <- function(input, output, session, usr) {
     }) %...!% (function(err) {
       catchError(err)
     })
-
+    
   })
   
 }
