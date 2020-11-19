@@ -75,7 +75,7 @@ RUN Rscript -e 'remotes::install_github("mazamascience/MazamaSpatialUtils@f5359d
 # AirSensor
 RUN Rscript -e 'remotes::install_github("MazamaScience/AirSensor@2addbf1fb07181f6ae3685f66b4e9f563fee1835")'
 # tiotemp
-RUN Rscript -e 'remotes::install_github("MazamaScience/tiotemp@0245211c05bc04f7ca374861a458c28abd061f9f")'
+RUN Rscript -e 'remotes::install_github("MazamaScience/tiotemp@48a6d83f069c9697f7b3a0a2ed2037f839ef1718")' 
 # PWFSLSmoke
 RUN Rscript -e 'remotes::install_github("MazamaScience/PWFSLSmoke@92f7ad31b5408a7542bae2c1a1db84e0131d0f03")'
 # golem
