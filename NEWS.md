@@ -1,3 +1,8 @@
+# AirSensorDataViewer 1.0.6
+
+* Updated to AirSensor 1.0.5
+* Changed label "PWFSL" to "Monitor" in correlation plot.
+
 # AirSensorDataViewer 1.0.5 
 
 * Clean deprecated code

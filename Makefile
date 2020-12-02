@@ -54,10 +54,10 @@ clean:
 
 # NOTE:  You need to manually edit these version numbers and that in docker/Dockerfile to match
 base_build:
-	cd docker; docker build --no-cache -t mazamascience/airsensor-dataviewer-base:1.0.4 -f Dockerfile-base .
+	cd docker; docker build --no-cache -t mazamascience/airsensor-dataviewer-base:1.0.5 -f Dockerfile-base .
 
 base_publish:
-	cd docker; docker login && docker push mazamascience/airsensor-dataviewer-base:1.0.4
+	cd docker; docker login && docker push mazamascience/airsensor-dataviewer-base:1.0.5
 
 # AirSensorShiny DESKTOP version -----------------------------------------------
 
@@ -68,7 +68,7 @@ desktop_build:
 	docker build -t airsensor-dataviewer-desktop:$(VERSION) \
 		-t airsensor-dataviewer-desktop:latest -f docker/Dockerfile .
 
-desktop_jon:
+jon_up:
 	docker-compose -f docker/docker-compose-jon.yml \
 		-p airsensordataviewerdesktop up -d
 desktop_up:

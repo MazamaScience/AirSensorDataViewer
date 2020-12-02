@@ -73,7 +73,7 @@ mod_patterns_server <- function(input, output, session, usr){
           "Maximum Windspeed (m/s)" = max(.data$ws, na.rm = TRUE),
           "Average Wind Direction (deg)" = mean(.data$wd, na.rm = TRUE),
           "Average Air Temperature (C)" = mean(.data$air_temp, na.rm = TRUE),
-          "Minimum Air Temperature (C)"= min(.data$air_temp, na.rm = TRUE),
+          "Minimum Air Temperature (C)" = min(.data$air_temp, na.rm = TRUE),
           "Maximum Air Temperature (C)" = max(.data$air_temp, na.rm = TRUE),
           "Average Relative Humidity (%)" = mean(.data$RH, na.rm = TRUE),
           "Minimum Relative Humidity (%)" = min(.data$RH, na.rm = TRUE),

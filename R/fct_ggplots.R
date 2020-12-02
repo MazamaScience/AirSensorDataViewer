@@ -149,7 +149,7 @@ asdv_externalFit <- function(
                            method = "lm", size = lr_lwd) +
       ggplot2::labs(title = "Correlation",
                     x = paste0("PurpleAir: \"", sensor$meta$monitorID, "\""),
-                    y = paste0("PWFSL: ", monitorID)) +
+                    y = paste0("Monitor: ", monitorID)) +
       ggplot2::theme_bw() +
       ggplot2::xlim(xylim) +
       ggplot2::ylim(xylim) +

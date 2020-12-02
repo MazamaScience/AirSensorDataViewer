@@ -80,21 +80,20 @@ noaaTable <- function(noaa) {
   })  
   
   # Handle +/-Inf and NaN values that occur when a vector is all NAs
+  # TODO:  Conversion of Inf/Nan to NA isn't currently working
+  noaaTable$mean_ws[is.nan(noaaTable$mean_ws)] <- NA
+  noaaTable$min_ws[is.infinite(noaaTable$min)] <- NA
+  noaaTable$max_ws[is.infinite(noaaTable$max)] <- NA
   
-  # TODO:  Figure out how to get something like this to work
-  # noaaTable$mean_ws <- ifelse(is.nan(noaaTable$mean_ws), NA, noaaTable$mean_ws)
-  # noaaTable$min_ws <- ifelse(is.infinite(noaaTable$min_ws), NA, noaaTable$min_ws)
-  # noaaTable$max_ws <- ifelse(is.infinite(noaaTable$max_ws), NA, noaaTable$max_ws)
-  # 
-  # noaaTable$mean_wd <- ifelse(nan(noaaTable$mean_wd), NA, noaaTable$mean_wd)
-  # 
-  # noaaTable$mean_air_temp <- ifelse(is.nan(noaaTable$mean_air_temp), NA, noaaTable$mean_air_temp)
-  # noaaTable$min_air_temp <- ifelse(is.infinite(noaaTable$min_air_temp), NA, noaaTable$min_air_temp)
-  # noaaTable$max_air_temp <- ifelse(is.infinite(noaaTable$max_air_temp), NA, noaaTable$max_air_temp)
-  # 
-  # noaaTable$mean_RH <- ifelse(is.nan(noaaTable$mean_RH), NA, noaaTable$mean_RH)
-  # noaaTable$min_RH <- ifelse(is.infinite(noaaTable$min_RH), NA, noaaTable$min_RH)
-  # noaaTable$max_RH <- ifelse(is.infinite(noaaTable$max_RH), NA, noaaTable$max_RH)
+  noaaTable$mean_wd[is.nan(noaaTable$mean_wd)] <- NA
+   
+  noaaTable$mean_air_temp[is.nan(noaaTable$mean_air)] <- NA
+  noaaTable$min_air_temp[is.infinite(noaaTable$min)] <- NA
+  noaaTable$max_air_temp[is.infinite(noaaTable$max)] <- NA
+   
+  noaaTable$mean_RH[is.nan(noaaTable$mean_RH)] <- NA
+  noaaTable$min_RH[is.infinite(noaaTable$min)] <- NA
+  noaaTable$max_RH[is.infinite(noaaTable$max)] <- NA
   
   
   names(noaaTable) <- c( 

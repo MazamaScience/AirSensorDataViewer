@@ -73,7 +73,7 @@ RUN Rscript -e 'remotes::install_version("bsplus",upgrade="never", version = "0.
 # Spatial Utils
 RUN Rscript -e 'remotes::install_github("mazamascience/MazamaSpatialUtils@f5359d1ddd5652b869631ce82409a0c8f90a0fc5")'
 # AirSensor
-RUN Rscript -e 'remotes::install_github("MazamaScience/AirSensor@2addbf1fb07181f6ae3685f66b4e9f563fee1835")'
+RUN Rscript -e 'remotes::install_github("MazamaScience/AirSensor@99af893998cc282777e4dbb10304de6d1d76dc4e")'
 # tiotemp
 RUN Rscript -e 'remotes::install_github("MazamaScience/tiotemp@48a6d83f069c9697f7b3a0a2ed2037f839ef1718")' 
 # PWFSLSmoke
