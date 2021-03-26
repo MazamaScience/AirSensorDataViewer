@@ -1,3 +1,7 @@
+# AirSensorDataViewer 1.0.7
+
+* Use SCAQMD archive at https://airsensor.aqmd.gov/PurpleAir/v1/
+
 # AirSensorDataViewer 1.0.6
 
 * Updated to AirSensor 1.0.5
@@ -29,7 +33,7 @@
 * Various package version updates.
 * Removed barchart show/hide.
 * Return to use of **worldmet** package for wind data.
-* Video URLs now point to http://data.mazamascienc.com/PurpleAir/v1/videos
+* Video URLs now point to http://data.mazamascience.com/PurpleAir/v1/videos
 * Added calendar legend.
 * Default timezone now set in `app_server.R`.
 * Reduced usage of waiter spinner.

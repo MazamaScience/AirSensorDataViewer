@@ -78,7 +78,7 @@ User <- R6::R6Class(
   
   public = list(
     
-    baseUrl = "http://data.mazamascience.com/PurpleAir/v1", 
+    baseUrl = "https://airsensor.aqmd.gov/PurpleAir/v1", 
     
     #' @details
     #' \code{User$selected$...}: Access Shiny Input reactive values.
