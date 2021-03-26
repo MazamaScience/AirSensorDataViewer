@@ -40,7 +40,7 @@ mod_video_server <- function(input, output, session, usr) {
       expr = {
         if ( community != "All.." ) {
           ed <- ed
-          baseUrl <- "https://airsensor.aqmd.gov/PurpleAir/v1//videos"
+          baseUrl <- "https://airsensor.aqmd.gov/PurpleAir/v1/videos"
           year    <- strftime(ed, "%Y", tz = timezone)
           mm      <- strftime(ed, "%m", tz = timezone)
           dd      <- strftime(ed, "%d", tz = timezone)
