@@ -115,13 +115,13 @@ test_container_logs:
 		-p airsensordataviewertest logs
 
 test_trace_log:
-	ls -lt /var/www/html/logs/$(SERVICE_PATH_TEST)/app/*/TRACE.log | head -1 | xargs cat
+	ls -t /var/www/html/logs/$(SERVICE_PATH_TEST)/app/*/TRACE.log | head -1 | xargs cat
 
 test_debug_log:
-	ls -lt /var/www/html/logs/$(SERVICE_PATH_TEST)/app/*/DEBUG.log | head -1 | xargs cat
+	ls -t /var/www/html/logs/$(SERVICE_PATH_TEST)/app/*/DEBUG.log | head -1 | xargs cat
 
 test_info_log:
-	ls -lt /var/www/html/logs/$(SERVICE_PATH_TEST)/app/*/INFO.log | head -1 | xargs cat
+	ls -t /var/www/html/logs/$(SERVICE_PATH_TEST)/app/*/INFO.log | head -1 | xargs cat
 
 test_error_log:
 	ls -t /var/www/html/logs/$(SERVICE_PATH_TEST)/app/*/ERROR.log | head -1 | xargs cat
@@ -151,16 +151,16 @@ joule_test_container_logs:
 		-p airsensordataviewertest logs
 
 joule_test_trace_log:
-	ls -lt /var/www/tools.mazamascience.com/html/logs/$(SERVICE_PATH)/app/*/TRACE.log | head -1 | xargs cat
+	ls -t /var/www/tools.mazamascience.com/html/logs/$(SERVICE_PATH)/app/*/TRACE.log | head -1 | xargs cat
 
 joule_test_debug_log:
-	ls -lt /var/www/tools.mazamascience.com/html/logs/$(SERVICE_PATH)/app/*/DEBUG.log | head -1 | xargs cat
+	ls -t /var/www/tools.mazamascience.com/html/logs/$(SERVICE_PATH)/app/*/DEBUG.log | head -1 | xargs cat
 
 joule_test_info_log:
-	ls -lt /var/www/tools.mazamascience.com/html/logs/$(SERVICE_PATH)/app/*/INFO.log | head -1 | xargs cat
+	ls -t /var/www/tools.mazamascience.com/html/logs/$(SERVICE_PATH)/app/*/INFO.log | head -1 | xargs cat
 
 joule_test_error_log:
-	ls -lt /var/www/tools.mazamascience.com/html/logs/$(SERVICE_PATH)/app/*/ERROR.log | head -1 | xargs cat
+	ls -t /var/www/tools.mazamascience.com/html/logs/$(SERVICE_PATH)/app/*/ERROR.log | head -1 | xargs cat
 
 joule_test_bounce: joule_test_down joule_test_up
 
