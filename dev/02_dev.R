@@ -43,7 +43,7 @@ usethis::use_package("shinyFeedback")
 
 
 # Add github personal access token if you build a lot and exceed rate limit
-# usethis::browse_github_pat()
+# usethis::create_github_token()
 # usethis::edit_r_environ()
 
 
